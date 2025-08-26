@@ -46,7 +46,23 @@
 				
 	</div>
 	
+	<div class="d-flex justify-content-center gap-3 mb-4">
+		<a href="/api/manage/main"><button class="btn btn-blue-main">관리자 페이지 확인용</button></a>
+		<a href="/api/manage/mypage"><button class="btn btn-purple-main">마이페이지 확인용</button></a>
+		
+		
+	</div>
+	<div class="d-flex justify-content-center gap-3 mb-4">
+		<a href="/api/game/main?game_seq=1"><button class="btn btn-blue-main">게임 임시 1 </button></a>
+		<a href="/api/game/main?game_seq=2"><button class="btn btn-purple-main">게임 임시 2</button></a>
+		<a href="/api/game/main?game_seq=3"><button class="btn btn-outline-blue-main">게임 임시 3 </button></a>
+		<a href="/api/game/main?game_seq=4"><button class="btn btn-outline-purple-main">게임 임시 4 </button></a>
+		
+	</div>
+	
 </div>
+
+
 
  <!-- </body></html> -->
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

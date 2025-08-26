@@ -7,32 +7,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class ManagerController
- */
-@WebServlet("/ManagerController")
-public class ManagerController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ManagerController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+@WebServlet("/api/manage/*")
+public class ManagerController extends HttpServlet {
+	
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+	
+		String path = request.getPathInfo(); 
+
+        if(path == null || path.equals("/main")) {
+            request.getRequestDispatcher("/WEB-INF/views/manage/chart.jsp").forward(request, response);
+        } else if(path.equals("/mypage")) {
+        	  request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp").forward(request, response);
+        }else if(path.equals("/user")) {
+      	  request.getRequestDispatcher("/WEB-INF/views/manage/user.jsp").forward(request, response);
+        }else if(path.equals("/board")) {
+        	  request.getRequestDispatcher("/WEB-INF/views/manage/board.jsp").forward(request, response);
+          }else if(path.equals("/game")) {
+        	  request.getRequestDispatcher("/WEB-INF/views/manage/game.jsp").forward(request, response);
+          }else if(path.equals("/store")) {
+        	  request.getRequestDispatcher("/WEB-INF/views/manage/store.jsp").forward(request, response);
+          }
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

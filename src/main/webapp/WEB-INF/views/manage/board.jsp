@@ -5,4 +5,6 @@
 여기에 코드 입력
  -->
  
+ 게시판 관리 페이지
+ 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

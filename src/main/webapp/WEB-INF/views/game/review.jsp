@@ -116,7 +116,7 @@
 	<div class="container reviewJsp">
 		<!-- 리뷰 작성 카드 -->
 		<div class="card">
-			<form class="review-form" method="post" action="/submitReview">
+			<div class="row review-form">
 
 				<div class="col-3 star-rating">
 					<input type="radio" id="5-stars" name="rating" value="5"><label
@@ -137,8 +137,7 @@
 				<div class="col-2 reviewInput">
 					<button type="submit">리뷰 등록</button>
 				</div>
-
-			</form>
+				</div>
 		</div>
 
 		<!-- 기존 리뷰 -->

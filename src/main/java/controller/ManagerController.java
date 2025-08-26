@@ -16,11 +16,12 @@ public class ManagerController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
 		String path = request.getPathInfo(); 
+		String loginId = (String) request.getSession().getAttribute("loginId");
 
         if(path == null || path.equals("/main")) {
             request.getRequestDispatcher("/WEB-INF/views/manage/chart.jsp").forward(request, response);
         } else if(path.equals("/mypage")) {
-        	  request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp").forward(request, response);
+        	  request.getRequestDispatcher("/api/friends/mypage?clickedUserID"+loginId).forward(request, response);
         }else if(path.equals("/user")) {
       	  request.getRequestDispatcher("/WEB-INF/views/manage/user.jsp").forward(request, response);
         }else if(path.equals("/board")) {

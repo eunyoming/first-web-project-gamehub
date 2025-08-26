@@ -8,32 +8,54 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class MemberController
- */
-@WebServlet("/MemberController")
+import dao.MemberDAO;
+
+
+@WebServlet("/api/member/*")
 public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public MemberController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+		String path = request.getPathInfo(); 
+		MemberDAO dao = MemberDAO.getInstance();
+		try {
+			if(path.equals("/loginPage")) {
+				request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response);
+				
+				
+			}else if(path.equals("/login")){
+				// userId, Pw 가져오기
+				String userId = request.getParameter("userId");
+				String userPassword = request.getParameter("userPassword");
+
+				// 중복 로그인 
+				boolean checkLogin = dao.selectMembersByIdAndPW(userId, userPassword);
+
+				// 로그인 성공시
+				if(checkLogin) {
+					// Session 에 userId 저장
+					request.getSession().setAttribute("userId", userId);
+					// index.jsp 로 다시 보내기
+					response.sendRedirect("/");
+
+				}else { // 실패시
+					System.out.println("로그인 실패");
+				}
+
+			}else if(path.equals("/joinPage")) {
+				response.sendRedirect("/WEB-INF/views/member/join.jsp");
+			}else if(path.equals("/join")) {
+				request.getRequestDispatcher("/WEB-INF/views/member/join.jsp").forward(request, response);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("/error.jsp");
+		}
+	
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

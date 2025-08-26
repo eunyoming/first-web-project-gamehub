@@ -48,7 +48,7 @@
 	
 	<div class="d-flex justify-content-center gap-3 mb-4">
 		<a href="/api/manage/main"><button class="btn btn-blue-main">관리자 페이지 확인용</button></a>
-		<a href="/api/manage/mypage"><button class="btn btn-purple-main">마이페이지 확인용</button></a>
+		<a href="/api/friends/mypage?clickedUserID=${loginId}"><button class="btn btn-purple-main">마이페이지 확인용</button></a>
 		
 		
 	</div>

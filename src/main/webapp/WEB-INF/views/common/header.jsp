@@ -31,8 +31,8 @@
       </ul>
       
       <div class="d-flex ms-3">
-        <a class="btn btn-blue-main me-2" href="#">로그인</a>
-        <a class="btn btn-purple-main" href="#">회원가입</a>
+        <a class="btn btn-blue-main me-2" href="/api/member/loginPage">로그인</a>
+        <a class="btn btn-purple-main" href="/api/member/join">회원가입</a>
       </div>
     </div>
   </div>

@@ -26,7 +26,7 @@
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link active" href="/">Main Page</a></li>
         <li class="nav-item"><a class="nav-link" href="/api/game">Game</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Community</a></li>
+        <li class="nav-item"><a class="nav-link" href="/board/list.jsp">Community</a></li>
          <li class="nav-item"><a class="nav-link" href="#">Store</a></li>
       </ul>
       

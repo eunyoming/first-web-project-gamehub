@@ -21,7 +21,7 @@
 
 
   <c:choose>
-  	<c:when test="${loginId==param.clickedUserID}">
+  	<c:when test="${loginId == param.userId}">
   		
   	<!-- 
   	마이 페이지일 경우
@@ -39,7 +39,7 @@
 여기에 코드 입력
  -->
 
- <p>친구 ${param.clickedUserID}의 페이지</p>
+ <p>친구 ${param.userId}의 페이지</p>
   	
   	</c:otherwise>
   </c:choose>

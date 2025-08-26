@@ -177,3 +177,22 @@ body{
   -webkit-backdrop-filter: blur(10px); 
   background-color: rgba(255, 255, 255, 0.7);
 }
+
+/* 텍스트 컬러 커스텀 클래스 */
+.text-blue { color: var(--main-color) !important; }
+.text-purple { color: var(--accent-color) !important; }
+.text-blue-smooth { color: var(--main-color-smooth) !important; }
+.text-purple-smooth { color: var(--accent-color-smooth) !important; }
+.text-red { color: var(--red-color) !important; }
+.text-yellow { color: var(--yellow-color) !important; }
+.text-green { color: var(--green-color) !important; }
+.text-navy { color: var(--navy-color) !important; }
+.text-gray { color: var(--gray-color) !important; }
+.text-peach { color: var(--peach-color) !important; }
+
+
+.site-footer {
+  background-color: white; /* footer 배경색 지정 */
+  color: black; /* 글씨 색상 */
+  padding: 20px;
+}

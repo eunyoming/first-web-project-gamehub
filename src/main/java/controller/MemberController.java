@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dao.MemberDAO;
+import dto.member.MemberDTO;
 
 
 @WebServlet("/api/member/*")
@@ -29,24 +30,41 @@ public class MemberController extends HttpServlet {
 				String userId = request.getParameter("userId");
 				String userPassword = request.getParameter("userPassword");
 
-				// 중복 로그인 
-				boolean checkLogin = dao.selectMembersByIdAndPW(userId, userPassword);
+				System.out.println(userId + ":" + userPassword);
+				
+				MemberDTO loginDto = dao.selectMembersByIdAndPW(userId, userPassword);
 
 				// 로그인 성공시
-				if(checkLogin) {
+				if(loginDto != null) {
 					// Session 에 userId 저장
-					request.getSession().setAttribute("userId", userId);
+					request.getSession().setAttribute("loginId", userId);
+					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
+					
+					
 					// index.jsp 로 다시 보내기
 					response.sendRedirect("/");
 
 				}else { // 실패시
 					System.out.println("로그인 실패");
+					response.sendRedirect("/api/member/loginPage");
 				}
 
 			}else if(path.equals("/joinPage")) {
 				response.sendRedirect("/WEB-INF/views/member/join.jsp");
+			
 			}else if(path.equals("/join")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/join.jsp").forward(request, response);
+			
+			}else if(path.equals("/logout")) {
+				request.getSession().invalidate();
+				
+				response.sendRedirect("/");
+			}else if(path.equals("/mypage")) {
+				
+				String userID = (String) request.getSession().getAttribute("loginId");
+				System.out.println("마이페이지 접속:"+userID);
+				
+				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp?userId="+userID).forward(request, response);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

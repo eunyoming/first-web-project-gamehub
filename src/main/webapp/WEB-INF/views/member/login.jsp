@@ -15,7 +15,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"
 	integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
 	crossorigin="anonymous" type="text/javascript"></script>
-<link href="/css/index.css" rel="stylesheet" />
+<link href="/css/main.css" rel="stylesheet" />
 </head>
 <body
 	style="background-image: url('https://picsum.photos/1920/1080'); background-size: cover; background-position: center;">
@@ -23,10 +23,10 @@
 
 <main>
 	<div
-		class="container d-flex justify-content-center align-items-center vh-100">
+		class="container d-flex justify-content-center align-items-center vh-100 ">
 
 		
-				<div class="login_box shadow-lg p-5 mb-5 g-5 rounded">
+				<div class="login_box shadow-lg p-5 mb-5 g-5 rounded blur-bg-login">
 					<form action="/api/member/login" id="login_form" method="post"
 						class="login form">
 						<label for="formGroupExampleInput" class="form-label text-center">아이디</label>

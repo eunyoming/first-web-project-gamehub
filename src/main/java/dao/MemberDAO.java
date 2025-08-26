@@ -8,6 +8,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import dto.member.MemberDTO;
+
 public class MemberDAO {
 //대상DTO: MemberDTO, MemberProfileDTO, RoleDTO
 	private static MemberDAO instance;
@@ -26,8 +28,8 @@ public class MemberDAO {
 		return ds.getConnection();
 	}
 	
-	public boolean selectMembersByIdAndPW(String id, String pw) throws Exception{
-		//로그인 가능한지 확인하는 메서드
+	public MemberDTO selectMembersByIdAndPW(String id, String pw) throws Exception{
+		//로그인 시에 사용되는 메서드 입니다.
 		String sql = "select * from members where id=? and pw=?";
 
 		try(
@@ -38,15 +40,15 @@ public class MemberDAO {
 			pstat.setString(1, id);
 			pstat.setString(2, pw);
 			ResultSet rs = pstat.executeQuery();
-			if(rs.next())
-			{
-				//rs.next()가 true면 값이 있다는 소리니까 true를 리턴
-				return true;
-			}
-			else
-			{
-				//else면 없다는 소리여서 true 리턴
-				return false;
+			if(rs.next()) {
+				MemberDTO dto = new MemberDTO();
+				dto.setId(rs.getString("id"));
+				dto.setPoint(rs.getInt("point"));
+				
+				
+				return dto;
+			}else {
+				return null;
 			}
 		}
 	}

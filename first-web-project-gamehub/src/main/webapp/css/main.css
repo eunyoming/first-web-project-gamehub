@@ -1,0 +1,174 @@
+@charset "UTF-8";
+
+:root {
+	background-color:white;
+  --main-color: #B4E4FF;   
+  --accent-color: #DCAAEB; 
+  --main-color-smooth : #B1D8FF;
+  --accent-color-smooth: #C7BCFA;
+   --red-color: #FFB4B4;
+    --yellow-color: #FFF1B4;
+    --green-color: #B4EBC1;
+	 --navy-color: #9BB4FF;     
+	  --gray-color: #D1D1D1; 
+	  --peach-color: #FFD1B4;
+}
+
+
+.btn-blue-main {
+  background-color: var(--main-color) !important;
+  border-color: #767676 !important;
+ 
+}
+
+.btn-outline-blue-main {
+  background-color: white !important;
+  border-color: var(--main-color) !important;
+ 
+}
+
+
+.btn-purple-main {
+	color: white !important;
+	 background-color: var(--accent-color) !important;
+  border-color: #767676 !important;
+}
+
+.btn-outline-purple-main {
+  background-color: white !important;
+  border-color: var(--accent-color) !important;
+ 
+}
+
+.btn-red-main {
+    color: black;
+    background-color: var(--red-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-red-main {
+    background-color: white !important;
+    border-color: var(--red-color) !important;
+}
+
+/* 노랑 버튼 */
+.btn-yellow-main {
+    color: black;
+    background-color: var(--yellow-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-yellow-main {
+    background-color: white !important;
+    border-color: var(--yellow-color) !important;
+}
+
+/* 초록 버튼 */
+.btn-green-main {
+    color: black;
+    background-color: var(--green-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-green-main {
+    background-color: white !important;
+    border-color: var(--green-color) !important;
+
+}
+
+.btn-peach-main {
+    color: black;
+    background-color: var(--peach-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-peach-main {
+    background-color: white !important;
+    border-color: var(--peach-color) !important;
+}
+
+/* 남색 */
+.btn-navy-main {
+    color: white !important;
+    background-color: var(--navy-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-navy-main {
+    background-color: white !important;
+    border-color: var(--navy-color) !important;
+}
+
+/* 회색 */
+.btn-gray-main {
+   color: white !important;
+    background-color: var(--gray-color) !important;
+    border-color: #767676 !important;
+}
+
+.btn-outline-gray-main {
+    background-color: white !important;
+    border-color: var(--gray-color) !important;
+}
+
+
+.btn-gradient {
+    color: white !important; /* 글씨 색상 */
+   border-color: var(--gray-color) !important;
+   background-size: 150% auto;
+    background-image: linear-gradient(to right, var(--color1), var(--color2));
+    transition: 0.5s;
+}
+
+
+.btn-blue-purple {
+    background-image: linear-gradient(to right, var(--main-color) 0%, var(--accent-color) 100%);
+}
+
+/* 빨강 + 복숭아 */
+.btn-red-peach {
+    background-image: linear-gradient(to right, var(--red-color), var(--peach-color));
+}
+
+/* 노랑 + 초록 */
+.btn-yellow-green {
+
+    background-image: linear-gradient(to right, var(--yellow-color), var(--green-color));
+}
+
+/* 남색 + 파랑 */
+.btn-navy-blue {
+    background-image: linear-gradient(to right, var(--navy-color), var(--main-color));
+}
+
+/* 회색 + 보라 */
+.btn-gray-purple {
+    background-image: linear-gradient(to right, var(--gray-color), var(--accent-color));
+}
+
+.btn-gradient:hover {
+  background-position: right center !important; /* change the direction of the change here */
+}
+
+
+
+.navbar {
+	
+  padding-top: 1rem;   /* 위쪽 여백 */
+  padding-bottom: 1rem; /* 아래쪽 여백 */
+}
+
+/*
+header는 fixed 되어 맨위 고정이기 때문에 그만큼 여백
+*/
+
+body{
+  padding-top: 70px; 
+}
+
+.blur-bg {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); 
+  background-color: rgba(255, 255, 255, 0.8); /* 반투명 흰색 */
+}
+

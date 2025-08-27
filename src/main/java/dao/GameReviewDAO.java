@@ -39,7 +39,7 @@ public class GameReviewDAO {
 		return ds.getConnection();
 	}
 
-	public List<GameReviewDTO> selectAllGameReviews(int game_seq) throws Exception {
+	public List<GameReviewDTO> selectGameReviewsByGame_seq(int game_seq) throws Exception {
 		String sql = "select * from gameReviews where game_seq = ? order by created_at asc";
 
 		try(	Connection con = getConnection();
@@ -62,10 +62,6 @@ public class GameReviewDAO {
 					int rating = result.getInt("rating");
 					Timestamp timestamp =result.getTimestamp("created_at");
 					
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm");
-					String formatted = sdf.format(timestamp);
-
-					
 					GameReviewDTO dto = new GameReviewDTO(seq,writer,title,content,game_seq,rating,timestamp);
 
 					list.add(dto);
@@ -74,6 +70,40 @@ public class GameReviewDAO {
 				return list;		
 			}
 			
+		}
+	}
+	public boolean selectGameReviewsBygame_seqAndWriter(int game_seq, String writer) throws Exception {
+		String sql = "select * from gameReviews where game_seq = ? and writer = ?";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			pstat.setInt(1, game_seq);
+			pstat.setString(2, writer);
+			try(
+					ResultSet result = pstat.executeQuery();)
+			{
+				return result.next();
+			}
+		}
+	}
+	public int insertGameReviews(GameReviewDTO gameReviewDTO) throws Exception{
+
+		String sql = "insert into GameReviews values(GameReviews_seq.nextval,?,?,?,?,?,sysdate)";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			pstat.setString(1, gameReviewDTO.getWriter());
+			pstat.setString(2, gameReviewDTO.getTitle());
+			pstat.setString(3, gameReviewDTO.getContent());
+			pstat.setInt(4, gameReviewDTO.getGame_seq());
+			pstat.setInt(5,gameReviewDTO.getRating());
+			
+			int result = pstat.executeUpdate();
+			
+			System.out.println("리뷰 작성 dao 까지 왔어요");
+			return result;
 		}
 	}
 	//	[ 우리끼리의 DAO 메서드명 컨벤션 ]

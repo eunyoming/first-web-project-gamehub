@@ -13,6 +13,7 @@
 	max-width: 800px;
 	margin: 30px auto;
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 30px auto;
 }
 
 /* 카드 스타일 */
@@ -84,7 +85,7 @@
 	font-weight: bold;
 	transition: background-color 0.2s;
 	width: 100%;
-	height:136px;
+	height: 136px;
 }
 
 .reviewInput button:hover {
@@ -106,55 +107,234 @@
 	color: #555;
 }
 
-.review-card .col-3, .review-card .col-6, .review-card .col-3 {
+.review-card .col-3, .review-card .col-6, .review-card .col-3,
+	.review-card .col-2 {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+}
+
+.review-edit-btn {
+	margin-bottom: 4px;
 }
 </style>
 
 	<div class="container reviewJsp">
 		<!-- 리뷰 작성 카드 -->
-		<div class="card">
-			<div class="row review-form">
+		<c:if test="${loginId!=null}">
+			<c:if test="${reviewWriteCheck==false}">
+				<div id="gameReviewWriteBox">
+					<div class="card">
+						<div class="row review-form">
 
-				<div class="col-3 star-rating">
-					<input type="radio" id="5-stars" name="rating" value="5"><label
-						for="5-stars">&#9733;</label> <input type="radio" id="4-stars"
-						name="rating" value="4"><label for="4-stars">&#9733;</label>
-					<input type="radio" id="3-stars" name="rating" value="3"><label
-						for="3-stars">&#9733;</label> <input type="radio" id="2-stars"
-						name="rating" value="2"><label for="2-stars">&#9733;</label>
-					<input type="radio" id="1-star" name="rating" value="1"><label
-						for="1-star">&#9733;</label>
+							<div class="col-3 star-rating">
+								<input type="radio" id="5-stars" name="rating" value="5" checked><label
+									for="5-stars">&#9733;</label> <input type="radio" id="4-stars"
+									name="rating" value="4"><label for="4-stars">&#9733;</label>
+								<input type="radio" id="3-stars" name="rating" value="3"><label
+									for="3-stars">&#9733;</label> <input type="radio" id="2-stars"
+									name="rating" value="2"><label for="2-stars">&#9733;</label>
+								<input type="radio" id="1-star" name="rating" value="1"><label
+									for="1-star">&#9733;</label>
+							</div>
+							<div class="col-7 reviewInput">
+								<input type="text" id="review-title" name="title"
+									placeholder="리뷰 제목" required>
+								<textarea id="review-content" name="review-content"
+									placeholder="리뷰 내용을 작성해주세요." required></textarea>
+							</div>
+							<div class="col-2 reviewInput">
+								<button type="button" id="reviewBtn">리뷰 등록</button>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="col-7 reviewInput">
-					<input type="text" id="title" name="title" placeholder="리뷰 제목"
-						required>
-					<textarea id="review-content" name="review-content"
-						placeholder="리뷰 내용을 작성해주세요." required></textarea>
-				</div>
-				<div class="col-2 reviewInput">
-					<button type="submit">리뷰 등록</button>
-				</div>
-				</div>
-		</div>
-
+			</c:if>
+		</c:if>
 		<!-- 기존 리뷰 -->
-		<c:forEach var="gameReview" items="${gameReviewList}">
-			<div class="card review-card">
-				<div class="row">
-					<div class="col-3 stars">★★★★★</div>
-					<div class="col-6">
-						<h3>${gameReview.title}</h3>
-						<div>${gameReview.content}</div>
-					</div>
-					<div class="col-3">
-						<div>${gameReview.writer}</div>
-						<div>${gameReview.created_at}</div>
-					</div>
-				</div>
-			</div>
-		</c:forEach>
+		<div id="gameReviewBox">
+			<c:forEach var="gameReview" items="${gameReviewList}">
+				<c:choose>
+					<c:when test="${gameReview.writer==loginId }">
+						<div class="card review-card">
+							<div class="row">
+								<div class="col-3 stars">
+									<c:forEach begin="1" end="${gameReview.rating}">
+							★
+						</c:forEach>
+									<c:forEach begin="1" end="${5-gameReview.rating}">
+							☆
+						</c:forEach>
+								</div>
+								<div class="col-6">
+									<h3>${gameReview.title}</h3>
+									<div>${gameReview.content}</div>
+								</div>
+								<div class="col-2">
+									<div>${gameReview.writer}</div>
+									<div class="reviewCreated_at">${gameReview.created_at}</div>
+
+								</div>
+								<div class="col-1" style="padding: 0px">
+									<div class="review-buttons">
+										<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
+										<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:when>
+					<c:otherwise>
+						<div class="card review-card">
+							<div class="row">
+								<div class="col-3 stars">
+									<c:forEach begin="1" end="${gameReview.rating}">
+							★
+						</c:forEach>
+									<c:forEach begin="1" end="${5-gameReview.rating}">
+							☆
+						</c:forEach>
+								</div>
+								<div class="col-6">
+									<h3>${gameReview.title}</h3>
+									<div>${gameReview.content}</div>
+								</div>
+								<div class="col-3">
+									<div>${gameReview.writer}</div>
+									<div class="reviewCreated_at">${gameReview.created_at}</div>
+								</div>
+							</div>
+						</div>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
+		</div>
 	</div>
+	<script>
+	//$("input[name='rating']:checked").val();
+	// input 중에 name이 rating인 것들을 전부 가져오고 거기서 checked 상태인거의 값
+		$(".reviewCreated_at").each(function() {
+		    let raw = $(this).text(); // "2025-08-27 14:35:20"
+		    let date = new Date(raw);
+		
+		    let year =  String(date.getFullYear()).slice(-2); // 2025 → "25"
+		    let month = (date.getMonth() + 1).toString().padStart(2, "0");
+		    let day = date.getDate().toString().padStart(2, "0");
+		
+		    let formatted = year + "년 " + month + "월 " + day + "일";
+		    $(this).text(formatted);
+		});
+		
+		let textLengthMax = 200;
+
+		$("#review-content").on("input", function() {
+		    
+		});
+		
+		$("#reviewBtn").on("click",function(){
+			if( $("#review-title").val()=="" ||  $("#review-content").val()=="")
+			{
+				alert("제목과 내용을 입력해주세요.");
+				return false;
+			}
+			
+			if($("#review-title").val().length > 33 ||  $("#review-content").val().length > 99)
+			{
+				//글자수로 인한 db 저장 오류 방지를 위해 제한을 걸어둠.
+			    alert("제목은 33자, 내용은 99자 이하로 작성해주세요.");
+				return false;
+			}
+			
+			
+			$.ajax({
+				url : "/api/game/main/reviewInsert",
+				type : "post",
+				data : {
+					game_seq : "${game_seq}",
+					rating : $("input[name='rating']:checked").val(),
+					title : $("#review-title").val(),
+					content : $("#review-content").val(),
+				},
+				 dataType: "json" 
+			}).done(function(resp){
+				console.log(resp + "응답받음");
+				$("#gameReviewBox").html("");
+				//리뷰 작성 내용 지워주고
+				$("#review-title").val("");
+				$("#review-content").val("");
+				$("#5-stars").prop("checked", true);
+				//리뷰 칸 전부 비우고 다시 채우기.
+				
+				resp.forEach(function(reviewItem){
+					let stars = "";
+				    for (let i = 0; i < reviewItem.rating; i++) {
+				        stars += "★ ";
+				    }
+				    for (let i = reviewItem.rating; i < 5; i++) {
+				        stars += "☆ ";
+				    }
+				    
+				    let reviewHtml="";
+				    
+				    if(reviewItem.writer === "${loginId}") {
+				    	reviewHtml = `
+							<div class="card review-card">
+								<div class="row">
+									<div class="col-3 stars">`+stars+`</div>
+									<div class="col-6">
+										<h3>`+reviewItem.title +`</h3>
+										<div>`+ reviewItem.content +`</div>
+									</div>
+									<div class="col-2">
+										<div>`+reviewItem.writer+`</div>
+										<div class="reviewCreated_at">`+reviewItem.created_at+`</div>
+									</div>
+
+									<div class="col-1" style="padding: 0px">
+										<div class="review-buttons">
+											<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
+											<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						`;
+				    }
+				    else
+				    {
+				    	reviewHtml = `
+							<div class="card review-card">
+								<div class="row">
+									<div class="col-3 stars">`+stars+`</div>
+									<div class="col-6">
+										<h3>`+reviewItem.title +`</h3>
+										<div>`+ reviewItem.content +`</div>
+									</div>
+									<div class="col-3">
+										<div>`+reviewItem.writer+`</div>
+										<div class="reviewCreated_at">`+reviewItem.created_at+`</div>
+									</div>
+								</div>
+							</div>
+						`;
+				    }
+					$("#gameReviewBox").append(reviewHtml);
+				});
+				
+				$("#gameReviewWriteBox").html("");
+				
+				$(".reviewCreated_at").each(function() {
+				    let raw = $(this).text(); // "2025-08-27 14:35:20"
+				    let date = new Date(raw);
+				
+				    let year =  String(date.getFullYear()).slice(-2); // 2025 → "25"
+				    let month = (date.getMonth() + 1).toString().padStart(2, "0");
+				    let day = date.getDate().toString().padStart(2, "0");
+				
+				    let formatted = year + "년 " + month + "월 " + day + "일";
+				    $(this).text(formatted);
+				});
+			});
+		});
+	</script>
 </div>

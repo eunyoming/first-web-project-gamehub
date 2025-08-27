@@ -31,4 +31,37 @@ public class GameDAO {
 		return ds.getConnection();
 	}
 	
+	
+	
+//	[ 우리끼리의 DAO 메서드명 컨벤션 ]
+	//			( select )
+	//			- select * from 테이블명
+	//			selectAll테이블명
+	//
+	//			- select * from 테이블명 where id = ?
+	//			select테이블명By조건필드명
+	//
+	//			( insert )
+	//			insert 테이블명
+	//
+	//			( delete )
+	//			delete테이블명By조건필드명
+	//
+	//			( update )
+	//			update테이블명By조건필드명
+	//
+	//			( Connection )
+	//			getConnection();
+	//
+	//			( DAO instance )
+	//			// 멤버필드
+	//			private static DAO명 instance;
+	//			// 기본 생성자 막기
+	//			private DAO명(){};
+	//			// DAO getter
+	//			public synchronized static DAO명 getInstance(){};
+
+
+	
 }
+

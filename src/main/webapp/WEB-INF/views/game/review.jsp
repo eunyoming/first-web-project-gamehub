@@ -114,7 +114,7 @@
 	justify-content: center;
 }
 
-.review-edit-btn {
+.review-edit-btn, .review-editclear-btn{
 	margin-bottom: 4px;
 }
 </style>
@@ -179,6 +179,9 @@
 									<div class="review-buttons">
 										<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
 										<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
+
+										<button class="btn btn-outline-gray-main review-editclear-btn">수정</button>
+										<button class="btn btn-outline-gray-main review-cancel-btn">취소</button>
 									</div>
 								</div>
 							</div>
@@ -293,7 +296,9 @@
 									<div class="col-1" style="padding: 0px">
 										<div class="review-buttons">
 											<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
+											<button class="btn btn-outline-gray-main review-editClear-btn">수정완료</button>
 											<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
+											<button class="btn btn-outline-gray-main review-cancel-btn">취소</button>
 										</div>
 									</div>
 								</div>

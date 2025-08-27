@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+* {
+	box-sizing: border-box;
+}
+
+/* container */
+.container {
+	margin-top: 20px;
+	width: 80vw;
+	height: 80vh;
+	max-width:1000px;
+	border: none !important;
+	outline: none !important;
+	text-align: center;
+}
+
+/* contents*/
+.contents{
+	border:1px solid gray;
+	border-radius:5px;
+}
+.listDiv{
+	border-bottom:1px solid gray;
+}
+.listDiv div{
+	height:100%;
+	padding-top:10px;
+	padding-bottom:10px;
+	display:felx;
+	justify-content:center;
+	align-items:center;
+}

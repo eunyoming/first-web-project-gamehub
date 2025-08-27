@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.GameRecordDAO;
 import dao.GameReviewDAO;
+import dto.game.GameRecordDTO;
 import dto.game.GameReviewDTO;
 
 @WebServlet("/api/game/*")
@@ -20,16 +22,16 @@ public class GameController extends HttpServlet {
 		 
 	        if(path == null || path.equals("/main")) {
 	        	GameReviewDAO gameReviewDAO = GameReviewDAO.getInstance();
-	        	
+	        	GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 				int game_seq = Integer.parseInt(request.getParameter("game_seq")); //게시글 번호
-
+				
 				System.out.println("파렌트 시퀀스=" +game_seq);
 				
 				try{
 				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectAllGameReviews(game_seq); 
-				
+				List<GameRecordDTO> gameRecordDTOList = gameRecordDAO.selectGameRecords(game_seq);
 				request.setAttribute("gameReviewList", gameReviewDTOList);
-				
+				request.setAttribute("gameRecordList", gameRecordDTOList);
 				request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
 				}
 				catch(Exception e) {

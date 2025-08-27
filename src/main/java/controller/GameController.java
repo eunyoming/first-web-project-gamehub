@@ -36,14 +36,14 @@ public class GameController extends HttpServlet {
 
 			try{
 				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq); 
-				boolean reviewWriteCheck = gameReviewDAO.selectGameReviewsBygame_seqAndWriter(game_seq,loginId);
+				GameReviewDTO wroteGameReviewDTO = gameReviewDAO.selectGameReviewsBygame_seqAndWriter(game_seq,loginId);
 
 				List<GameRecordDTO> gameRecordDTOList = gameRecordDAO.selectGameRecords(game_seq);
 
 				request.setAttribute("game_seq", game_seq);
 				request.setAttribute("gameReviewList", gameReviewDTOList);
 				request.setAttribute("gameRecordList", gameRecordDTOList);
-				request.setAttribute("reviewWriteCheck", reviewWriteCheck);
+				request.setAttribute("wroteGameReviewDTO", wroteGameReviewDTO);
 
 				request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
 			}

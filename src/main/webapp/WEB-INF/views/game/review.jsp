@@ -114,7 +114,7 @@
 	justify-content: center;
 }
 
-.review-edit-btn, .review-editclear-btn{
+.review-edit-btn, .review-editclear-btn {
 	margin-bottom: 4px;
 }
 </style>
@@ -122,34 +122,64 @@
 	<div class="container reviewJsp">
 		<!-- 리뷰 작성 카드 -->
 		<c:if test="${loginId!=null}">
-			<c:if test="${reviewWriteCheck==false}">
-				<div id="gameReviewWriteBox">
-					<div class="card">
-						<div class="row review-form">
+			<c:choose>
+				<c:when test="${wroteGameReviewDTO!=null}">
+					<div id="gameReviewWriteBox">
+						<div class="card">
+							<div class="row review-form">
 
-							<div class="col-3 star-rating">
-								<input type="radio" id="5-stars" name="rating" value="5" checked><label
-									for="5-stars">&#9733;</label> <input type="radio" id="4-stars"
-									name="rating" value="4"><label for="4-stars">&#9733;</label>
-								<input type="radio" id="3-stars" name="rating" value="3"><label
-									for="3-stars">&#9733;</label> <input type="radio" id="2-stars"
-									name="rating" value="2"><label for="2-stars">&#9733;</label>
-								<input type="radio" id="1-star" name="rating" value="1"><label
-									for="1-star">&#9733;</label>
-							</div>
-							<div class="col-7 reviewInput">
-								<input type="text" id="review-title" name="title"
-									placeholder="리뷰 제목" required>
-								<textarea id="review-content" name="review-content"
-									placeholder="리뷰 내용을 작성해주세요." required></textarea>
-							</div>
-							<div class="col-2 reviewInput">
-								<button type="button" id="reviewBtn">리뷰 등록</button>
+								<div class="col-3 star-rating">
+									<input type="radio" id="5-stars" name="rating" value="5"
+										checked><label for="5-stars">&#9733;</label> <input
+										type="radio" id="4-stars" name="rating" value="4"><label
+										for="4-stars">&#9733;</label> <input type="radio" id="3-stars"
+										name="rating" value="3"><label for="3-stars">&#9733;</label>
+									<input type="radio" id="2-stars" name="rating" value="2"><label
+										for="2-stars">&#9733;</label> <input type="radio" id="1-star"
+										name="rating" value="1"><label for="1-star">&#9733;</label>
+								</div>
+								<div class="col-7 reviewInput">
+									<input type="text" id="review-title" name="title"
+										placeholder="리뷰 제목" value="${wroteGameReviewDTO.title}" required>
+									<textarea id="review-content" name="review-content"
+										placeholder="리뷰 내용을 작성해주세요." required> ${wroteGameReviewDTO.content}</textarea>
+								</div>
+								<div class="col-2 reviewInput">
+									<button type="button" id="reviewBtn">리뷰 수정</button>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</c:if>
+				</c:when>
+				<c:otherwise>
+					<div id="gameReviewWriteBox">
+						<div class="card">
+							<div class="row review-form">
+
+								<div class="col-3 star-rating">
+									<input type="radio" id="5-stars" name="rating" value="5"
+										checked><label for="5-stars">&#9733;</label> <input
+										type="radio" id="4-stars" name="rating" value="4"><label
+										for="4-stars">&#9733;</label> <input type="radio" id="3-stars"
+										name="rating" value="3"><label for="3-stars">&#9733;</label>
+									<input type="radio" id="2-stars" name="rating" value="2"><label
+										for="2-stars">&#9733;</label> <input type="radio" id="1-star"
+										name="rating" value="1"><label for="1-star">&#9733;</label>
+								</div>
+								<div class="col-7 reviewInput">
+									<input type="text" id="review-title" name="title"
+										placeholder="리뷰 제목" required>
+									<textarea id="review-content" name="review-content"
+										placeholder="리뷰 내용을 작성해주세요." required></textarea>
+								</div>
+								<div class="col-2 reviewInput">
+									<button type="button" id="reviewBtn">리뷰 등록</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</c:otherwise>
+			</c:choose>
 		</c:if>
 		<!-- 기존 리뷰 -->
 		<div id="gameReviewBox">
@@ -180,8 +210,10 @@
 										<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
 										<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
 
-										<button class="btn btn-outline-gray-main review-editclear-btn">수정</button>
-										<button class="btn btn-outline-gray-main review-cancel-btn">취소</button>
+										<button class="btn btn-outline-gray-main review-editclear-btn"
+											style="display: none;">수정</button>
+										<button class="btn btn-outline-gray-main review-cancel-btn"
+											style="display: none;">취소</button>
 									</div>
 								</div>
 							</div>
@@ -295,10 +327,10 @@
 
 									<div class="col-1" style="padding: 0px">
 										<div class="review-buttons">
-											<button class="btn btn-outline-gray-main review-edit-btn">수정</button>
-											<button class="btn btn-outline-gray-main review-editClear-btn">수정완료</button>
+											<button class="btn btn-outline-gray-main review-edit-btn" >수정</button>
 											<button class="btn btn-outline-gray-main review-delete-btn">삭제</button>
-											<button class="btn btn-outline-gray-main review-cancel-btn">취소</button>
+											<button class="btn btn-outline-gray-main review-editclear-btn" style="display: none;">수정</button>
+											<button class="btn btn-outline-gray-main review-cancel-btn" style="display: none;">취소</button>
 										</div>
 									</div>
 								</div>
@@ -340,6 +372,26 @@
 				    $(this).text(formatted);
 				});
 			});
+		});
+		
+		$(".review-edit-btn").on("click",function(){
+			$(this).hide();
+			$(".review-delete-btn").hide();
+			$(".review-editclear-btn").show();
+			$(".review-cancel-btn").show();
+		});
+		$(".review-delete-btn").on("click",function(){
+			
+		});
+		$(".review-editclear-btn").on("click",function(){
+			
+		});
+		
+		$(".review-cancel-btn").on("click",function(){
+			$(this).hide();
+			$(".review-editclear-btn").hide();
+			$(".review-delete-btn").show();
+			$(".review-edit-btn").show();
 		});
 	</script>
 </div>

@@ -72,7 +72,7 @@ public class GameReviewDAO {
 			
 		}
 	}
-	public boolean selectGameReviewsBygame_seqAndWriter(int game_seq, String writer) throws Exception {
+	public GameReviewDTO selectGameReviewsBygame_seqAndWriter(int game_seq, String writer) throws Exception {
 		String sql = "select * from gameReviews where game_seq = ? and writer = ?";
 
 		try(	Connection con = getConnection();
@@ -83,7 +83,18 @@ public class GameReviewDAO {
 			try(
 					ResultSet result = pstat.executeQuery();)
 			{
-				return result.next();
+				if(result.next())
+				{
+					
+					String title = result.getString("title");
+					String content = result.getString("content");
+					int rating = result.getInt("rating");
+					return new GameReviewDTO(0,writer,title,content,game_seq,rating,null);
+				}
+				else
+				{
+					return null;
+				}
 			}
 		}
 	}

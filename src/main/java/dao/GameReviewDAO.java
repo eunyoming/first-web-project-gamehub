@@ -117,6 +117,43 @@ public class GameReviewDAO {
 			return result;
 		}
 	}
+	
+	public int deleteGameReviewsBygame_seqAndWriter(int game_seq, String writer) throws Exception{
+		String sql = "delete from gamereviews where game_seq = ? and writer = ?";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			
+			pstat.setInt(1, game_seq);
+			pstat.setString(2, writer);
+			
+			int result = pstat.executeUpdate();
+			System.out.println("리뷰제거까지 왔어요");
+			return result;
+		}
+		
+	}
+	
+	public int updateGameReviewsBygame_seqAndWriter(GameReviewDTO gameReviewDTO) throws Exception{
+		String sql = "update gamereviews set title= ?,content=?,rating= ? where game_seq = ? and writer = ?";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			
+			pstat.setString(1, gameReviewDTO.getTitle());
+			pstat.setString(2, gameReviewDTO.getContent());
+			pstat.setInt(3, gameReviewDTO.getRating());
+			pstat.setInt(4, gameReviewDTO.getGame_seq());
+			pstat.setString(5, gameReviewDTO.getWriter());
+			
+			int result = pstat.executeUpdate();
+			System.out.println("리뷰 업데이트 까지 왔어요");
+			return result;
+		}
+		
+	}
 	//	[ 우리끼리의 DAO 메서드명 컨벤션 ]
 	//			( select )
 	//			- select * from 테이블명

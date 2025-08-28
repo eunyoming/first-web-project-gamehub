@@ -31,7 +31,9 @@ public class GameRecordDAO {
 		return ds.getConnection();
 	}
 	
-	public List<GameRecordDTO> selectGameRecords(int game_seq)throws Exception {
+	
+	
+	public List<GameRecordDTO> selectGameRecordsByRank(int game_seq)throws Exception {
 		String sql = "SELECT * FROM ( SELECT game_seq,userId,Max(gameScore) AS gameScore, "
 				+ "ROW_NUMBER() OVER (PARTITION BY game_seq ORDER BY Max(gameScore) DESC)"
 				+ " AS rank FROM gameRecords GROUP BY game_seq, userId) "
@@ -57,5 +59,22 @@ public class GameRecordDAO {
 		
 		
 	}
+	
+	
+	
+	public int insertGameRecords(GameRecordDTO dto)throws Exception{
+		String sql = "insert into gameRecords values (gameRecords_seq.nextval,?,?,?,?,?)";
+		try(Connection con = this.getConnection(); PreparedStatement pstat = con.prepareStatement(sql)){
+			pstat.setString(1,dto.getUserId());
+			pstat.setInt(2,dto.getGame_seq());
+			pstat.setInt(3,dto.getGameScore());
+			pstat.setTimestamp(4,dto.getGameStartTime());
+			pstat.setTimestamp(5,dto.getGameStartTime());
+			int result = pstat.executeUpdate();
+			return result;
+		}
+				//insert into gameRecords values (gameRecords_seq.nextval,userId,game_seq,gameStartTime,gameEndTime)
+	}
+	//insert 만들기  -- gamerecord에서 입력된 데이터를 
 
 }

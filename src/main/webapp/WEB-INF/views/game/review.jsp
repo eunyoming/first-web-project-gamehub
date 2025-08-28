@@ -159,8 +159,8 @@
 							<input type="radio" id="3-stars" name="rating" value="3"><label
 								for="3-stars">&#9733;</label> <input type="radio" id="2-stars"
 								name="rating" value="2"><label for="2-stars">&#9733;</label>
-							<input type="radio" id="1-star" name="rating" value="1"><label
-								for="1-star">&#9733;</label>
+							<input type="radio" id="1-stars" name="rating" value="1"><label
+								for="1-stars">&#9733;</label>
 						</div>
 						<div class="col-7 reviewInput">
 							<input type="text" id="review-title" name="title"

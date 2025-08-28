@@ -147,24 +147,20 @@ public class GameController extends HttpServlet {
 			}
 		}else if(path.equals("/recordInsert")) { // 내 점수 기록하기
 			// GameDataDto dto = gson.fromJson(sb.toString(), GameDataDto.class);
-			 BufferedReader reader = request.getReader();
-			  StringBuilder sb = new StringBuilder();
-			  String line;
-			  while ((line = reader.readLine()) != null) {
-			      sb.append(line);
-			  }
-
-			GameRecordDTO dto = g.fromJson(sb.toString(), GameRecordDTO.class);
-			// 인서트 하고  
 			
+//			 BufferedReader reader = request.getReader();
+//			  StringBuilder sb = new StringBuilder();
+//			  String line;
+//			  while ((line = reader.readLine()) != null) {
+//			      sb.append(line);
+//			  } 이게 아래에 이거임
+			  
+			GameRecordDTO dto = g.fromJson(request.getReader(), GameRecordDTO.class); // ajax 받고
 			try {
-				
-				
 				int result = gameRecordDAO.insertGameRecords(dto);
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(result));
+				pw.append(g.toJson(result)); // ajax 보내기
 				
 			
 			

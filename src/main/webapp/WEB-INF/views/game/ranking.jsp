@@ -14,6 +14,32 @@
 </div>
 
 <script>
+function gameRecordByUserId(userId, score, startTime, endTime) {
+	  $.ajax({
+	    url: "/recordInsert",
+	    type: "post",
+	    contentType: "json; charset=UTF-8",
+	    data: JSON.stringify({
+	      userId: userId,
+	      game_seq: game_seq,
+	      gameScore: score,
+	      gameStartTime: startTime,
+	      gameEndTime: endTime
+	    }),
+	    success: function(resp) {
+	      console.log("점수 기록 성공:", resp);
+	      alert("점수가 저장되었습니다!");
+	    },
+	    error: function(xhr, status, error) {
+	      console.error("점수 기록 실패:", error);
+	      alert("점수 저장에 실패했습니다.");
+	    }
+	  });
+	}
+
+
+
+
 let game_seq = "${game_seq}";
 $.ajax({
 	  url: "/api/game/main/record",
@@ -52,7 +78,7 @@ $.ajax({
 	  console.error("AJAX 실패:", status, error);
 	});
 
-	
+
 	
 	
 </script>

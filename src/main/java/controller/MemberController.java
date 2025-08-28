@@ -1,6 +1,10 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,21 +21,21 @@ public class MemberController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		String path = request.getPathInfo(); 
 		MemberDAO dao = MemberDAO.getInstance();
 		try {
 			if(path.equals("/loginPage")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response);
-				
-				
+
+
 			}else if(path.equals("/login")){
 				// userId, Pw 가져오기
 				String userId = request.getParameter("userId");
-				String userPassword = request.getParameter("userPassword");
+				String userPassword = encrypt(request.getParameter("userPassword"));
 
 				System.out.println(userId + ":" + userPassword);
-				
+
 				MemberDTO loginDto = dao.selectMembersByIdAndPW(userId, userPassword);
 
 				// 로그인 성공시
@@ -39,8 +43,8 @@ public class MemberController extends HttpServlet {
 					// Session 에 userId 저장
 					request.getSession().setAttribute("loginId", userId);
 					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
-					
-					
+
+
 					// index.jsp 로 다시 보내기
 					response.sendRedirect("/");
 
@@ -48,35 +52,80 @@ public class MemberController extends HttpServlet {
 					System.out.println("로그인 실패");
 					response.sendRedirect("/api/member/loginPage");
 				}
-
 			}else if(path.equals("/joinPage")) {
 				response.sendRedirect("/WEB-INF/views/member/join.jsp");
-			
-			}else if(path.equals("/join")) {
+			}
+			// 아이디 중복 체크 
+			else if(path.equals("/idCheck")) {
+
+				String id  = request.getParameter("id");
+
+				boolean result = dao.isIdExist (id);
+
+				PrintWriter pw = response.getWriter();
+				pw.write("{\"result\": " + result + "}");
+			}
+			else if(path.equals("/join")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/join.jsp").forward(request, response);
-			
-			}else if(path.equals("/logout")) {
-				request.getSession().invalidate();
+			}
+			// 회원가입 insert
+			else if(path.equals("/insert")) {
+				request.setCharacterEncoding("UTF-8");
+
+				String id = request.getParameter("id");
+				String pw = encrypt(request.getParameter("pw"));
+				String name = request.getParameter("name");
+				String phone = request.getParameter("phone");
+				String email = request.getParameter("email");
+				String zipcode = request.getParameter("zipcode");
+				String address = request.getParameter("address");
+				String addressDetail = request.getParameter("addressDetail");
+				String privacy_agreed_at = request.getParameter("privacy_agreed_at");
+
+				MemberDTO dto = new MemberDTO (id,pw,name,phone,email,zipcode,address,addressDetail,0,'Y',null,null);
+
+				int result = dao.insertMembers(dto);
 				
+				if(result != 0) {
+				response.sendRedirect("/api/member/loginPage");
+				}
+			}
+			else if(path.equals("/logout")) {
+				request.getSession().invalidate();
+
 				response.sendRedirect("/");
 			}else if(path.equals("/mypage")) {
-				
+
 				String userID = (String) request.getSession().getAttribute("loginId");
 				System.out.println("마이페이지 접속:"+userID);
-				
+
 				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp?userId="+userID).forward(request, response);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("/error.jsp");
 		}
-	
-	}
 
-	
+	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	//암호화
+	public static String encrypt(String text) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-512");
+			byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
+			byte[] digest = md.digest(bytes);
 
+			StringBuilder builder = new StringBuilder();
+			for (byte b : digest) {
+				builder.append(String.format("%02x", b));
+			}
+			return builder.toString();
+
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException("SHA-512 암호화 실패", e);
+		}
+	}
 }
+

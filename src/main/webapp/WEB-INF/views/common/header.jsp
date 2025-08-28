@@ -6,12 +6,15 @@
 <head>
 <meta charset="UTF-8">
 <title><c:out value="${pageTitle}" default="기본 제목" /></title>
+<!-- 부트스트랩 cdn -->
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jquery cdn -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- main css -->
 <link href="/css/main.css" rel="stylesheet" />
 </head>
 <body>

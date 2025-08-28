@@ -7,8 +7,8 @@ public class PageNaviDTO {
 	private boolean needPrev;
 	private boolean jumpNext;
 	private boolean needNext;
-	private int currentPage = 0;;
-	private int totalPage = 0;
+	private int currentPage = 0;
+	private int pageTotalCount = 0;
 	
 	public int getStartNavi() {
 		return startNavi;
@@ -31,11 +31,11 @@ public class PageNaviDTO {
 	public int getCurrentPage() {
 		return currentPage;
 	}
-	public int getTotalPage() {
-		return totalPage;
+	public int getPageTotalCount() {
+		return pageTotalCount;
 	}
 	public PageNaviDTO(int startNavi, int endNavi, boolean jumpPrev, boolean needPrev, boolean jumpNext,
-			boolean needNext, int currentPage, int totalPage) {
+			boolean needNext, int currentPage, int pageTotalCount) {
 		this.startNavi = startNavi;
 		this.endNavi = endNavi;
 		this.jumpPrev = jumpPrev;
@@ -43,6 +43,6 @@ public class PageNaviDTO {
 		this.jumpNext = jumpNext;
 		this.needNext = needNext;
 		this.currentPage = currentPage;
-		this.totalPage = totalPage;
+		this.pageTotalCount = pageTotalCount;
 	};
 }

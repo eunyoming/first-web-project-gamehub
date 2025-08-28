@@ -171,7 +171,7 @@ public class GameController extends HttpServlet {
 				PrintWriter pw = response.getWriter();
 
 				pw.append(g.toJson(gameRecordDTOList));
-				System.out.println(g.toJson(gameRecordDTOList));
+				
 			}
 			catch(Exception e) {
 				e.printStackTrace();

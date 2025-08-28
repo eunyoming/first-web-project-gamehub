@@ -25,6 +25,7 @@
     const IMG_PATH = "${imgPath}";
     const loginId = "${loginId}";
 </script>
+<script src="/games/achievementPopup.js"></script>
 
       <script src="/games/game2/Intro.js"></script>
          <script src="/games/game2/MainGame.js"></script>
@@ -48,7 +49,7 @@
         physics: {
             default: "arcade",
           arcade:{
-         
+         	debug:true,
           }
 
         },

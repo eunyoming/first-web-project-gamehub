@@ -1,10 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
      <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+      
+ <%
+    request.setAttribute("pageTitle", "메인페이지");
+%>
+ 
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 <!-- <html><head></head><body> -->
 <!-- 
 여기에 코드 입력
  -->
+
 <div class="container p-5">
 <div class="mb-4"><h2>버튼 모음</h2>
 <p> 기본적으로 btn 클래스는 무조건 포함임</p></div>

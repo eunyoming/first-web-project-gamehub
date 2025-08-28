@@ -17,6 +17,29 @@ class Gameover extends Phaser.Scene{
     }
 
     create(){
+		
+		const payload = {
+		    userId: loginId,
+		    game_seq: parseInt(new URLSearchParams(window.location.search).get("game_seq")),
+		    gameScore: this.finalScore,
+			gameStartTime: Number(this.startTime),
+			gameEndTime: Number(this.endTime)
+
+		};
+
+		console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
+		
+		$.ajax({
+			url:"/api/game/recordInsert",
+			contentType: "application/json",
+			type:"post",
+			data:JSON.stringify(payload)
+
+			}).done(function(resp){
+							
+			console.log(resp);
+							
+			}); 
 
          this.add.text(
             this.cameras.main.width/2, 
@@ -110,7 +133,7 @@ class Gameover extends Phaser.Scene{
 
         //
          restartButton.on("pointerdown",()=>{
-           
+			this.scene.stop("MainGame");
            this.scene.start("MainGame");
         })
 

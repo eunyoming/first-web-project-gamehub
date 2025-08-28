@@ -1,18 +1,17 @@
+
+
 class MainGame extends Phaser.Scene{
+	
+
     constructor(){
         super({key:"MainGame"});
-        this.obstacles = null;
-        this.items = null;
-        this.playerHasLaser = false;
-        
-      
-   
-
-
+		this.attackCount = 0;
+		
     }
 
 
       init() {
+		
         this.startTimeStamp = Date.now();
         this.startTime = 0;
         this.difficultyLevel = 1; // 기본 난이도
@@ -20,9 +19,12 @@ class MainGame extends Phaser.Scene{
         this.score = 0;
         this.heart = 2;
         this.lazorCount = 2;
-     
         this.bossSpawned = false;
-
+		this.obstacles= null;
+		this.items = null;
+		this.obstacleTimer = null;
+		this.checkTimer = null;
+		this.playerHasLaser = false;
 
         
     }
@@ -56,13 +58,23 @@ class MainGame extends Phaser.Scene{
 
 
     create(){
-        this.startTime = this.time.now;
+       
         this.speed = 350;
         this.gameOver = false; 
         this.cameras.main.setBackgroundColor("#ffffff");
+		this.startTime = this.time.now;
+		
+		if (this.obstacleTimer) {
+		       this.obstacleTimer.remove(false); // false: 즉시 제거
+		   }
 
+		   if(this.checkTimer){
+			this.checkTimer.remove(false);
+		   }
+		
+		
         // 난이도 체크 타이머 (매 5초마다 확인)
-        this.time.addEvent({
+       this.checkTimer =  this.time.addEvent({
             delay: 5000,
             loop: true,
             callback: () => {
@@ -79,7 +91,7 @@ class MainGame extends Phaser.Scene{
 
 
                     this.bossSpawned = true;
-                                }
+                  }
                 else if (elapsed > 60) newLevel = 4;
                 else if (elapsed > 40) newLevel = 3;
                 else if (elapsed > 20) newLevel = 2;
@@ -119,18 +131,22 @@ class MainGame extends Phaser.Scene{
 
         this.tileSprite = this.add.tileSprite(0,0, 900, 900,'background').setOrigin(0,0);
 
-           this.anims.create({
-            key: 'attack',
-            frames: this.anims.generateFrameNumbers('lazor', { start: 0, end: 7}),
-            frameRate:8,
-            repeat: 0
-            });
+		if (!this.anims.exists('attack')) {
+		    this.anims.create({
+		        key: 'attack',
+		        frames: this.anims.generateFrameNumbers('lazor', { start: 0, end: 7 }),
+		        frameRate: 8,
+		        repeat: 0
+		    });
+		}
 
           let cameraWidth = this.cameras.main.width;
         let cameraHeight = this.cameras.main.height;
 
 
-        this.player = this.physics.add.sprite(cameraWidth/2,cameraHeight-100,"player").setScale(0.3 ,0.3);
+        this.player = this.physics.add.sprite(cameraWidth/2,cameraHeight-100,"player")
+		.setScale(0.3 ,0.3)
+		.setSize(200,300);
         
         this.obstacles = this.physics.add.group(); 
          this.items = this.physics.add.group(); 
@@ -145,7 +161,7 @@ class MainGame extends Phaser.Scene{
          this.physics.add.collider(this.obstacles, rectangle, (box) =>{
             box.destroy(); 
             
-             console.log( this.obstacles.length);
+        
          });
 
          this.physics.add.collider(this.items, rectangle, (box) =>{
@@ -164,7 +180,7 @@ class MainGame extends Phaser.Scene{
                 const selectedItem = Phaser.Utils.Array.GetRandom(weightedItems);
 
                  this.items.create(
-                    Phaser.Math.Between(0, 900),
+                    Phaser.Math.Between(-50, 900),
                     0,
                     selectedItem
                     )
@@ -190,26 +206,26 @@ class MainGame extends Phaser.Scene{
 
                 if(selectedStone == "stone3"){
                         this.obstacles.create(
-                    Phaser.Math.Between(0, 900),
+                    Phaser.Math.Between(-50, 900),
                     0,
                     selectedStone
                 )
                 .setScale(0.2)
                 .setSize(200, 200)
                 .setOrigin(0, 0)
-                .setGravityY(300)
+                .setGravityY(350)
                 .setVelocityY(speed)
                 .setCollideWorldBounds(false);
                 }else{
                     this.obstacles.create(
-                    Phaser.Math.Between(0, 900),
+                    Phaser.Math.Between(-50, 900),
                     0,
                     selectedStone
                 )
                 .setScale(0.2)
                 .setSize(300, 300)
                 .setOrigin(0, 0)
-                .setGravityY(300)
+                .setGravityY(350)
                 .setVelocityY(speed)
                 .setCollideWorldBounds(false);
 
@@ -249,7 +265,7 @@ class MainGame extends Phaser.Scene{
          this.physics.add.overlap([this.player], this.items, (player, item)=>{
            if (item.texture.key === 'item1') {
                 this.lazorCount += 1;
-                this.score + 100;
+                this.score + 150;
 
                 const lazorText = this.add.text(20, 80, '레이저 획득!', { fontSize: '24px', fill: '#00ff00' });
 
@@ -268,10 +284,10 @@ class MainGame extends Phaser.Scene{
             }else if (item.texture.key === 'item3') {
 
                 this.heart += 1;
-                this.score + 100;
+                this.score + 150;
             } else if (item.texture.key === 'item4') {
 
-                this.score + 100;
+                this.score + 150;
 
                 const speedText = this.add.text(20, 120, '속도 증가!', {
                     fontSize: '24px',
@@ -311,6 +327,7 @@ class MainGame extends Phaser.Scene{
            
             obstacle.destroy();  // 장애물 제거
              this.score += 500; //장애물 제거시 점수 증가 (500점)
+			 this.handleAttackSuccess();
 
             });
 
@@ -355,7 +372,7 @@ class MainGame extends Phaser.Scene{
             });
 
               this.time.addEvent({
-            delay: 100, // 1초마다
+            delay: 50,
             callback: () => {
                  this.score += 10;
             },
@@ -464,12 +481,12 @@ class MainGame extends Phaser.Scene{
 
 getObstacleSpeed() {
     switch (this.difficultyLevel) {
-        case 1: return Phaser.Math.Between(200, 300);
-        case 2: return Phaser.Math.Between(400, 500);
-        case 3: return Phaser.Math.Between(500, 700);
-        case 4: return Phaser.Math.Between(600,800);
-        case 5: return Phaser.Math.Between(500, 900);
-        default: return Phaser.Math.Between(200, 300);
+        case 1: return 250;
+        case 2: return 350;
+        case 3: return 550;
+        case 4: return 600;
+        case 5: return 700;
+        default: return 200;
     }
 }
 
@@ -536,6 +553,41 @@ spawnBoss(){
             }).setOrigin(0.5, 0.5);
 
 }
+
+
+//업적 관리 함수
+	handleAttackSuccess() {
+       this.attackCount++;
+
+       if (this.attackCount >= 1) {
+           this.unlockAchievement("ACH_1_ATTACKS");
+       }
+	   
+	   if(this.attackCount >= 10){
+			this.unlockAchievement("ACH_10_ATTACKS");
+	   }
+   }
+
+   unlockAchievement(achievementId) {
+      
+	  
+	  $.ajax({
+	            url: "/api/achievement/unlock",
+	            type: "POST",
+	            contentType: "application/json",
+	            data: JSON.stringify({
+	                userId: loginId,
+	                achievementId: achievementId
+	            })
+	        }).done((resp) => {
+	            if (resp.status === "success") {
+	                showAchievementPopup("🎉 업적 달성: " + achievementId);
+	            }
+	        });
+	  
+	  
+   }
+
 
 
 

@@ -19,16 +19,22 @@ public class ManagerController extends HttpServlet {
 		String loginId = (String) request.getSession().getAttribute("loginId");
 
         if(path == null || path.equals("/main")) {
+        	
             request.getRequestDispatcher("/WEB-INF/views/manage/chart.jsp").forward(request, response);
         } else if(path.equals("/mypage")) {
+        	
         	  request.getRequestDispatcher("/api/friends/mypage?clickedUserID"+loginId).forward(request, response);
         }else if(path.equals("/user")) {
+        	
       	  request.getRequestDispatcher("/WEB-INF/views/manage/user.jsp").forward(request, response);
         }else if(path.equals("/board")) {
+        	
         	  request.getRequestDispatcher("/WEB-INF/views/manage/board.jsp").forward(request, response);
           }else if(path.equals("/game")) {
+        	  
         	  request.getRequestDispatcher("/WEB-INF/views/manage/game.jsp").forward(request, response);
           }else if(path.equals("/store")) {
+        	  
         	  request.getRequestDispatcher("/WEB-INF/views/manage/store.jsp").forward(request, response);
           }
 	}

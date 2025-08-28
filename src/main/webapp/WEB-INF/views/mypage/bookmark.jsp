@@ -44,7 +44,7 @@
 		<div class="card bookmark-card">
 			<div class="card-body">
 				<div class="row">
-					<div class="col-11 card-col-val">
+					<div class="col-11 card-col-val bookmark-card-body-cursor">
 						<h6 class="card-title">Html체크용 버튼 동작 안함.</h6>
 						<p class="card-text">Body text for whatever you'd like to say.
 							Add main takeaway points, quotes, anecdotes, or even a very very
@@ -144,7 +144,7 @@
 				        bookmarkRow.attr({"class":"row"});
 				        
 				        let bookmarkCol_11 = $("<div>");
-				        bookmarkCol_11.attr({"class":"col-11 card-col-val"});
+				        bookmarkCol_11.attr({"class":"col-11 card-col-val bookmark-card-body-cursor"});
 				        
 					        let bookmarkTitle = $("<h6>");
 					        bookmarkTitle.html(item.title);
@@ -157,7 +157,12 @@
 					        bookmarkContent.attr({"class":"card-text"});
 					        
 					        bookmarkCol_11.append(bookmarkContent);
-				        
+				        	
+					        bookmarkCol_11.on("click", function() {
+					            window.location.href = "#";
+					            console.log(item.seq + ":seq")
+					            
+					        });
 					        
 					    bookmarkRow.append(bookmarkCol_11);    
 					    let bookmarkCol_1 = $("<div>");

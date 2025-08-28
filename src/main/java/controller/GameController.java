@@ -80,10 +80,72 @@ public class GameController extends HttpServlet {
 				e.printStackTrace();
 				System.out.println("에러!!");
 			}
+		}
+		else if(path.equals("/main/reviewView")) {
+			//ajax로 리뷰 리스트 전달 처리.
+			try{
+				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+
+				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq); 
+
+				response.setContentType("text/html; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+
+				pw.append(g.toJson(gameReviewDTOList));
+				System.out.println(g.toJson(gameReviewDTOList));
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("에러!!");
+			}
+
+		}
+		else if(path.equals("/main/reviewUpdate")) {
+			//ajax로 리뷰 업데이트 처리.
+			try{
+				String title = request.getParameter("title");
+				String content = request.getParameter("content");
+				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+				int rating = Integer.parseInt(request.getParameter("rating"));
 
 
-			//	            request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
-		} 
+				GameReviewDTO gameReviewDTO = new GameReviewDTO(0,loginId,title,content,game_seq,rating,null);
+
+
+				int updateResult = gameReviewDAO.updateGameReviewsBygame_seqAndWriter(gameReviewDTO);
+
+				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq); 
+
+				response.setContentType("text/html; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+
+				pw.append(g.toJson(gameReviewDTOList));
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("에러!!");
+			}
+		}
+		else if(path.equals("/main/reviewDelete")) {
+			//ajax로 리뷰 삭제 처리.
+			try{
+				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+
+				int delResult = gameReviewDAO.deleteGameReviewsBygame_seqAndWriter(game_seq,loginId);
+
+				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq); 
+
+				response.setContentType("text/html; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+
+				pw.append(g.toJson(gameReviewDTOList));
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("에러!!");
+			}
+
+		}
 	}
 
 

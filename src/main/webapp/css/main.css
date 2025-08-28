@@ -196,3 +196,53 @@ body{
   color: black; /* 글씨 색상 */
   padding: 20px;
 }
+
+.card-header-main {
+  background-color: var(--main-color);
+  color: #000;
+}
+
+.card-header-accent {
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+.card-header-smooth-main {
+  background-color: var(--main-color-smooth);
+  color: #000;
+}
+
+.card-header-smooth-accent {
+  background-color: var(--accent-color-smooth);
+  color: #fff;
+}
+
+.card-header-red {
+  background-color: var(--red-color);
+  color: #000;
+}
+
+.card-header-yellow {
+  background-color: var(--yellow-color);
+  color: #000;
+}
+
+.card-header-green {
+  background-color: var(--green-color);
+  color: #000;
+}
+
+.card-header-navy {
+  background-color: var(--navy-color);
+  color: #fff;
+}
+
+.card-header-gray {
+  background-color: var(--gray-color);
+  color: #000;
+}
+
+.card-header-peach {
+  background-color: var(--peach-color);
+  color: #000;
+}

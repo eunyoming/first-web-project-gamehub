@@ -1,0 +1,61 @@
+@charset "UTF-8";
+
+* {
+	box-sizing: border-box;
+}
+
+/* container */
+.container {
+	margin-top: 20px;
+	padding:5px;
+	width: 80vw;
+	height: 80vh;
+	max-width:1000px;
+	border: 1px solid gray;
+	border-radius:5px;
+}
+
+/* header */
+.header-board{
+	padding-top:15px;
+	padding-bottom:15px;
+	border-bottom:1px solid gray;
+	text-align: center;
+}
+.header-writer{
+	padding-top:10px;
+	padding-bottom:10px;
+}
+.header-writer div{
+	display:flex;
+	justify-content:between;
+	align-items:center;
+	
+}
+.writer{
+	padding-left:15px;
+}
+
+/* contents */
+.contents{
+	margin:10px;
+	border:1px solid gray;
+	border-radius:5px;
+	height:50%;
+}
+/* icon 색상 변경 */
+.bi-heart-fill,
+.bi-bookmark-fill {
+  color: #e74c3c !important;
+}
+/* modal */
+.modal {
+  z-index: 1050;
+}
+.modal-backdrop {
+  z-index: 1040;
+}
+.btn-red-main{
+	color:white;
+	border:1px solid #FFB4B4 !important;
+}

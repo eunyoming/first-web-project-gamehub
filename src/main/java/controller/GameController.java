@@ -234,7 +234,7 @@ public class GameController extends HttpServlet {
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
 				
-				pw.append(g.toJson(gameDTO));
+				pw.append(g.toJson(gameDTO)); // 여기서 객체 보냈습니다.
 				
 				
 			}catch(Exception e) {

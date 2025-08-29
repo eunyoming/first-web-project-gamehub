@@ -46,7 +46,7 @@ public class GameRecordDAO {
 					
 					String userId = rs.getString("userId");
 					int gameScore = rs.getInt("gameScore");
-					
+						
 					GameRecordDTO dto = new GameRecordDTO(0,userId,game_seq,gameScore,null,null);
 					list.add(dto);
 					//game_seq , userId, gameScore ,rank

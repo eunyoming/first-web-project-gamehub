@@ -79,8 +79,8 @@
 						<hr>
 						<h4>제작자 코멘트</h4>
 						<blockquote class="blockquote">
-							<p>“안녕하세요?”</p>
-							<footer class="blockquote-footer">${gameList.creator}</footer>
+							<p>${infoList.creatorComment}</p>
+							<footer class="blockquote-footer">${infoList.creator}</footer>
 						</blockquote>
 					</div>
 				</div>
@@ -95,7 +95,15 @@
 
 <script>
 
-
+$.ajax({
+	url : "/info",
+	data : {
+		
+	} "json"
+	
+}).done(function(resp)){
+	
+}
 
 
 </script>

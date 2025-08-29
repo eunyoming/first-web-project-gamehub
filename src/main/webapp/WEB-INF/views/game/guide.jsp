@@ -32,15 +32,6 @@
 
 
 <script>
- $.ajax({
-	 url: "/guide",
-	 dataType: "json"
- }).done(function (resp){
-	 
-	 
-	 
-	 $(".game-card").append(resp.guide);
-	 
- })
+
 
 </script>

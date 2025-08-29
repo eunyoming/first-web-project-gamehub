@@ -1,10 +1,15 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+
+import dto.game.GameDTO;
+import dto.game.GameInfoDTO;
 
 public class GameInfoDAO {
 
@@ -24,5 +29,24 @@ public class GameInfoDAO {
 		return ds.getConnection();
 	}
 	
-	public void selectGameInfoByGuide() {}
+	public GameInfoDTO selectGameInfoBySeq(int game_seq)throws Exception{
+		String sql = "select * from gameInfo where seq = ?";
+		try (Connection con = this.getConnection(); PreparedStatement pstat = con.prepareStatement(sql)) {
+			pstat.setInt(1, game_seq);
+			try (ResultSet rs = pstat.executeQuery()) {
+				if (rs.next()) {
+					String screenshot = rs.getString("screenshot");
+					String creator = rs.getString("creator");
+					String creatorComment = rs.getString("creatorComment");
+					String guide = rs.getString("guide");
+
+					GameInfoDTO gameInfoDTO = new GameInfoDTO(game_seq,screenshot,creator,creatorComment,guide);
+					return gameInfoDTO;
+				}
+				return null;
+
+			}
+		}
+	}
+	
 }

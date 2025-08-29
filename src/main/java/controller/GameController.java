@@ -74,6 +74,8 @@ public class GameController extends HttpServlet {
 
 				request.setAttribute("gameReviewList", gameReviewDTOList);
 				GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
+				GameInfoDTO gameInfoDTO = gameInfoDAO.selectGameInfoBySeq(game_seq);
+				request.setAttribute("infoList", gameInfoDTO);
 				request.setAttribute("gameList", gameDTO);
 				// game_seq 에 따른 gamedto 가져오는 메소드 제작하기 ex) gamedto.???
 
@@ -208,37 +210,19 @@ public class GameController extends HttpServlet {
 			}
 
 		} else if (path.equals("/info")) {
-			// ajax로 게임제목, 배경, 사진들
-			// System.out.println("info");
-			// try{
-			// int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+			 //ajax로 게임제목, 배경, 사진들
+			 System.out.println("info");
+			 try{
+			 int game_seq = Integer.parseInt(request.getParameter("game_seq"));
 
-			// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
-			// response);
+			 request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
+			 response);
 
-			// }catch(Exception e) {
-			// e.printStackTrace();
-			// System.out.println("에러!!");
-			// }
-		} else if (path.equals("/guide")) {
-				
-			// 데이터를 어떻게 받고
-			GameInfoDTO gameInfoDTO = g.fromJson(request.getReader(), GameInfoDTO.class); // ajax 받고
-			try {
-				
-				
-				// 여기가 데이터 받는곳인데 데이터를 어떻게 보내줄까
-				 gameInfoDAO.selectGameInfoByGuide(); 
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-				//여기에 데이터 쏴줘야해요
-				pw.append(g.toJson(gameInfoDTO)); 
-			}
-
-			catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("에러!!");
-			}
+			 }catch(Exception e) {
+			 e.printStackTrace();
+			System.out.println("에러!!");
+			 }
+		
 
 		}
 	}

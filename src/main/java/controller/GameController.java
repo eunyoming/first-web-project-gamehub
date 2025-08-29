@@ -1,6 +1,6 @@
 package controller;
 
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
@@ -23,9 +23,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import dao.GameDAO;
 import dao.GameRecordDAO;
 
 import dao.GameReviewDAO;
+import dto.game.GameDTO;
 import dto.game.GameRecordDTO;
 import dto.game.GameReviewDTO;
 
@@ -57,6 +59,8 @@ public class GameController extends HttpServlet {
 
 		GameReviewDAO gameReviewDAO = GameReviewDAO.getInstance();
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
+		GameDAO gameDAO = GameDAO.getInstance();
+		
 		if(path == null || path.equals("/main")) {
 
 			
@@ -70,6 +74,8 @@ public class GameController extends HttpServlet {
 				request.setAttribute("game_seq", game_seq);
 				//game_seq 에 따른 gamedto 가져오는 메소드 제작하기 ex) gamedto.???
 				request.setAttribute("gameReviewList", gameReviewDTOList);
+				GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
+				request.setAttribute("gameList", gameDTO);
 				
 				request.setAttribute("wroteGameReviewDTO", wroteGameReviewDTO);
 
@@ -167,7 +173,7 @@ public class GameController extends HttpServlet {
 				PrintWriter pw = response.getWriter();
 
 				pw.append(g.toJson(gameRecordDTOList));
-				System.out.println(g.toJson(gameRecordDTOList));
+				
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -220,6 +226,20 @@ public class GameController extends HttpServlet {
 			}
 
 
+		}else if(path.equals("/info")) {
+			//ajax로 게임제목, 배경, 사진들
+			System.out.println("info");
+			try{
+				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+				
+				
+				
+				request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
+				
+			}catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("에러!!");
+			}
 		}
 	}
 

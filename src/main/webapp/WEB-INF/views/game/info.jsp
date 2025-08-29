@@ -47,13 +47,13 @@
 					<div id="gameCarousel" class="carousel slide" data-bs-ride="carousel">
 						<div class="carousel-inner">
 							<div class="carousel-item active">
-								<img src="${gameList.url} + '/썸네일이미지.jpg'" class="d-block w-100" alt="썸네일">
+								<img src="${gameList.url}/thumbnail.png" class="d-block w-100" alt="썸네일">
 							</div>
 							<div class="carousel-item">
-								<img src="${gameList.url} + '/플레이이미지1.jpg'" class="d-block w-100" alt="플레이1">
+								<img src="${gameList.url}/playImage1.png" class="d-block w-100" alt="플레이1">
 							</div>
 							<div class="carousel-item">
-								<img src="${gameList.url} + '/플레이이미지2.jpg'" class="d-block w-100" alt="플레이2">
+								<img src="${gameList.url}/playImage2.png" class="d-block w-100" alt="플레이2">
 							</div>
 						</div>
 						<button class="carousel-control-prev" type="button"

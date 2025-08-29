@@ -49,7 +49,7 @@
         physics: {
             default: "arcade",
           arcade:{
-         	debug:true,
+        
           }
 
         },

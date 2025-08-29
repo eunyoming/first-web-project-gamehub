@@ -34,11 +34,23 @@
   border-color: #767676 !important;
 }
 
+.btn-purple-main-black {
+	 background-color: var(--accent-color) !important;
+  border-color: #767676 !important;
+}
+
 .btn-outline-purple-main {
   background-color: white !important;
   border-color: var(--accent-color) !important;
  
 }
+
+.btn-blue-smooth-main {
+  background-color: var(--main-color-smooth) !important;
+  border-color: #767676 !important;
+ 
+}
+
 
 .btn-red-main {
     color: black;

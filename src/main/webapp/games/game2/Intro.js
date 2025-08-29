@@ -24,7 +24,7 @@ class Intro extends Phaser.Scene{
     this.add.text(
         this.cameras.main.width / 2,
         this.cameras.main.height - 30,
-        "접속한 아이디: "+loginId,
+        loginId===""? "비회원 접속":"접속한 아이디: "+loginId,
         {
             fontSize: "16px",
             fill: "#ffffff"

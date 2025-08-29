@@ -645,6 +645,8 @@ class MainGame extends Phaser.Scene {
 	}
 
 	unlockAchievement(achievementId) {
+		
+		if(loginId==="") return;
 
 		console.log(this.unlockedAchievements);
 

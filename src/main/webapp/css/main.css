@@ -258,3 +258,64 @@ body{
   background-color: var(--peach-color);
   color: #000;
 }
+
+
+.main-section {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-main-waves {
+  background-image: url('/asset/img/layered-waves.png');
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+}
+
+.responsive-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+ .text-white-shadow {
+  color: #fff; /* 하얀색 글씨 */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* 어두운 그림자 */
+}
+
+@font-face {
+    font-family: 'Danjo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-1@1.1/Danjo-bold-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+.font-simple {
+  font-family: 'Danjo', sans-serif;
+}
+
+
+
+.footer {
+    width: 100%;
+    background-color: #111;             /* 어두운 배경 */
+    color: #ccc;                        /* 글자 색상 */
+    font-family: 'Montserrat', sans-serif;
+    /* border-top: 1px solid orangered;    위쪽 경계선 */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;          /* 글자를 아래쪽으로 정렬 */
+    align-items: center;            /* 왼쪽 정렬 */
+    padding: 10px 20px;                 /* 위/아래 여백 조절, 글자와 경계선 간격 */
+}
+
+.footer p {
+    margin: 2px 0;                      /* 문단 간 간격 최소화 */
+    font-size: 12px;
+}
+

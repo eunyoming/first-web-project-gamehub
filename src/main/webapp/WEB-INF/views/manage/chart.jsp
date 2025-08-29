@@ -87,6 +87,7 @@
     $.ajax({
       url: '/api/manage/signup-data?type='+type,
       method: 'GET',
+      dataType: "json",
       success: function(response) {
         const labels = response.label;
         const dataValues = response.data;
@@ -140,17 +141,17 @@
     $.ajax({
       url: '/api/manage/post-data?type='+type,
       method: 'GET',
+      dataType: "json", 
       success: function(response) {
-        const labels = response.label;
         const dataValues = response.data;
         const maxValue = Math.max(...dataValues);
-
+	
         const backgroundColors = dataValues.map(v =>
           v === maxValue ? '#DCAAEB' : '#B4E4FF'
         );
 
         const chartData = {
-          labels: labels,
+          labels: response.label,
           datasets: [{
             label: '작성된 게시글 수',
             data: dataValues,
@@ -197,6 +198,7 @@
     $.ajax({
       url: '/api/manage/top-players?game='+gameseq, // 서버에서 gameType에 따라 데이터 분기
       method: 'GET',
+      dataType: "json",
       success: function(response) {
         const labels = response.label; // 유저 이름 배열
         const dataValues = response.data; // 게임 횟수 배열
@@ -259,13 +261,14 @@
 // 초기 로딩
    loadSignupChart('daily');
    loadPostChart('daily');
-   loadTopGameChart('StarCraft');
+   loadTopGameChart('1');
 
 //네번째 차트, 총게임 플레이 횟수 차트
   // 임의 데이터
  $.ajax({
   url: '/api/manage/gamePlayChart',
   method: 'GET',
+  dataType: "json",
   success: function(response) {
 	 const labels = response.title;
   const values = response.data;

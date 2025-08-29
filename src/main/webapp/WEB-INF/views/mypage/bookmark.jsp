@@ -39,9 +39,8 @@
 	<div class="section bookmark-section" id="bookmark-bookmark-section">
 		<h5>북마크</h5>
 		<p class="text-muted">Subheading</p>
-
-
-		<div class="card bookmark-card">
+		<!-- ajax요청 받은 후 생성하는 형태 확인용 -->
+		<!-- <div class="card bookmark-card">
 			<div class="card-body">
 				<div class="row">
 					<div class="col-11 card-col-val bookmark-card-body-cursor">
@@ -55,58 +54,21 @@
 					</div>
 				</div>
 			</div>
-		</div>
-	</div>
+		</div> -->
+	</div> 
 
 	<!-- 내가 작성한 게시글 섹션 -->
 	<div class="section bookmark-section" id="bookmark-board-section">
 		<h5>내가 작성한 게시글</h5>
 		<p class="text-muted">Subheading</p>
-
-		<div class="card bookmark-card">
-			<div class="card-body bookmark-card-body-cursor">
-				<h6 class="card-title">Title</h6>
-				<p class="card-text">Body text for whatever you'd like to say.
-					Add main takeaway points, quotes, anecdotes, or even a very very
-					short story.</p>
-			</div>
-		</div>
-
-		<div class="card bookmark-card">
-			<div class="card-body">
-				<h6 class="card-title">Title</h6>
-				<p class="card-text">Body text for whatever you'd like to say.
-					Add main takeaway points, quotes, anecdotes, or even a very very
-					short story.</p>
-			</div>
-		</div>
-
+		<!-- 여기에 append 들어감 -->
 	</div>
 
 	<!-- 내가 작성한 댓글 섹션 -->
 	<div class="section bookmark-section" id="bookmark-reply-section">
-
 		<h5>내가 작성한 댓글</h5>
 		<p class="text-muted">Subheading</p>
-
-		<div class="card bookmark-card">
-			<div class="card-body">
-				<h6 class="card-title">Title</h6>
-				<p class="card-text">Body text for whatever you'd like to say.
-					Add main takeaway points, quotes, anecdotes, or even a very very
-					short story.</p>
-			</div>
-		</div>
-
-		<div class="card bookmark-card">
-			<div class="card-body">
-				<h6 class="card-title">Title</h6>
-				<p class="card-text">Body text for whatever you'd like to say.
-					Add main takeaway points, quotes, anecdotes, or even a very very
-					short story.</p>
-			</div>
-		</div>
-
+		<!-- 여기에 append 들어감 -->
 	</div>
 </div>
 <script>

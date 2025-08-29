@@ -74,6 +74,8 @@ public class GameController extends HttpServlet {
 				request.setAttribute("game_seq", game_seq);
 				//game_seq 에 따른 gamedto 가져오는 메소드 제작하기 ex) gamedto.???
 				request.setAttribute("gameReviewList", gameReviewDTOList);
+				GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
+				request.setAttribute("gameList", gameDTO);
 				
 				request.setAttribute("wroteGameReviewDTO", wroteGameReviewDTO);
 
@@ -226,16 +228,13 @@ public class GameController extends HttpServlet {
 
 		}else if(path.equals("/info")) {
 			//ajax로 게임제목, 배경, 사진들
+			System.out.println("info");
 			try{
 				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
 				
-				GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
 				
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
 				
-				pw.append(g.toJson(gameDTO)); // 여기서 객체 보냈습니다.
-				
+				request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
 				
 			}catch(Exception e) {
 				e.printStackTrace();

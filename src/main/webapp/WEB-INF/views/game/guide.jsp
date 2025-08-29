@@ -2,6 +2,7 @@
      <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <style>
         .game-card {
+        	
             background-color: #e0e0e0;
             padding: 20px;
             text-align: center;
@@ -18,12 +19,12 @@
         <div class="row">
             <div class="col-6">
                 <div class="game-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3106/3106379.png" alt="게임 컨트롤">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3106/3106379.png" style="width: 300px; height: 300px; alt="게임 컨트롤">
                 </div>
             </div>
             <div class="col-6">
                 <div class="game-card">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3106/3106379.png" alt="게임 컨트롤">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3106/3106379.png" style="width: 300px; height: 300px; alt="게임 컨트롤">
                 </div>
             </div>
         </div>

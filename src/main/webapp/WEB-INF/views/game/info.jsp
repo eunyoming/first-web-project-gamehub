@@ -37,10 +37,9 @@
 		margin: 0;
 	}
 </style>
-
 <div class="d-flex justify-content-center align-items-center">
-	<div class="container">
-		<div class="row g-4">
+	<div class="container"  id="infoList">
+		<div class="row">
 			
 			<!-- 좌측: 이미지 캐러셀 -->
 			<div class="col-md-6">
@@ -48,13 +47,13 @@
 					<div id="gameCarousel" class="carousel slide" data-bs-ride="carousel">
 						<div class="carousel-inner">
 							<div class="carousel-item active">
-								<img src="썸네일이미지.jpg" class="d-block w-100" alt="썸네일">
+								<img src="${gameList.url} + '/썸네일이미지.jpg'" class="d-block w-100" alt="썸네일">
 							</div>
 							<div class="carousel-item">
-								<img src="플레이이미지1.jpg" class="d-block w-100" alt="플레이1">
+								<img src="${gameList.url} + '/플레이이미지1.jpg'" class="d-block w-100" alt="플레이1">
 							</div>
 							<div class="carousel-item">
-								<img src="플레이이미지2.jpg" class="d-block w-100" alt="플레이2">
+								<img src="${gameList.url} + '/플레이이미지2.jpg'" class="d-block w-100" alt="플레이2">
 							</div>
 						</div>
 						<button class="carousel-control-prev" type="button"
@@ -73,13 +72,15 @@
 			<div class="col-md-6">
 				<div class="info-game-info">
 					<div class="card">
-						<h2>게임 제목</h2>
-						<p><strong>배경 설명:</strong> 배경 내용</p>
+						<h2>${gameList.title}</h2>
+						<p><strong>배경 설명:</strong> 
+						${gameList.description}
+						</p>
 						<hr>
 						<h4>제작자 코멘트</h4>
 						<blockquote class="blockquote">
 							<p>“안녕하세요?”</p>
-							<footer class="blockquote-footer">제작자</footer>
+							<footer class="blockquote-footer">${gameList.creator}</footer>
 						</blockquote>
 					</div>
 				</div>
@@ -88,3 +89,15 @@
 		</div>
 	</div>
 </div>
+
+
+
+
+<script>
+
+
+
+
+</script>
+
+

@@ -44,7 +44,6 @@
   padding: 10px 0;
   font-family: 'Segoe UI', sans-serif;
 }
-
 .pageNavi a {
   display: inline-block;
   padding: 6px 10px;
@@ -54,12 +53,10 @@
   border-bottom: 2px solid transparent;
   transition: all 0.2s ease;
 }
-
 .pageNavi a:hover {
   color: skyblue;
   border-bottom: 2px solid #cceeff;
 }
-
 .pageNavi a.active {
   color: skyblue;
   font-weight: bold;

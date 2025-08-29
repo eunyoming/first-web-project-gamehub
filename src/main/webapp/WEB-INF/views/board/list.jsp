@@ -47,7 +47,8 @@
 	<div class="contents mt-5">
 		<div class="row board-item board-header g-0">
 			<div class="col-1">번호</div>
-			<div class="col-3">[카테고리] / [관련 게임]</div>
+			<div class="col-1">[카테고리]</div>
+			<div class="col-2">[ 관련 게임 ]</div>
 			<div class="col-3">게시글 제목[댓글수]</div>
 			<div class="col-1">작성자</div>
 			<div class="col-2">작성시간</div>
@@ -63,7 +64,8 @@
 				<c:forEach var="dto" items="${list}">
 					<div class="row board-item g-0">
 						<div class="col-1">${dto.seq}</div>
-						<div class="col-3">[ ${dto.category} ] / [ ${dto.refgame} ]</div>
+						<div class="col-1">[ ${dto.category} ]</div>
+						<div class="col-2">[ ${dto.refgame} ]</div>
 						<div class="col-3">
 							<a href="/detail.board?seq=${dto.seq}"
 								style="text-decoration: none; color: inherit;">

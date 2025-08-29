@@ -73,15 +73,16 @@ public class BoardDAO {
 		}
 	}
 
-	// update by seq set title, cntents, category
-	public int updateBoardsBySeq(String title, String contents, String category, int seq) throws Exception{
-		String sql = "update boards set title = ?, contents = ?, category = ? where seq = ?";
+	// update by seq set title, contents, category, refgame
+	public int updateBoardsBySeq(int seq, String title, String contents, String category, String refgame) throws Exception{
+		String sql = "update boards set title = ?, contents = ?, category = ?, refgame = ? where seq = ?";
 		try(Connection con = this.getConnection();
 				PreparedStatement pst = con.prepareStatement(sql);){
 			pst.setString(1, title);
 			pst.setString(2, contents);
 			pst.setString(3, category);
-			pst.setInt(4, seq);
+			pst.setString(4, refgame);
+			pst.setInt(5, seq);
 
 			return pst.executeUpdate();
 		}

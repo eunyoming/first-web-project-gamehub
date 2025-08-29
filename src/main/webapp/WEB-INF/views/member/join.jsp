@@ -174,7 +174,7 @@ button {
         <div class="form-group">
             <label for="phone">PHONE</label> <input type="text" name="phone" id="phone" placeholder="전화번호를 입력하세요">
             <div class="fieldCheckMessage" id="phoneFieldCheck">예 : 010-0000-0000 숫자 형식으로 입력</div>
-            <div class="error-message" id="phoneNumberError"></div>
+            <div class="error-message" id="phoneError"></div>
         </div>
         <div class="form-group">
             <label for="email">E-mail</label><input type="text" name="email" id="email" placeholder="이메일을 입력하세요">
@@ -400,6 +400,11 @@ button {
 		                }
 		            }
 		        });
+		    });
+		 // ID 값이 바뀌면 중복확인 상태 초기화
+		    $("#id").on("input", function () {
+		        idChecked = false;
+		        $("#checkResult").text("");
 		    });
 		 // 비밀번호 일치 실시간 체크
 		    $("#pw, #pwCheck").on("input", function () {

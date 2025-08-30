@@ -307,22 +307,15 @@ h2 {
 
 	<div class="d-flex justify-content-center gap-3 mb-4">
 		<a href="/api/manage/main"><button class="btn btn-blue-main">관리자
-				페이지 확인용</button></a> <a href="/api/friends/mypage?clickedUserID=${loginId}"><button
+				페이지 확인용</button></a> <a href="/api/member/mypage?section=collection&userId=${loginId}"><button
 				class="btn btn-purple-main">마이페이지 확인용</button></a>
-
-
+					<form action="/api/friends/request" method="post">
+				<input type="hidden" name="toUser" value="friend001">
+				  <input type="hidden" name="fromUser" value="${loginId}">
+				  <button type="submit" class="btn btn-outline-blue-main"> friend001에게 친구 요청</button>
+	</form> 
 	</div>
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<a href="/api/game/main?game_seq=1"><button
-				class="btn btn-blue-main">게임 임시 1</button></a> <a
-			href="/api/game/main?game_seq=2"><button
-				class="btn btn-purple-main">게임 임시 2</button></a> <a
-			href="/api/game/main?game_seq=3"><button
-				class="btn btn-outline-blue-main">게임 임시 3</button></a> <a
-			href="/api/game/main?game_seq=4"><button
-				class="btn btn-outline-purple-main">게임 임시 4</button></a>
 
-	</div>
 
 </section>
 <section class="strips strips-container">

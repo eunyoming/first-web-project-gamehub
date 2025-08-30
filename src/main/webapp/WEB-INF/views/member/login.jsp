@@ -36,7 +36,7 @@
 						<input name="userPassword" type="password" class="form-control"
 							id="pwInput" placeholder="패스워드 입력" required title="이 필드는 필수입니다.">
 						<button class="btn btn-light w-100 mb-3 mt-3">로그인</button>
-						<a href="/api/member/joinPage"><button type="button"
+						<a href="/api/member/join"><button type="button"
 								class="btn btn-light w-100">회원가입</button></a>
 					</form>
 				</div>

@@ -79,6 +79,15 @@ public class ReplyDTO {
 		this.visibility = visibility;
 		this.created_at = created_at;
 	}
+	
+	public ReplyDTO(int seq, String writer, String contents, int board_seq,  
+			Timestamp created_at) {
+		this.seq = seq;
+		this.writer = writer;
+		this.contents = contents;
+		this.board_seq = board_seq;
+		this.created_at = created_at;
+	}
 	public ReplyDTO() {
 	}
 

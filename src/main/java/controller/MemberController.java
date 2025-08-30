@@ -52,8 +52,6 @@ public class MemberController extends HttpServlet {
 					System.out.println("로그인 실패");
 					response.sendRedirect("/api/member/loginPage");
 				}
-			}else if(path.equals("/joinPage")) {
-				response.sendRedirect("/WEB-INF/views/member/join.jsp");
 			}
 			// 아이디 중복 체크 
 			else if(path.equals("/idCheck")) {
@@ -96,10 +94,21 @@ public class MemberController extends HttpServlet {
 				response.sendRedirect("/");
 			}else if(path.equals("/mypage")) {
 
-				String userID = (String) request.getSession().getAttribute("loginId");
-				System.out.println("마이페이지 접속:"+userID);
+				
+				String userId = request.getParameter("userId");
+				String loginId = (String) request.getSession().getAttribute("loginId");
+				 String section = request.getParameter("section");
+			        if (section == null || section.isEmpty()) {
+			            section = "collection"; // 기본 탭
+			        }
 
-				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp?userId="+userID).forward(request, response);
+
+			        request.setAttribute("active", section);
+			        request.setAttribute("paramUserId", userId);
+			        request.setAttribute("loginId", loginId );
+
+
+				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp").forward(request, response);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

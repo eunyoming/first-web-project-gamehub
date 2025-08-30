@@ -60,7 +60,7 @@
 								</a>
 								<ul class="dropdown-menu dropdown-menu-end"
 									aria-labelledby="profileDropdown">
-									<li><a class="dropdown-item" href="/api/member/mypage">마이
+									<li><a class="dropdown-item" href="/api/member/mypage?section=collection&userId=${loginId}">마이
 											페이지</a></li>
 									<li><a class="dropdown-item" href="#">보유 포인트:
 											${currentPoint}</a></li>

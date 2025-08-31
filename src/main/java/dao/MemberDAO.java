@@ -75,7 +75,11 @@ public class MemberDAO {
 			pstat.setString(8, dto.getAddressDetail());
 			pstat.setString(9,"Y");
 
-			return pstat.executeUpdate();
+			int result =  pstat.executeUpdate();
+			if(result >0) {
+				RoleDAO.getInstance().insertDefaultRole(dto.getId());
+			}
+			return result;
 		}
 	}
 	// ID 중복 확인
@@ -93,6 +97,43 @@ public class MemberDAO {
 				return rs.next();
 			}
 		}
+	}
+	
+	public SimpleUserProfileDTO login(String id, String pw) {
+	    String sql = "SELECT m.id AS userId,\n"
+	    		+ "       mp.profileImage,\n"
+	    		+ "       NVL(a.title, '업적 칭호 없음') AS equipedAchiev,\n"
+	    		+ "       NVL(r.category, 'User') AS category "
+	    		+ "FROM members m\n"
+	    		+ "LEFT JOIN member_profiles mp ON m.id = mp.userId\n"
+	    		+ "LEFT JOIN (\n"
+	    		+ "    SELECT ua.userId, ach.title\n"
+	    		+ "    FROM userAchievement ua\n"
+	    		+ "    JOIN Achievement ach ON ua.achiev_seq = ach.seq\n"
+	    		+ "    WHERE ua.isEquip = 'Y'\n"
+	    		+ ") a ON m.id = a.userId\n"
+	    		+ "LEFT JOIN role r ON m.id = r.id "
+	    		+ "WHERE m.id = ? AND m.pw = ?";
+
+	    try (Connection conn = getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setString(1, id);
+	        ps.setString(2, pw);
+
+	        ResultSet rs = ps.executeQuery();
+	        if (rs.next()) {
+	            return new SimpleUserProfileDTO(
+	                rs.getString("userId"),
+	                rs.getString("profileImage"),
+	                rs.getString("equipedAchiev"),
+	                rs.getString("category")
+	            );
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
 	}
 	
 	
@@ -121,7 +162,7 @@ public class MemberDAO {
 	            if (rs.next()) {
 	                String profileImage = rs.getString("profileImage");
 	                String equipedAchiev = rs.getString("equipedAchiev");
-	                return new SimpleUserProfileDTO(userId, profileImage, "🏆"+equipedAchiev);
+	                return new SimpleUserProfileDTO(userId, profileImage, "🏆"+equipedAchiev,null);
 	            }
 	        }
 
@@ -171,7 +212,7 @@ public class MemberDAO {
 	                String userId = rs.getString("userId");
 	                String profileImage = rs.getString("profileImage");
 	                String equipedAchiev = rs.getString("equipedAchiev");
-	                result.add(new SimpleUserProfileDTO(userId, profileImage,"🏆"+ equipedAchiev));
+	                result.add(new SimpleUserProfileDTO(userId, profileImage,"🏆"+ equipedAchiev, null));
 	            }
 	        }
 

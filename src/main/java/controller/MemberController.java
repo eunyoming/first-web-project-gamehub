@@ -39,20 +39,17 @@ public class MemberController extends HttpServlet {
 
 				System.out.println(userId + ":" + userPassword);
 
-				MemberDTO loginDto = dao.selectMembersByIdAndPW(userId, userPassword);
+				SimpleUserProfileDTO loginDto = dao.login(userId, userPassword);
 
 				// 로그인 성공시
 				if(loginDto != null) {
 					// Session 에 userId 저장
 					
 					request.getSession().setAttribute("loginId", userId);
-					
-					SimpleUserProfileDTO simpleProfile = dao.getSimpleUserProfile(userId);
-					// 세션에 저장
-		
-					request.getSession().setAttribute("simpleProfile", simpleProfile);
+				
+					request.getSession().setAttribute("simpleProfile", loginDto);
 					request.getSession().setAttribute("loginId", userId);
-					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
+					request.getSession().setAttribute("currentPoint", 0);
 
 
 					// index.jsp 로 다시 보내기

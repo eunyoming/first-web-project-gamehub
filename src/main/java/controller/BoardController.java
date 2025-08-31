@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import commons.Config;
 import dao.BoardDAO;
+import dao.MemberDAO;
 import dao.ReplyDAO;
 import dto.board.BoardDTO;
 import dto.board.PageNaviDTO;
+import dto.member.SimpleUserProfileDTO;
 
 @WebServlet("*.board")
 public class BoardController extends HttpServlet {
@@ -61,10 +63,15 @@ public class BoardController extends HttpServlet {
 				// 글 seq 가져오기
 				int seq = Integer.parseInt(request.getParameter("seq"));
 				BoardDTO dto = board_dao.selectBoardsBySeq(seq);
+				
+				
+				//작성자 프로필 용 dto 
+				SimpleUserProfileDTO simpleUserProfileDTO = MemberDAO.getInstance().getSimpleUserProfile(dto.getWriter());
 
 				// request 에 담기
 				request.setAttribute("loginId", loginId);
 				request.setAttribute("boardDto", dto);
+				request.setAttribute("writerProfile", simpleUserProfileDTO);
 				
 				request.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(request, response);
 			}else if(cmd.equals("/update.board")) {

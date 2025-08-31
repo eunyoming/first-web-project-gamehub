@@ -146,7 +146,8 @@ $(document).ready(function() {
         });
     }
     
-    function  deleteFriend(friendId){
+    //친구 삭제
+    function deleteFriend(friendId){
     	$.post("/api/friends/delete", { targetID: friendId }, function(res) {
             updateFriendButton();
         });

@@ -16,6 +16,7 @@ import org.apache.jasper.tagplugins.jstl.core.If;
 
 import dao.MemberDAO;
 import dto.member.MemberDTO;
+import dto.member.SimpleUserProfileDTO;
 
 
 @WebServlet("/api/member/*")
@@ -43,6 +44,13 @@ public class MemberController extends HttpServlet {
 				// 로그인 성공시
 				if(loginDto != null) {
 					// Session 에 userId 저장
+					
+					request.getSession().setAttribute("loginId", userId);
+					
+					SimpleUserProfileDTO simpleProfile = dao.getSimpleUserProfile(userId);
+					// 세션에 저장
+		
+					request.getSession().setAttribute("simpleProfile", simpleProfile);
 					request.getSession().setAttribute("loginId", userId);
 					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
 

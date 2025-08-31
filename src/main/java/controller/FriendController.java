@@ -214,11 +214,6 @@ public class FriendController extends HttpServlet {
                 out.flush();
             }
 
-            	
-            
-                
-
-
 		}catch(SQLException e) {
 			e.printStackTrace();
 			int errorCode = e.getErrorCode();

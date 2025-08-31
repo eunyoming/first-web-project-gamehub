@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -81,34 +82,144 @@ public class FriendController extends HttpServlet {
 		        
 		        boolean success =friendDAO.requestFriend(fromUser, toUser);
 		        if(success) {
-			        request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp?userId="+toUser).forward(request, response);
+			        request.getRequestDispatcher("/api/member/mypage?section=collection&userId="+toUser).forward(request, response);
 		        }else {
-		        	response.sendRedirect("/error.jsp");
+		        	if(friendDAO.isAlreadyRequested(fromUser, toUser)) {
+		        		response.sendRedirect("/error?alreadyFriend");
+		        	}else {
+		        		response.sendRedirect("/error?friendError");
+		        	}
+		        	
+		        	
 		        }
 
 			}else if ("/sent-requests".equals(path)) {
                 resultList = friendDAO.selectFriendShipRequestsByID(currentUserId);
                 String jsonResult = gson.toJson(resultList);
                 response.getWriter().write(jsonResult);
+                
             } else if ("/received-requests".equals(path)) {
                 resultList = friendDAO.selectFriendShipResponsesByID(currentUserId);
                 String jsonResult = gson.toJson(resultList);
                 response.getWriter().write(jsonResult);
+                
             } else if ("/list".equals(path)) {
                 resultList = friendDAO.selectAllMyFriendships(currentUserId);
                 String jsonResult = gson.toJson(resultList);
                 response.getWriter().write(jsonResult);
-            } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("{\"error\": \"Endpoint not found.\"}");
-                return;
+                
+                //친구 요청을 승낙하는 api
+            }else if(path.equals("/received-requests-accept")){
+            	
+            	System.out.println("친구 수락 요청");
+            	String targetId= request.getParameter("targetID");
+            	if (currentUserId == null || targetId == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\":\"사용자 정보가 누락되었습니다.\"}");
+                    return;
+                }
+            	
+            	boolean success = friendDAO.acceptFriendship(targetId, currentUserId);
+
+            	if (success) {
+                    // 성공 응답
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("{\"status\":\"success\", \"message\":\"친구 요청이 수락되었습니다.\"}");
+                } else {
+                    // 실패 응답 (DB 업데이트 실패 등)
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().write("{\"status\":\"fail\", \"message\":\"친구 요청 수락에 실패했습니다.\"}");
+                }
+            	
+            	//친구 요청 취소 api
+            }else if(path.equals("/sent-requests-cancel")) {
+            	
+            	System.out.println("친구 요청 취소");
+            	
+            	String targetId= request.getParameter("targetID");
+            	
+            	if (currentUserId == null || targetId == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\":\"사용자 정보가 누락되었습니다.\"}");
+                    return;
+                }
+            	
+            	boolean success = friendDAO.cancelFriendshipRequest(currentUserId, targetId);
+            	if (success) {
+                    // 성공 응답
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("{\"status\":\"success\", \"message\":\"친구 요청이 취소 되었습니다.\"}");
+                } else {
+                    // 실패 응답 (DB 업데이트 실패 등)
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().write("{\"status\":\"fail\", \"message\":\"친구 요청 취소에 실패했습니다.\"}");
+                }
+            	//친구 삭제
+            }else if(path.equals("/delete")) {
+            	
+            	System.out.println("친구 삭제");
+            	
+            	String targetId= request.getParameter("targetID");
+            	
+            	if (currentUserId == null || targetId == null) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\":\"사용자 정보가 누락되었습니다.\"}");
+                    return;
+                }
+            	
+            	boolean success = friendDAO.deleteFriendship(currentUserId, targetId);
+            	if (success) {
+                    // 성공 응답
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("{\"status\":\"success\", \"message\":\"친구 삭제가 완료 되었습니다.\"}");
+                } else {
+                    // 실패 응답 (DB 업데이트 실패 등)
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    response.getWriter().write("{\"status\":\"fail\", \"message\":\"친구 삭제에 실패했습니다.\"}");
+                }
+            	
             }
+            
+            else if(path.equals("/friendsCheck")){
+            	String targetId = request.getParameter("targetID"); 
+            	
+            	FriendshipDTO targetUser = friendDAO.selectFriendShipByID(targetId);
+            	
+            	if(targetUser == null) {
+            		
+            		//친구가 아닌 경우
+            		
+            		
+            	}else if(targetUser.getStatus().equals("accept")) {
+            		//친구가 맞는 경우
+            		
+            		
+            	}else if(targetUser.getStatus().equals("pending") && targetUser.getUserIdA().equals(currentUserId)) {
+            		//내가 보낸 요청의 수락 대기 중인 경우
+            		
+            	}else if(targetUser.getStatus().equals("pending") && targetUser.getUserIdA().equals(targetId)) {
+            		//상대가 나의 친구 요청을 수락 대기 중인 경우
+            		
+            	}
+            	
+            }
+            	
+            
+                
 
 
-		}catch(Exception e) {
+		}catch(SQLException e) {
 			e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"An internal error occurred.\"}");
+			int errorCode = e.getErrorCode();
+			System.out.println(errorCode);
+			if(errorCode == 20001 || errorCode==1) {
+				response.sendRedirect("/error?alreadyFriend");
+			}else {
+				response.sendRedirect("/error?friendError");
+			}
+			
+		}catch(Exception e) {
+			response.sendRedirect("/error?friendError");
 		}
 		
 		

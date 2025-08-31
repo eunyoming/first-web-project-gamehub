@@ -94,13 +94,13 @@
                 };
 
                 if (url.includes('sent-requests')) {
-                    btns.push(createBtn('취소', 'btn-yellow-main', () => handleAction('/api/friends/sent-requests-cancel/userID?='+friendId, refreshCallback, '취소 실패')));
+                    btns.push(createBtn('취소', 'btn-yellow-main', () => handleAction('/api/friends/sent-requests-cancel?targetID='+friendId, refreshCallback, '취소 실패')));
                 } else if (url.includes('received-requests')) {
-                    btns.push(createBtn('수락', 'btn-green-main', () => handleAction('/api/friends/received-requests-accept/userID?='+friendId, refreshCallback, '수락 실패')));
+                    btns.push(createBtn('수락', 'btn-green-main', () => handleAction('/api/friends/received-requests-accept?targetID='+friendId, refreshCallback, '수락 실패')));
                 } else if (url.includes('/list')) {
-                    btns.push(createBtn('삭제', 'btn-red-main', () => handleAction('/api/friends/delete/userID?='+friendId, refreshCallback, '삭제 실패')));
-                    btns.push(createBtn('블락', 'btn-gray-main', () => handleAction('/api/friends/block/userID?='+friendId, refreshCallback, '블락 실패')));
-                    btns.push(createBtn('채팅', 'btn-navy-main', () => window.location.href = '/chat/roomID?='+friendId));
+                    btns.push(createBtn('삭제', 'btn-red-main', () => handleAction('/api/friends/delete?targetID='+friendId, refreshCallback, '삭제 실패')));
+                    btns.push(createBtn('블락', 'btn-gray-main', () => handleAction('/api/friends/block?targetID='+friendId, refreshCallback, '블락 실패')));
+                    btns.push(createBtn('채팅', 'btn-navy-main', () => window.location.href = '/chat/open?friendId='+friendId));
                 }
 
                 return btns;

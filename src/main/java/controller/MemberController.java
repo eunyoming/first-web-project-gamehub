@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jasper.tagplugins.jstl.core.If;
+
 import dao.MemberDAO;
 import dto.member.MemberDTO;
 
@@ -96,6 +98,8 @@ public class MemberController extends HttpServlet {
 
 				
 				String userId = request.getParameter("userId");
+				
+			if(dao.isIdExist(userId)){
 				String loginId = (String) request.getSession().getAttribute("loginId");
 				 String section = request.getParameter("section");
 			        if (section == null || section.isEmpty()) {
@@ -109,10 +113,15 @@ public class MemberController extends HttpServlet {
 
 
 				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp").forward(request, response);
+			}else {
+				//존재하지 않는 id 페이지로의 요청
+				response.sendRedirect("/error/noneIdRequest");
+			}
+				
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
-			response.sendRedirect("/error.jsp");
+			response.sendRedirect("/error");
 		}
 
 	}

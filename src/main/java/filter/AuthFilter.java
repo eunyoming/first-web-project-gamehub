@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import commons.SessionManager;
 import dto.member.SimpleUserProfileDTO;
 
 @WebFilter("/*") // 모든 요청 필터링, 필요하면 /secure/* 이런 식으로 좁힐 수도 있음
@@ -37,7 +38,10 @@ public class AuthFilter implements Filter {
         if (loginUser != null) {
             if ("Banned".equalsIgnoreCase(loginUser.getCategory())) {
                 // 밴 유저 → 로그아웃 처리 + 안내 페이지로 이동
+            	
                 session.invalidate();
+                SessionManager.getInstance().removeSession(loginUser.getUserId());
+                
                 res.sendRedirect(req.getContextPath() + "/banned.jsp");
                 return;
             }

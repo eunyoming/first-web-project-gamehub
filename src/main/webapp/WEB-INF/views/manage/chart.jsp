@@ -5,7 +5,10 @@
  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
 <div class="container">
   <h2 class="mb-4">관리자 대시보드</h2>
-  
+  <div>
+    현재 로그인 중인 유저 수: <span id="activeUserCount">0</span>
+    <button id="refreshBtn" class="btn btn-purple-main">새로고침</button>
+</div>
   <div class="row">
     <div class="col-md-6">
       <div class="card">
@@ -76,7 +79,33 @@
   </div> <!-- 두 번째 row 닫기 -->
 </div> <!-- container 닫기 -->
   <script>
-  
+  function updateActiveUserCount() {
+	    $.ajax({
+	        url: '/api/manage/getSessionUserCount',
+	        type: 'GET',
+	        dataType: 'json',
+	        success: function(data) {
+	            // JSON에서 activeUserCount 가져와서 화면에 표시
+	            $('#activeUserCount').text(data.activeUserCount);
+	        },
+	        error: function(xhr, status, error) {
+	            console.error('로그인 유저 수 가져오기 실패:', error);
+	        }
+	    });
+	}
+
+	// 페이지 로드 시 한 번 호출
+	$(document).ready(function() {
+	    updateActiveUserCount();
+
+	    // 버튼 클릭 시 새로고침
+	    $('#refreshBtn').on('click', function() {
+	        updateActiveUserCount();
+	    });
+
+	    // 10초마다 자동 갱신
+	    setInterval(updateActiveUserCount, 10000);
+	});
   
   let signupChartInstance = null;
   let postChartInstance = null;

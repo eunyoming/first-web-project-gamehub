@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import commons.SessionManager;
 import dao.ManagerDAO;
 
 
@@ -153,11 +154,26 @@ public class ManagerController extends HttpServlet {
 				pw.append(json);  
 				System.out.println(json);
 
+				//세션에 남아있는 banned된 유저의 세션 만료 시키기
+			}else if(path.equals("/bannedUser")) {
+				String bannedUserId = request.getParameter("bannedUserId");
+				SessionManager.getInstance().invalidateSession(bannedUserId);
+				
+				//현재 로그인 상태의 유저 수를 파악하는 api
+			}else if(path.equals("/getSessionUserCount")) {
+				int count = SessionManager.getInstance().getActiveSessionCount();
+				response.setContentType("application/json;charset=UTF-8");
+			    response.setCharacterEncoding("UTF-8");
 
+			    String json = "{ \"activeUserCount\": " + count + " }";
+
+			    response.getWriter().write(json);
+			    response.getWriter().flush();
 			}
 		}catch(Exception e) {
-			System.out.println("error");
+			
 			e.printStackTrace();
+			request.getRequestDispatcher("/error").forward(request, response);
 		}
 	}
 

@@ -5,8 +5,5 @@
 여기에 코드 입력
  -->
  
-<a href="/api/friends/mypage?clickedUserID=test">
-<button>친구 마이페이지용 버튼</button></a>
- 
  <p>유저 관리 페이지</p>
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jasper.tagplugins.jstl.core.If;
 
+import commons.SessionManager;
 import dao.MemberDAO;
 import dto.member.MemberDTO;
+import dto.member.SimpleUserProfileDTO;
 
 
 @WebServlet("/api/member/*")
@@ -38,16 +40,30 @@ public class MemberController extends HttpServlet {
 
 				System.out.println(userId + ":" + userPassword);
 
-				MemberDTO loginDto = dao.selectMembersByIdAndPW(userId, userPassword);
+				SimpleUserProfileDTO loginDto = dao.login(userId, userPassword);
 
 				// 로그인 성공시
 				if(loginDto != null) {
 					// Session 에 userId 저장
+					
+					if ("Banned".equalsIgnoreCase(loginDto.getCategory())) {
+					        // 로그인 자체 차단
+					        response.sendRedirect("/banned.jsp");
+					        return;
+					  }
+
+					
 					request.getSession().setAttribute("loginId", userId);
-					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
+				
+					request.getSession().setAttribute("simpleProfile", loginDto);
+					request.getSession().setAttribute("loginId", userId);
+					request.getSession().setAttribute("currentPoint", 0);
 
-
-					// index.jsp 로 다시 보내기
+					//세션 메니저에 세션 등록
+					 SessionManager.getInstance().addSession(userId, request.getSession());	
+					
+					 
+					 // index.jsp 로 다시 보내기
 					response.sendRedirect("/");
 
 				}else { // 실패시
@@ -90,7 +106,11 @@ public class MemberController extends HttpServlet {
 				response.sendRedirect("/api/member/loginPage");
 				}
 			}
+			//로그아웃
 			else if(path.equals("/logout")) {
+				
+				//세션 매니저에서 제거
+				SessionManager.getInstance().removeSession((String) request.getSession().getAttribute("loginId"));
 				request.getSession().invalidate();
 
 				response.sendRedirect("/");

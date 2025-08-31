@@ -156,7 +156,7 @@ public class GameController extends HttpServlet {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
 			}
 
 		}
@@ -201,7 +201,7 @@ public class GameController extends HttpServlet {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameRecordError").forward(request, response);
 			}
 			
 			//insertGameRecords
@@ -222,7 +222,7 @@ public class GameController extends HttpServlet {
 			}
 			catch(Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
 			}
 
 

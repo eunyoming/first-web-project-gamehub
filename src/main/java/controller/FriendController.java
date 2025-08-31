@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -21,6 +22,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import dao.FriendDAO;
+import dao.FriendDAO.FriendshipStatus;
 import dto.friend.FriendshipDTO;
 
 
@@ -144,7 +146,7 @@ public class FriendController extends HttpServlet {
                     return;
                 }
             	
-            	boolean success = friendDAO.cancelFriendshipRequest(currentUserId, targetId);
+            	boolean success = friendDAO.cancelOrDeleteFriendship(currentUserId, targetId);
             	if (success) {
                     // 성공 응답
                     response.setStatus(HttpServletResponse.SC_OK);
@@ -167,7 +169,7 @@ public class FriendController extends HttpServlet {
                     return;
                 }
             	
-            	boolean success = friendDAO.deleteFriendship(currentUserId, targetId);
+            	boolean success = friendDAO.cancelOrDeleteFriendship(currentUserId, targetId);
             	if (success) {
                     // 성공 응답
                     response.setStatus(HttpServletResponse.SC_OK);
@@ -179,34 +181,38 @@ public class FriendController extends HttpServlet {
                 }
             	
             }
-            
-            else if(path.equals("/friendsCheck")){
-            	String targetId = request.getParameter("targetID"); 
-            	
-            	FriendshipDTO targetUser = friendDAO.selectFriendShipByID(targetId);
-            	
-            	if(targetUser == null) {
-            		
-            		//친구가 아닌 경우
-            		
-            		
-            	}else if(targetUser.getStatus().equals("accept")) {
-            		//친구가 맞는 경우
-            		
-            		
-            	}else if(targetUser.getStatus().equals("pending") && targetUser.getUserIdA().equals(currentUserId)) {
-            		//내가 보낸 요청의 수락 대기 중인 경우
-            		
-            	}else if(targetUser.getStatus().equals("pending") && targetUser.getUserIdA().equals(targetId)) {
-            		//상대가 나의 친구 요청을 수락 대기 중인 경우
-            		
-            	}
-            	
-            }
-            	
-            
-                
+            //친구 상태 체크 메소드
+            else if (path.equals("/friendsCheck")) {
+                String targetId = request.getParameter("targetID"); 
+               
 
+                // 친구 상태 확인
+                FriendshipStatus status = friendDAO.checkFriendshipStatus(currentUserId, targetId);
+
+                // JSON 반환
+                response.setContentType("application/json;charset=UTF-8");
+                PrintWriter out = response.getWriter();
+                
+                String json = "{}";
+
+                switch (status) {
+                    case NONE:
+                        json = "{\"status\":\"none\"}"; // 아무 관계 없음
+                        break;
+                    case FRIEND:
+                        json = "{\"status\":\"friend\"}"; // 이미 친구
+                        break;
+                    case REQUEST_SENT:
+                        json = "{\"status\":\"request_sent\"}"; // 내가 보낸 요청 대기
+                        break;
+                    case REQUEST_RECEIVED:
+                        json = "{\"status\":\"request_received\"}"; // 상대가 보낸 요청 대기
+                        break;
+                }
+
+                out.print(json);
+                out.flush();
+            }
 
 		}catch(SQLException e) {
 			e.printStackTrace();

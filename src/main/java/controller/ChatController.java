@@ -65,7 +65,7 @@ public class ChatController extends HttpServlet {
 				    String friendId = request.getParameter("friendId");
 
 				    // 1. 로그인 사용자의 친구 목록 조회
-				    List<String> friends = friendDAO.selectAllFriendIds(loginId);
+				    List<String> friends = friendDAO.getAllFriendIds(loginId);
 				    request.setAttribute("friends", friends);
 
 				    if(friendId != null && !friendId.isEmpty()) {

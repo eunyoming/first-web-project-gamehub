@@ -48,12 +48,12 @@
 		<div class="col-8 writer">
 			<div class="profile">
 				<!-- 프로필 이미지 -->
-				<img src="https://picsum.photos/100/100?random=1" alt="프로필"
+				<img src="${writerProfile.profileImage}" alt="프로필"
 					class="rounded-circle me-2" width="40" height="40">
 				<!-- 아이디와 칭호 -->
 				<div class="d-none d-md-block text-end">
-					<div class="fw-bold text-purple">${boardDto.writer}</div>
-					<div class="text-muted">🏆 초보 마스터</div>
+					<div class="fw-bold text-purple">${writerProfile.userId}</div>
+					<div class="text-muted">${writerProfile.equipedAchiev}</div>
 				</div>
 			</div>
 		</div>

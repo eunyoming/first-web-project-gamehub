@@ -2,7 +2,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
      <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
+<style>
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
 
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-footer {
+    flex-shrink: 0; /* 높이 고정 */
+}
+</style>
 <div class="container-fluid">
     <div class="row vh-100">
 
@@ -43,11 +58,17 @@
                 </c:forEach>
             </div>
 
-            <div class="chat-input d-flex mt-2">
-                <input type="hidden" id="chatroomSeq" value="<c:out value='${chatroomSeq}'/>">
-                <input type="text" id="messageInput" class="form-control me-2" placeholder="메시지 입력">
-                <button id="sendBtn" class="btn btn-primary">전송</button>
-            </div>
+           <div class="chat-input d-flex flex-column mt-2">
+    <input type="hidden" id="chatroomSeq" value="<c:out value='${chatroomSeq}'/>">
+    
+    <!-- 여러 줄 입력 가능 -->
+    <textarea id="messageInput" class="form-control mb-2" placeholder="메시지 입력" rows="3"></textarea>
+    
+    <div class="d-flex justify-content-end">
+        <button id="sendBtn" class="btn btn-blue-purple">전송</button>
+    </div>
+</div>
+
         </div>
 
     </div>
@@ -71,10 +92,6 @@ $(document).ready(function() {
 
 });
 
-
-    // -----------------------------
-    // 메시지 전송
-    // -----------------------------
     $('#sendBtn').click(function() {
         const content = $('#messageInput').val().trim();
         if(!content || !currentChatroomSeq) return;
@@ -88,9 +105,24 @@ $(document).ready(function() {
         socket.send(JSON.stringify(msg));
         $('#messageInput').val('');
     });
+    
 
     $('#messageInput').keypress(function(e) {
         if(e.which === 13) $('#sendBtn').click();
+    });
+    
+    // Enter / Shift+Enter 처리
+    $('#messageInput').on('keydown', function(e) {
+        if (e.key === 'Enter') {
+            if (e.shiftKey) {
+                // Shift + Enter → 줄바꿈 허용
+                return;
+            } else {
+                // Enter → 메시지 전송
+                e.preventDefault(); // 줄바꿈 방지
+                sendMessage();
+            }
+        }
     });
 
     // -----------------------------

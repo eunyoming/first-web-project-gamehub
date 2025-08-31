@@ -51,11 +51,11 @@
 									class="d-flex align-items-center text-decoration-none dropdown-toggle"
 									href="#" id="profileDropdown" data-bs-toggle="dropdown"
 									aria-expanded="false"> <!-- 프로필 이미지 --> <img
-									src="https://picsum.photos/100/100?random=1" alt="프로필"
+									src="${simpleProfile.profileImage }" alt="프로필"
 									class="rounded-circle me-2" width="40" height="40"> <!-- 아이디와 칭호 -->
 									<div class="d-none d-md-block text-end">
 										<div class="fw-bold text-purple">${loginId}</div>
-										<div class="text-muted">🏆 초보 마스터</div>
+										<div class="text-muted">${simpleProfile.equipedAchiev}</div>
 									</div>
 								</a>
 								<ul class="dropdown-menu dropdown-menu-end"

@@ -30,23 +30,28 @@ public class FriendDAO {
 		return ds.getConnection();
 	}
 	
-	
-	
-	public  boolean requestFriend(String userA,String userB) throws Exception {
-		 String sql = "INSERT INTO FRIENDSHIPS (SEQ, USERIDA, USERIDB, STATUS, CREATED_AT, UPDATED_AT) " +
-                 "VALUES (FRIENDSHIP_SEQ.nextval, ?, ?, 'pending', SYSTIMESTAMP, SYSTIMESTAMP)";
-		try(Connection con = this.getConnection();
-				PreparedStatement pstmt = con.prepareStatement(sql); ){
-				
-				pstmt.setString(1, userA);
-		        pstmt.setString(2, userB);
-		        
-		        return pstmt.executeUpdate() > 0;
-
-		}
-		
-		
+	public enum FriendshipStatus {
+	    FRIEND,         // 이미 친구
+	    REQUEST_SENT,   // 내가 요청 보낸 상태
+	    REQUEST_RECEIVED, // 상대방이 나에게 요청 보낸 상태
+	    NONE            // 아무 관계도 아님
 	}
+	
+	
+	
+    // 친구 요청 보내기
+    public boolean requestFriend(String userA, String userB) throws Exception {
+        if (checkFriendshipStatus(userA, userB) != FriendshipStatus.NONE) return false;
+
+        String sql = "INSERT INTO FRIENDSHIPS (SEQ, USERIDA, USERIDB, STATUS, CREATED_AT, UPDATED_AT) " +
+                     "VALUES (FRIENDSHIP_SEQ.nextval, ?, ?, 'pending', SYSTIMESTAMP, SYSTIMESTAMP)";
+        try (Connection con = this.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, userA);
+            pstmt.setString(2, userB);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
 	
 	//내가 보낸 요청 전부 확인해서 반환
 	public List<FriendshipDTO> selectFriendShipRequestsByID(String userId) throws Exception{
@@ -117,7 +122,7 @@ public class FriendDAO {
 		}
 	
 	
-	//
+	//이미 요청을 보낸 적이 있는지 확인
 	public boolean isAlreadyRequested(String userIDA, String userIDB) throws Exception{
 	String sql = "SELECT *  FROM FRIENDSHIPS WHERE userIDA = ? or userIDB = ?";
 	
@@ -209,78 +214,91 @@ public class FriendDAO {
 			}
 	}
 	
-	// 내 친구 ID 목록만 반환
-	public List<String> selectAllFriendIds(String userId) throws Exception {
-	    String sql = "SELECT * FROM FRIENDSHIPS WHERE (userIDA = ? OR userIDB = ?) AND STATUS = 'accepted'";
+	// 친구 목록 조회
+    public List<String> getAllFriendIds(String userId) throws Exception {
+        String sql = "SELECT userIDA, userIDB FROM FRIENDSHIPS " +
+                     "WHERE (userIDA = ? OR userIDB = ?) AND STATUS = 'accepted'";
+        List<String> friends = new ArrayList<>();
 
-	    List<String> friendIds = new ArrayList<>();
+        try (Connection con = this.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String a = rs.getString("userIDA");
+                    String b = rs.getString("userIDB");
+                    friends.add(userId.equals(a) ? b : a);
+                }
+            }
+        }
+        return friends;
+    }
+	
+
+	 // 친구 요청 수락
+    public boolean acceptFriendship(String userA, String userB) throws Exception {
+        String sql = "UPDATE FRIENDSHIPS SET STATUS = 'accepted', UPDATED_AT = SYSTIMESTAMP " +
+                     "WHERE userIDA = ? AND userIDB = ? AND STATUS = 'pending'";
+        try (Connection con = this.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, userA);
+            pstmt.setString(2, userB);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+	
+    // 친구 요청 취소 / 삭제
+    public boolean cancelOrDeleteFriendship(String userA, String userB) throws Exception {
+        String sql = "DELETE FROM FRIENDSHIPS " +
+                     "WHERE (userIDA = ? AND userIDB = ?) OR (userIDA = ? AND userIDB = ?)";
+        try (Connection con = this.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, userA);
+            pstmt.setString(2, userB);
+            pstmt.setString(3, userB);
+            pstmt.setString(4, userA);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+	
+		
+	
+	public FriendshipStatus checkFriendshipStatus(String myId, String otherId) throws Exception {
+	    String sql = "SELECT * FROM FRIENDSHIPS " +
+	                 "WHERE (userIDA = ? AND userIDB = ?) OR (userIDA = ? AND userIDB = ?)";
 	    
 	    try (Connection con = this.getConnection();
 	         PreparedStatement pstmt = con.prepareStatement(sql)) {
 
-	        pstmt.setString(1, userId);
-	        pstmt.setString(2, userId);
+	        pstmt.setString(1, myId);
+	        pstmt.setString(2, otherId);
+	        pstmt.setString(3, otherId);
+	        pstmt.setString(4, myId);
 
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) {
+	                String status = rs.getString("status");
 	                String userIdA = rs.getString("userIdA");
 	                String userIdB = rs.getString("userIdB");
 
-	                // 내 ID가 아니면 추가
-	                String friendId = userId.equals(userIdA) ? userIdB : userIdA;
-	                friendIds.add(friendId);
+	                if ("accepted".equalsIgnoreCase(status)) {
+	                    return FriendshipStatus.FRIEND;
+	                } else if ("pending".equalsIgnoreCase(status)) {
+	                    if (myId.equals(userIdA) && otherId.equals(userIdB)) {
+	                        return FriendshipStatus.REQUEST_SENT;
+	                    } else if (myId.equals(userIdB) && otherId.equals(userIdA)) {
+	                        return FriendshipStatus.REQUEST_RECEIVED;
+	                    }
+	                }
 	            }
 	        }
 	    }
-	    
-	    return friendIds;
+
+	    return FriendshipStatus.NONE;
 	}
-	
-	// 친구 요청 승낙 함수 
-	public boolean acceptFriendship(String userIdA, String userIdB) throws Exception {
-	    String sql = "UPDATE FRIENDSHIPS SET STATUS = 'accepted', UPDATED_AT = sysdate "
-	               + "WHERE userIDA = ? AND userIDB = ? AND STATUS = 'pending'";
 
-	    try (Connection con = this.getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-	        pstmt.setString(1, userIdA);
-	        pstmt.setString(2, userIdB);
-
-	        return pstmt.executeUpdate() > 0;
-	    }
-	}
-	
-	// 친구 요청 취소
-	public boolean cancelFriendshipRequest(String userA, String userB) throws Exception {
-	    String sql = "DELETE FROM FRIENDSHIPS WHERE userIDA = ? AND userIDB = ? AND STATUS = 'pending'";
-	    
-	    try (Connection con = this.getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-	        pstmt.setString(1, userA); // 요청을 보낸 사람 (나)
-	        pstmt.setString(2, userB); // 요청을 받은 사람
-	        
-	        return pstmt.executeUpdate() > 0;
-	    }
-	}
-	
-	// 친구 삭제
-	public boolean deleteFriendship(String userA, String userB) throws Exception {
-	    String sql = "DELETE FROM FRIENDSHIPS WHERE (userIDA = ? AND userIDB = ? OR userIDA = ? AND userIDB = ?) AND STATUS = 'accepted'";
-	    
-	    try (Connection con = this.getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-	        pstmt.setString(1, userA); // 친구 삭제를 요청한 사람
-	        pstmt.setString(2, userB); // 삭제 대상인 친구
-	        pstmt.setString(3, userB); // 반대 경우 (친구 관계가 userB-userA로 저장된 경우)
-	        pstmt.setString(4, userA); // 반대 경우
-	        
-	        return pstmt.executeUpdate() > 0;
-	    }
-	}
-		
 	
 
 }

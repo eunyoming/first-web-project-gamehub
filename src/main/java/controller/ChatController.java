@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,7 +22,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import dao.ChatDAO;
+import dao.FriendDAO;
 import dto.chat.MessageDTO;
+import dto.friend.FriendshipDTO;
+import dto.member.MemberDTO;
+import dto.member.MemberProfileDTO;
 
 
 @WebServlet("/chat/*")
@@ -30,6 +35,7 @@ public class ChatController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		 String path = request.getPathInfo();
 		 ChatDAO chatDAO = ChatDAO.getInstance();
+		 FriendDAO friendDAO = FriendDAO.getInstance();
 		 String loginId = (String) request.getSession().getAttribute("loginId");
 		 Gson gson = new GsonBuilder()
 				 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -55,26 +61,42 @@ public class ChatController extends HttpServlet {
 		 
 		 try {
 			 if(path.equals("/open")) {
-				 
-				 String friendId = request.getParameter("friendId");
-				 
-				 int chatroomSeq = chatDAO.findOrCreateChatroom(loginId, friendId);
-				 
-				 List<MessageDTO> messages = chatDAO.getMessages(chatroomSeq,20);
 
-				 request.setAttribute("chatroomSeq", chatroomSeq);
-				 request.setAttribute("friendId", friendId);
-				 request.setAttribute("messages", messages);
+				    String friendId = request.getParameter("friendId");
 
-				 request.getRequestDispatcher("/WEB-INF/views/chat/chatroom.jsp").forward(request, response);
-			 }else if(path.equals("/loadMessages")) {
+				    // 1. 로그인 사용자의 친구 목록 조회
+				    List<String> friends = friendDAO.selectAllFriendIds(loginId);
+				    request.setAttribute("friends", friends);
+
+				    if(friendId != null && !friendId.isEmpty()) {
+				        // 2. 1:1 채팅방 조회/생성
+				        int chatroomSeq = chatDAO.findOrCreateChatroom(loginId, friendId);
+
+				        // 3. 최근 메시지 로딩
+				        List<MessageDTO> messages = chatDAO.getMessages(chatroomSeq, 30);
+
+				        request.setAttribute("chatroomSeq", chatroomSeq);
+				        request.setAttribute("friendId", friendId);
+				        request.setAttribute("messages", messages);
+				    } else {
+				        // friendId 없으면 기본값
+				        request.setAttribute("chatroomSeq", null);
+				        request.setAttribute("friendId", null);
+				        request.setAttribute("messages", Collections.emptyList());
+				    }
+
+				    request.getRequestDispatcher("/WEB-INF/views/chat/chatroom.jsp").forward(request, response);
+				}
+			 else if(path.equals("/loadMessages")) {
 				 int chatroomSeq = Integer.parseInt(request.getParameter("chatroomSeq"));
 
-		            List<MessageDTO> messages = chatDAO.getMessages(chatroomSeq,20);
+		            List<MessageDTO> messages = chatDAO.getMessages(chatroomSeq,30);
 
 		            response.setContentType("application/json; charset=UTF-8");
 		            response.getWriter().write(gson.toJson(messages));
 			 }else if(path.equals("/sendMessage")) {
+				 
+				 
 				 int chatroomSeq = Integer.parseInt(request.getParameter("chatroomSeq"));
 		            String content = request.getParameter("content");
 		            String senderId = (String) request.getSession().getAttribute("loginId");

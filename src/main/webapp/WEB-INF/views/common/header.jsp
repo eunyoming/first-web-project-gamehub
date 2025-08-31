@@ -64,7 +64,7 @@
 											페이지</a></li>
 									<li><a class="dropdown-item" href="#">보유 포인트:
 											${currentPoint}</a></li>
-									<li><a class="dropdown-item" href="#">채팅</a></li>
+									<li><a class="dropdown-item" href="/chat/open">채팅</a></li>
 									<li><hr class="dropdown-divider"></li>
 									<li><a class="dropdown-item text-danger "
 										href="/api/member/logout">로그아웃</a></li>

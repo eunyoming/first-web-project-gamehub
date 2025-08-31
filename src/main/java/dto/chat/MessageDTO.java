@@ -8,6 +8,7 @@ public class MessageDTO {
     private int seq;
     @SerializedName("sender_Id") 
     private String sender_Id;
+    @SerializedName("chatroom_seq") 
     private int chatroom_seq;
     private String content;
     @SerializedName("created_at")

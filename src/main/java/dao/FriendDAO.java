@@ -209,6 +209,33 @@ public class FriendDAO {
 			}
 	}
 	
+	// 내 친구 ID 목록만 반환
+	public List<String> selectAllFriendIds(String userId) throws Exception {
+	    String sql = "SELECT * FROM FRIENDSHIPS WHERE (userIDA = ? OR userIDB = ?) AND STATUS = 'accepted'";
+
+	    List<String> friendIds = new ArrayList<>();
+	    
+	    try (Connection con = this.getConnection();
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+	        pstmt.setString(1, userId);
+	        pstmt.setString(2, userId);
+
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                String userIdA = rs.getString("userIdA");
+	                String userIdB = rs.getString("userIdB");
+
+	                // 내 ID가 아니면 추가
+	                String friendId = userId.equals(userIdA) ? userIdB : userIdA;
+	                friendIds.add(friendId);
+	            }
+	        }
+	    }
+	    
+	    return friendIds;
+	}
+	
 	// 친구 요청 승낙 함수 
 	public boolean acceptFriendship(String userIdA, String userIdB) throws Exception {
 	    String sql = "UPDATE FRIENDSHIPS SET STATUS = 'accepted', UPDATED_AT = sysdate "

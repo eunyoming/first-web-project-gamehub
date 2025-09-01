@@ -67,7 +67,7 @@
 						<div class="col-1">[ ${dto.category} ]</div>
 						<div class="col-2">[ ${dto.refgame} ]</div>
 						<div class="col-3">
-							<a href="/detail.board?seq=${dto.seq}"
+							<a href="/detailPage.board?seq=${dto.seq}"
 								style="text-decoration: none; color: inherit;">
 								${dto.title}[댓글수]</a>
 						</div>

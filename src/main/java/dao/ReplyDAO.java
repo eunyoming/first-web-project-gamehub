@@ -55,8 +55,8 @@ public class ReplyDAO {
 
 	// insert
 	public int insertReplies(ReplyDTO dto) throws Exception{
-		String insertSql = "INSERT INTO replies VALUES(replies_seq.nextval, ?, ?, 0, ?, ?, '', 'public', sysdate)";
-		String updateSql = "UPDATE replies SET path = ? WHERE seq = ?";
+		String insertSql = "insert into replies values(replies_seq.nextval, ?, ?, 0, ?, ?, '0', 'public', sysdate)";
+		String updateSql = "update replies set path = ? where seq = ?";
 		
 		int result = 0;
 	    int mySeq = 0;
@@ -187,8 +187,26 @@ public class ReplyDAO {
 			return pst.executeUpdate();
 		}
 	}
+	
+	// 댓글 부모 작성자 구하기 ( 어느 댓글의 댓글인지 @작성자 해주기 위한 메서드 )
+	public String getParentWriterByPath(String path) throws Exception {
+	    String[] parts = path.split("/");
+	    if (parts.length < 2) return ""; // 부모 없음
 
+	    int parentSeq = Integer.parseInt(parts[parts.length - 2]); // index 여서 -1, 부모니까 -1
 
+	    String sql = "select writer from replies where seq = ?";
+	    try (Connection con = this.getConnection();
+	         PreparedStatement pst = con.prepareStatement(sql)) {
+	        pst.setInt(1, parentSeq);
+	        try (ResultSet rs = pst.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getString("writer");
+	            }
+	        }
+	    }
+	    return "";
+	}
 
 
 }

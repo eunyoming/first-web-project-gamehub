@@ -95,15 +95,6 @@
 
 <script>
 
-$.ajax({
-	url : "/info",
-	data : {
-		
-	} "json"
-	
-}).done(function(resp)){
-	
-}
 
 
 </script>

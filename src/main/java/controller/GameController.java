@@ -35,30 +35,31 @@ public class GameController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String path = request.getPathInfo();
-		Gson g = new GsonBuilder().registerTypeAdapter(Timestamp.class, new JsonDeserializer<Timestamp>() {
-			@Override
-			public Timestamp deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-					throws JsonParseException {
-				JsonPrimitive primitive = json.getAsJsonPrimitive();
-				if (primitive.isNumber()) {
-					return new Timestamp(primitive.getAsLong());
-				} else if (primitive.isString()) {
-					try {
-						return new Timestamp(Long.parseLong(primitive.getAsString()));
-					} catch (NumberFormatException e) {
-						throw new JsonParseException("Invalid timestamp format", e);
+		Gson g = new GsonBuilder().disableHtmlEscaping().registerTypeAdapter(Timestamp.class, new JsonDeserializer<Timestamp>() {
+					@Override
+					public Timestamp deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+							throws JsonParseException {
+						JsonPrimitive primitive = json.getAsJsonPrimitive();
+						if (primitive.isNumber()) {
+							return new Timestamp(primitive.getAsLong());
+						} else if (primitive.isString()) {
+							try {
+								return new Timestamp(Long.parseLong(primitive.getAsString()));
+							} catch (NumberFormatException e) {
+								throw new JsonParseException("Invalid timestamp format", e);
+							}
+						} else {
+							throw new JsonParseException("Unsupported timestamp format");
+						}
 					}
-				} else {
-					throw new JsonParseException("Unsupported timestamp format");
-				}
-			}
-		}).create();
+				}).create();
 		String loginId = (String) request.getSession().getAttribute("loginId"); // 로그인 아이디
 
 		GameReviewDAO gameReviewDAO = GameReviewDAO.getInstance();
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 		GameDAO gameDAO = GameDAO.getInstance();
 		GameInfoDAO gameInfoDAO = GameInfoDAO.getInstance();
+		System.out.println("요청 path: " + path);
 
 		if (path == null || path.equals("/main")) {
 
@@ -210,19 +211,44 @@ public class GameController extends HttpServlet {
 			}
 
 		} else if (path.equals("/info")) {
-			 //ajax로 게임제목, 배경, 사진들
-			 System.out.println("info");
-			 try{
-			 int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+			// ajax로 게임제목, 배경, 사진들
 
-			 request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
-			 response);
+			// try{
+			// int game_seq = Integer.parseInt(request.getParameter("game_seq"));
 
-			 }catch(Exception e) {
-			 e.printStackTrace();
-			System.out.println("에러!!");
-			 }
-		
+			// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
+			// response);
+
+			// }catch(Exception e) {
+			// e.printStackTrace();
+			// System.out.println("에러!!");
+			// }
+
+		} else if (path.equals("/guide")) {
+			System.out.println("잘들어오잖아");
+			GameInfoDTO gameInfoDTO = g.fromJson(request.getReader(), GameInfoDTO.class); // ajax로 작성된 데이터 받아와서 dto에 저장
+			
+			int game_seq = gameInfoDTO.getSeq();
+			try {
+			
+					GameInfoDTO result = gameInfoDAO.selectGameInfoBySeq(game_seq); // 문장들 다 뽑고
+					response.setContentType("application/json; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+					System.out.println(result);
+					System.out.println("직렬화 테스트: " + g.toJson(result));
+					pw.append(g.toJson(result)); // ajax 보내기
+				
+
+			} catch (Exception e) {
+			    e.printStackTrace();
+			    response.setContentType("application/json; charset=UTF-8");
+			    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			    PrintWriter pw = response.getWriter();
+			    pw.append("{\"error\":\"서버 오류 발생\"}");
+			}
+
+
+			// ajax로 게시판 내용들 가져오기
 
 		}
 	}

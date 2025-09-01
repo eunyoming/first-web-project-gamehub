@@ -119,7 +119,7 @@ public class BoardDAO {
 	// selectFromToBoards / 원하는 게시물 수 만큼 가져오기.
 	public List<BoardDTO> selectFromToBoards(int from, int to) throws Exception{
 		String sql = "select * from (select boards.*,  row_number() over(order by seq desc) rn "
-				+ "from boards) where rn between ? and ? order by 1 desc";
+				+ "from boards where visibility = 'public') where rn between ? and ? order by 1 desc";
 
 		try(Connection con = this.getConnection();
 				PreparedStatement pst = con.prepareStatement(sql)){

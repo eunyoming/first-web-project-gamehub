@@ -13,6 +13,16 @@ public class ReplyDTO {
 	private String path;
 	private String visibility;
 	private Timestamp created_at;
+	
+	private String parentWriter;
+	
+	public String getParentWriter() {
+		return parentWriter;
+	}
+	public void setParentWriter(String parentWriter) {
+		this.parentWriter = parentWriter;
+	}
+	
 	public int getSeq() {
 		return seq;
 	}

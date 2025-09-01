@@ -11,6 +11,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import dto.member.ManagerMemberDTO;
 import dto.member.MemberDTO;
 import dto.member.SimpleUserProfileDTO;
 
@@ -195,6 +196,64 @@ public class MemberDAO {
 			}
 			return null;
 		}
+		
+		public List<ManagerMemberDTO> getMemberList(int startRow, int endRow) {
+	        List<ManagerMemberDTO> list = new ArrayList<>();
+	        String sql =
+	            "SELECT * FROM ( " +
+	            "  SELECT ROWNUM rnum, A.* FROM ( " +
+	            "    SELECT m.id, m.email, m.point, m.created_at, r.category " +
+	            "    FROM members m " +
+	            "    LEFT JOIN role r ON m.id = r.id " +
+	            "    ORDER BY m.created_at DESC " +
+	            "  ) A " +
+	            "  WHERE ROWNUM <= ? " +
+	            ") " +
+	            "WHERE rnum >= ?";
+
+	        try (Connection conn =getConnection();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	            pstmt.setInt(1, endRow);
+	            pstmt.setInt(2, startRow);
+
+	            try (ResultSet rs = pstmt.executeQuery()) {
+	                while (rs.next()) {
+	                    ManagerMemberDTO dto = new ManagerMemberDTO();
+	                    dto.setId(rs.getString("id"));
+	                    dto.setEmail(rs.getString("email"));
+	                    dto.setPoint(rs.getInt("point"));
+	                    dto.setCreatedAt(rs.getTimestamp("created_at"));
+	                    dto.setRole(rs.getString("category"));
+	                    list.add(dto);
+	                }
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return list;
+	    }
+
+	    /** 총 회원 수 조회 */
+	    public int getTotalMemberCount() {
+	        int count = 0;
+	        String sql = "SELECT COUNT(*) FROM members";
+	        try (Connection conn = getConnection();
+	             PreparedStatement pstmt = conn.prepareStatement(sql);
+	             ResultSet rs = pstmt.executeQuery()) {
+
+	            if (rs.next()) {
+	                count = rs.getInt(1);
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return count;
+	    }
+	    
+	    
 
 
 		//프로필용 

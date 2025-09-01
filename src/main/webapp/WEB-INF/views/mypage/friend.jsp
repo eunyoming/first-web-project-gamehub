@@ -10,20 +10,30 @@
                     <div class="card-header card-header-main">
                         <h4>내가 보낸 친구 요청</h4>
                     </div>
-                    <ul class="list-group list-group-flush" id="sentRequestsList">
-                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
-                    </ul>
+                    <div class="card-body d-flex flex-column" style="height: 400px;">
+	                     <div class="flex-grow-1 overflow-y-auto" style="min-height: 0;">
+	                    	 <ul class="list-group list-group-flush" id="sentRequestsList">
+	                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
+	                   		 </ul>
+	                    </div>
+                    </div>
+                   
+                   
                 </div>
             </div>
 
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header card-header-main">
-                        <h4>내게 온 친구 요청</h4>
+	                        <h4>내게 온 친구 요청</h4>
+	                    </div>   
+	                    <div class="card-body d-flex flex-column" style="height: 400px;">
+		                     <div class="flex-grow-1 overflow-y-auto" style="min-height: 0;">
+		                    <ul class="list-group list-group-flush" id="receivedRequestsList">
+		                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
+		                    </ul>
+                    	</div>
                     </div>
-                    <ul class="list-group list-group-flush" id="receivedRequestsList">
-                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
-                    </ul>
                 </div>
             </div>
             
@@ -32,9 +42,13 @@
                     <div class="card-header card-header-accent">
                         <h4>내 친구 목록</h4>
                     </div>
-                    <ul class="list-group list-group-flush" id="friendsList">
-                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
-                    </ul>
+                     <div class="card-body d-flex flex-column" style="height: 400px;">
+		                     <div class="flex-grow-1 overflow-y-auto" style="min-height: 0;">
+			                    <ul class="list-group list-group-flush" id="friendsList">
+			                        <li class="list-group-item text-muted">데이터를 불러오는 중...</li>
+			                    </ul>
+			                 </div>
+			         </div>
                 </div>
             </div>
         </div>

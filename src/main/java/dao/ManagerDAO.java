@@ -28,6 +28,33 @@ public class ManagerDAO {
 		DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/oracle");
 		return ds.getConnection();
 	}
+	
+	//여러 회원들의 role 변경 
+	public void updateMemberRoles(List<String> ids, String newRole) {
+	    String sql = "MERGE INTO role r " +
+	                 "USING (SELECT ? AS id, ? AS category FROM dual) src " +
+	                 "ON (r.id = src.id) " +
+	                 "WHEN MATCHED THEN " +
+	                 "  UPDATE SET r.category = src.category, r.updated_at = SYSDATE " +
+	                 "WHEN NOT MATCHED THEN " +
+	                 "  INSERT (seq, id, category,updated_at) " +
+	                 "  VALUES (role_seq.nextval, src.id, src.category,  SYSDATE)";
+
+	    try (Connection conn = getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        for (String id : ids) {
+	            pstmt.setString(1, id);      // src.id
+	            pstmt.setString(2, newRole); // src.category
+	            pstmt.addBatch();
+	        }
+	        pstmt.executeBatch();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
 
 	public List<Map<String,String>> selectGamePlayCount() throws Exception {
 		//전체 이용자 게임별 플레이 횟수 - 완

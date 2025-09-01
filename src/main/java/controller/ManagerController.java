@@ -3,6 +3,8 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,11 @@ import com.google.gson.Gson;
 
 import commons.SessionManager;
 import dao.ManagerDAO;
+import dao.MemberDAO;
+import dao.RoleDAO;
+import dto.member.ManagerMemberDTO;
+import dto.member.RoleDTO;
+import dto.member.SimpleUserProfileDTO;
 
 
 @WebServlet("/api/manage/*")
@@ -26,8 +33,11 @@ public class ManagerController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String path = request.getPathInfo(); 
+		
 		String loginId = (String) request.getSession().getAttribute("loginId");
 
+		request.setCharacterEncoding("UTF-8");
+		
 
 		ManagerDAO managerDAO = ManagerDAO.getInstance();
 		Gson gson = new Gson();
@@ -154,7 +164,7 @@ public class ManagerController extends HttpServlet {
 				pw.append(json);  
 				System.out.println(json);
 
-				//세션에 남아있는 banned된 유저의 세션 만료 시키기
+				//해당 유저를 banned 시키고, 세션에 남아있는 banned된 유저의 세션 만료 시키기
 			}else if(path.equals("/bannedUser")) {
 				String bannedUserId = request.getParameter("bannedUserId");
 				SessionManager.getInstance().invalidateSession(bannedUserId);
@@ -169,7 +179,80 @@ public class ManagerController extends HttpServlet {
 
 			    response.getWriter().write(json);
 			    response.getWriter().flush();
+			    
+			    //현재 밴된 유저만 뽑아오기
+			}else if(path.equals("/bannedUserList")) {
+				
+				response.setContentType("application/json;charset=UTF-8");
+			    response.setCharacterEncoding("UTF-8");
+				
+				List<RoleDTO> bannedUserList = RoleDAO.getInstance().selectBannedUser();
+				List<SimpleUserProfileDTO> bannedUserListResult = new ArrayList<SimpleUserProfileDTO>();
+				for(RoleDTO bannedUser: bannedUserList) {
+					SimpleUserProfileDTO userDto= MemberDAO.getInstance().getSimpleUserProfile(bannedUser.getId());
+					bannedUserListResult.add(userDto);
+				}
+				
+				
+				
+				String json = gson.toJson(bannedUserListResult);
+				System.out.println(json);
+				response.getWriter().write(json);
+				response.getWriter().flush();
+				
+			}else if(path.equals("/unban")) {
+				String bannedId = request.getParameter("bannedId");
+				
+				System.out.println("언밴 요청 아이디: "+bannedId);
+				
+				if(RoleDAO.getInstance().unbanUser(bannedId)) {
+					 response.setStatus(HttpServletResponse.SC_OK);
+	                response.getWriter().write("{\"status\":\"success\", \"message\":\"언밴 요청이 성공했습니다..\"}");
+					
+				}else {
+		            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					response.getWriter().write("{\"status\":\"fail\", \"message\":\"언밴 요청이 실패했습니다..\"}");
+					
+				}
+			}else if(path.equals("/memberList")) {
+				 int page = Integer.parseInt(request.getParameter("page"));
+			        int pageSize = 10;
+
+			        int startRow = (page - 1) * pageSize + 1;
+			        int endRow = page * pageSize;
+
+			        List<ManagerMemberDTO> list = MemberDAO.getInstance().getMemberList(startRow, endRow);
+			        int totalCount = MemberDAO.getInstance().getTotalMemberCount();
+
+			        
+			        
+			        Map<String, Object> result = new HashMap<>();
+			        result.put("members", list);
+			        result.put("totalCount", totalCount);
+
+			        // Gson 으로 JSON 변환
+			        String json = gson.toJson(result);
+
+			        response.setContentType("application/json; charset=UTF-8");
+			        response.getWriter().write(json);
+			        //입력이 들어온 전체 유저의 role을 변경
+			}else if(path.equals("/updateRole")) {
+				
+					String[] ids = request.getParameterValues("ids");
+			        String role =request.getParameter("role");
+			        
+			        System.out.println(ids);
+			        System.out.println(role);
+
+			        ManagerDAO.getInstance().updateMemberRoles(Arrays.asList(ids), role);
+
+			        String json = gson.toJson(Collections.singletonMap("status", "success"));
+			        response.setContentType("application/json; charset=UTF-8");
+			        response.getWriter().write(json);
 			}
+				
+			
+			
 		}catch(Exception e) {
 			
 			e.printStackTrace();

@@ -68,40 +68,36 @@ public class AchievementDAO {
 		
 		
 		public AchievementDTO selectAchievementByID(String achievementId) throws Exception {
-			String sql = "Select * from Achievement where id = ?";
-			try(PreparedStatement pstmt = this.getConnection().prepareStatement(sql)){
-				pstmt.setString(1,achievementId);
-				
-				try(ResultSet rs = pstmt.executeQuery();){
-					AchievementDTO achiev = null;
-					
-					if(rs.next()) {
-						achiev= new AchievementDTO();
-						
-						achiev.setSeq(rs.getInt("seq"));
-						achiev.setId(rs.getString("id"));
-						achiev.setTitle(rs.getString("title"));
-						achiev.setDescription(rs.getString("description"));
-						achiev.setIconUrl(rs.getString("icon_url"));
-						achiev.setGameSeq(rs.getInt("game_seq"));
-						achiev.setPointSeq(rs.getInt("point_seq"));
-						
-					}
-					return achiev;
-					
-					
-				}
-		       
-			}
-			
+		    String sql = "SELECT * FROM Achievement WHERE id = ?";
+		    try (Connection conn = this.getConnection();
+		         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		        pstmt.setString(1, achievementId);
+
+		        try (ResultSet rs = pstmt.executeQuery()) {
+		            AchievementDTO achiev = null;
+		            if (rs.next()) {
+		                achiev = new AchievementDTO();
+		                achiev.setSeq(rs.getInt("seq"));
+		                achiev.setId(rs.getString("id"));
+		                achiev.setTitle(rs.getString("title"));
+		                achiev.setDescription(rs.getString("description"));
+		                achiev.setIconUrl(rs.getString("icon_url"));
+		                achiev.setGameSeq(rs.getInt("game_seq"));
+		                achiev.setPointSeq(rs.getInt("point_seq"));
+		            }
+		            return achiev;
+		        }
+		    }
 		}
+
 		
 		public boolean insertUserAchievement(String userId,int achiev_Seq, Timestamp unlocked_At ) throws Exception {
 			String sql = "INSERT INTO UserAchievement " +
 	                 "(SEQ, USERID, ACHIEV_SEQ, ISEQUIP, UNLOCKED_AT) " +
 	                 "VALUES (USERACH_SEQ.NEXTVAL, ?, ?, default, ?)";
 	    
-	    try (PreparedStatement pstmt = this.getConnection().prepareStatement(sql)) {
+	    try (Connection conn = this.getConnection();
+		         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 	        pstmt.setString(1, userId);
 	        pstmt.setInt(2, achiev_Seq);
 	        pstmt.setTimestamp(3,unlocked_At ); // java.sql.Timestamp

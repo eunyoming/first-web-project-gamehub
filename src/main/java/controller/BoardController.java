@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import commons.Config;
 import dao.BoardDAO;
+import dao.MemberDAO;
 import dao.ReplyDAO;
 import dto.board.BoardDTO;
 import dto.board.PageNaviDTO;
+import dto.member.SimpleUserProfileDTO;
 
 @WebServlet("*.board")
 public class BoardController extends HttpServlet {
@@ -23,6 +25,7 @@ public class BoardController extends HttpServlet {
 		String cmd = request.getRequestURI();
 		BoardDAO board_dao = BoardDAO.getInstance();
 		ReplyDAO reply_dao = ReplyDAO.getInstance();
+		
 
 		try {
 			if(cmd.equals("/list.board")) {
@@ -55,17 +58,51 @@ public class BoardController extends HttpServlet {
 			}else if(cmd.equals("/detail.board")) {
 				
 				// 로그인 정보 가져오기
-				String userId = (String)request.getSession().getAttribute("loginId");
+				String loginId = (String)request.getSession().getAttribute("loginId");
 				
 				// 글 seq 가져오기
 				int seq = Integer.parseInt(request.getParameter("seq"));
 				BoardDTO dto = board_dao.selectBoardsBySeq(seq);
 				
+				
+				//작성자 프로필 용 dto 
+				SimpleUserProfileDTO simpleUserProfileDTO = MemberDAO.getInstance().getSimpleUserProfile(dto.getWriter());
+
 				// request 에 담기
-				request.setAttribute("dto", dto);
+				request.setAttribute("loginId", loginId);
+				request.setAttribute("boardDto", dto);
+				request.setAttribute("writerProfile", simpleUserProfileDTO);
 				
 				request.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(request, response);
+			}else if(cmd.equals("/update.board")) {
+				
+				// 글 seq 가져오기
+				int board_seq = Integer.parseInt(request.getParameter("board_seq"));
+				
+				// 수정 내용 받아오기
+				String title = request.getParameter("title");
+				String contents = request.getParameter("contents");
+				String category = request.getParameter("category");
+				String refgame = request.getParameter("refgame");
+				
+				// 수정 하기
+				int result = board_dao.updateBoardsBySeq(board_seq, title, contents, category, refgame);
+				
+				if(result != 0) {
+					response.sendRedirect("/detail.board?seq=" + board_seq);
+				}else {
+					response.sendRedirect("/error.jsp");
+				}
+				
+			}else if(cmd.equals("delete.board")) {
+				
+				// 글 seq 가져오기
+				int seq = Integer.parseInt(request.getParameter("seq"));
+				
+				
+				
 			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("/error.jsp");

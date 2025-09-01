@@ -149,7 +149,7 @@ public class GameController extends HttpServlet {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
 			}
 
 		} else if (path.equals("/main/record")) { // 상위5등까지 기록한 점수 보기
@@ -187,7 +187,7 @@ public class GameController extends HttpServlet {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameRecordError").forward(request, response);
 			}
 
 			// insertGameRecords
@@ -206,7 +206,7 @@ public class GameController extends HttpServlet {
 				pw.append(g.toJson(gameReviewDTOList));
 			} catch (Exception e) {
 				e.printStackTrace();
-				System.out.println("에러!!");
+				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
 			}
 
 		} else if (path.equals("/info")) {

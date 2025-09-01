@@ -12,8 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jasper.tagplugins.jstl.core.If;
+
+import commons.SessionManager;
 import dao.MemberDAO;
 import dto.member.MemberDTO;
+import dto.member.SimpleUserProfileDTO;
 
 
 @WebServlet("/api/member/*")
@@ -36,24 +40,36 @@ public class MemberController extends HttpServlet {
 
 				System.out.println(userId + ":" + userPassword);
 
-				MemberDTO loginDto = dao.selectMembersByIdAndPW(userId, userPassword);
+				SimpleUserProfileDTO loginDto = dao.login(userId, userPassword);
 
 				// 로그인 성공시
 				if(loginDto != null) {
 					// Session 에 userId 저장
+					
+					if ("Banned".equalsIgnoreCase(loginDto.getCategory())) {
+					        // 로그인 자체 차단
+					        response.sendRedirect("/banned.jsp");
+					        return;
+					  }
+
+					
 					request.getSession().setAttribute("loginId", userId);
-					request.getSession().setAttribute("currentPoint", loginDto.getPoint());
+				
+					request.getSession().setAttribute("simpleProfile", loginDto);
+					request.getSession().setAttribute("loginId", userId);
+					request.getSession().setAttribute("currentPoint", 0);
 
-
-					// index.jsp 로 다시 보내기
+					//세션 메니저에 세션 등록
+					 SessionManager.getInstance().addSession(userId, request.getSession());	
+					
+					 
+					 // index.jsp 로 다시 보내기
 					response.sendRedirect("/");
 
 				}else { // 실패시
 					System.out.println("로그인 실패");
 					response.sendRedirect("/api/member/loginPage");
 				}
-			}else if(path.equals("/joinPage")) {
-				response.sendRedirect("/WEB-INF/views/member/join.jsp");
 			}
 			// 아이디 중복 체크 
 			else if(path.equals("/idCheck")) {
@@ -90,20 +106,42 @@ public class MemberController extends HttpServlet {
 				response.sendRedirect("/api/member/loginPage");
 				}
 			}
+			//로그아웃
 			else if(path.equals("/logout")) {
+				
+				//세션 매니저에서 제거
+				SessionManager.getInstance().removeSession((String) request.getSession().getAttribute("loginId"));
 				request.getSession().invalidate();
 
 				response.sendRedirect("/");
 			}else if(path.equals("/mypage")) {
 
-				String userID = (String) request.getSession().getAttribute("loginId");
-				System.out.println("마이페이지 접속:"+userID);
+				
+				String userId = request.getParameter("userId");
+				
+			if(dao.isIdExist(userId)){
+				String loginId = (String) request.getSession().getAttribute("loginId");
+				 String section = request.getParameter("section");
+			        if (section == null || section.isEmpty()) {
+			            section = "collection"; // 기본 탭
+			        }
 
-				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp?userId="+userID).forward(request, response);
+
+			        request.setAttribute("active", section);
+			        request.setAttribute("paramUserId", userId);
+			        request.setAttribute("loginId", loginId );
+
+
+				request.getRequestDispatcher("/WEB-INF/views/mypage/main.jsp").forward(request, response);
+			}else {
+				//존재하지 않는 id 페이지로의 요청
+				response.sendRedirect("/error/noneIdRequest");
+			}
+				
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
-			response.sendRedirect("/error.jsp");
+			response.sendRedirect("/error");
 		}
 
 	}

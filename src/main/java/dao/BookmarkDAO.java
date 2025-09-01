@@ -117,6 +117,7 @@ public class BookmarkDAO {
 					String writer = result.getString("writer");
 					String contents = result.getString("contents");
 					int board_seq = result.getInt("board_seq");
+
 					Timestamp timestamp =result.getTimestamp("created_at");
 
 					ReplyDTO dto = new ReplyDTO(seq,writer,contents,board_seq,timestamp);

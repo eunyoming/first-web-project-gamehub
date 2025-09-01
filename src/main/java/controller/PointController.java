@@ -8,35 +8,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class PointController
- */
-@WebServlet("/PointController")
+import dao.MemberDAO;
+
+@WebServlet("/api/point/*")
 public class PointController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public PointController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
+		String path = request.getPathInfo(); 
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
 
-}
+		try {
+			if(path.equals("/pointPage")) {
+				
+				
+				
+				request.getRequestDispatcher("/WEB-INF/views/store/selling.jsp").forward(request, response);
+			}
+		}catch(Exception e) {
+				e.printStackTrace();
+				response.sendRedirect("/error");
+			}
+		}
+		protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+			doGet(request, response);
+		}
+
+	}

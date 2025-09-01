@@ -35,7 +35,7 @@
 						<li class="nav-item"><a class="nav-link"
 							href="/api/game/main?game_seq=1">Game</a></li>
 						<li class="nav-item"><a class="nav-link" href="/list.board">Community</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Store</a></li>
+						<li class="nav-item"><a class="nav-link" href="/api/point/pointPage">Store</a></li>
 					</ul>
 					<c:choose>
 						<c:when test="${loginId == null }">

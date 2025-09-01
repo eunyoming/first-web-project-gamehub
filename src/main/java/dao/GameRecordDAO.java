@@ -69,7 +69,7 @@ public class GameRecordDAO {
 			pstat.setInt(2,dto.getGame_seq());
 			pstat.setInt(3,dto.getGameScore());
 			pstat.setTimestamp(4,dto.getGameStartTime());
-			pstat.setTimestamp(5,dto.getGameStartTime());
+			pstat.setTimestamp(5,dto.getGameEndTime());
 			int result = pstat.executeUpdate();
 			return result;
 		}

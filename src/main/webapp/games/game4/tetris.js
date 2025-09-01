@@ -174,6 +174,8 @@ class tetris extends Phaser.Scene {
 
     init() {
         this.unlockedAchievements = new Set();
+        this.startTimeStamp = Date.now();
+
     }
 
 
@@ -415,7 +417,7 @@ class tetris extends Phaser.Scene {
     }
     displayEndGameMessage() {
 
-        this.scene.start("Gameover", { score: score, level: level, lines: lines });
+        this.scene.start("Gameover", { score: score, level: level, lines: lines, startTime : this.startTimeStamp, endTime: Date.now() });
 
         // finalScore.innerText = score;
 
@@ -468,6 +470,9 @@ class tetris extends Phaser.Scene {
         else if (rotationCount == 50) {
             this.unlockAchievement("TETRIS_ROTATION_MASTER2");
         }
+        else if (rotationCount == 100) {
+            this.unlockAchievement("TETRIS_ROTATION_MASTER3");
+        }
     }
     isRotationValid(type, rotationState) {
         let rotationValid = true;
@@ -493,6 +498,9 @@ class tetris extends Phaser.Scene {
         return rotationValid;
     }
     update() {
+       
+
+
         if (gameOver) return;
         this.moveCounter++;
         if (this.currentTetrimino && this.moveCounter >= this.moveInterval) {
@@ -718,4 +726,6 @@ class tetris extends Phaser.Scene {
         });
 
     }
+
+    
 }

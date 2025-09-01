@@ -8,14 +8,41 @@ class Gameover extends Phaser.Scene {
         this.score = data.score;
         this.level = data.level;
         this.lines = data.lines;
+        this.startTime = data.startTime;
+        this.endTime = data.endTime;
     }
 
     preload() {
-        
-        this.load.image('gameoverBackground', IMG_PATH+'assets/gameover.png'); // 경로는 프로젝트에 맞게
+
+        this.load.image('gameoverBackground', IMG_PATH + 'assets/gameover.png'); // 경로는 프로젝트에 맞게
     }
 
     create() {
+
+        const payload = {
+            userId: loginId,
+            game_seq: parseInt(new URLSearchParams(window.location.search).get("game_seq")),
+            gameScore: this.score,
+            gameStartTime: Number(this.startTime),
+            gameEndTime: Number(this.endTime)
+        };
+
+        console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
+
+        $.ajax({
+            url: "/api/game/recordInsert",
+            contentType: "application/json",
+            type: "post",
+            data: JSON.stringify(payload)
+
+        }).done(function (resp) {
+
+            console.log(resp);
+
+        });
+
+    
+
         let bg = this.add.image(
             this.cameras.main.width / 2,
             this.cameras.main.height / 2,
@@ -87,7 +114,7 @@ class Gameover extends Phaser.Scene {
         // 사용 예
         this.restartButton = createButton(this.cameras.main.width / 2 - 100, this.cameras.main.height / 2 + 203, "Restart", () => {
             this.scene.start("tetris");
-            
+
         });
         this.mainMenuButton = createButton(this.cameras.main.width / 2 + 100, this.cameras.main.height / 2 + 203, "Main Menu", () => {
             this.scene.start("GameIntro");

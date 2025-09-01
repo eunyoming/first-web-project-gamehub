@@ -70,8 +70,10 @@ request.setAttribute("pageTitle", "메인페이지");
 }
 
 .strips__strip:nth-child(4) .strip__content {
-	background: linear-gradient(to right, var(--gray-color),
-		var(--accent-color));
+	background-image: url("/games/game4/assets/tetrisSceneBackground1.png");
+	background-size: cover;
+  background-position: center;
+	
 	transform: translate3d(0, 100%, 0);
 }
 
@@ -384,17 +386,17 @@ h2 {
 	</article>
 	<article class="strips__strip">
 		<div class="strip__content">
-			<h1 class="strip__title">게임4</h1>
+			<h1 class="strip__title">테트리스</h1>
 			<div class="strip__inner-text">
 			<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임4</h2>
+						<h2>테트리스</h2>
 						<p>게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
-						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
+						<video src="/games/game4/thumbnails/tetrisGame.mp4" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
-							<a href="/api/game/main?game_seq=1"><button
+							<a href="/api/game/main?game_seq=4"><button
 									class="btn btn-navy-main strip__game">게임하러 가기</button></a>
 							<button class="btn btn-navy-main strip__close btn">close</button>
 						</div>

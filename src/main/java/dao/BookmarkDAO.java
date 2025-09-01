@@ -100,7 +100,7 @@ public class BookmarkDAO {
 	}
 
 	public List<ReplyDTO> selectReplysByWriter(String userId) throws Exception {
-		String sql = "select * from replys where Writer = ?";
+		String sql = "select * from replies where Writer = ?";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )

@@ -11,6 +11,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import dto.game.GameRecentDTO;
 import dto.game.GameRecordDTO;
 
 public class GameRecordDAO {
@@ -59,6 +60,55 @@ public class GameRecordDAO {
 		
 		
 	}
+	
+		 public List<GameRecentDTO> selectGameRecordsByLoginId(String loginId)throws Exception{
+			 String sql = "SELECT * FROM (SELECT  g.title AS title, g.url AS gameIcon,\r\n"
+			 		+ "    FLOOR(\r\n"
+			 		+ "      (\r\n"
+			 		+ "        SUM(EXTRACT(SECOND FROM gr.gameEndTime)) +\r\n"
+			 		+ "        SUM(EXTRACT(MINUTE FROM gr.gameEndTime)) * 60 +\r\n"
+			 		+ "        SUM(EXTRACT(HOUR FROM gr.gameEndTime)) * 3600 +\r\n"
+			 		+ "        SUM(EXTRACT(DAY FROM gr.gameEndTime)) * 86400\r\n"
+			 		+ "      ) -\r\n"
+			 		+ "      (\r\n"
+			 		+ "        SUM(EXTRACT(SECOND FROM gr.gameStartTime)) +\r\n"
+			 		+ "        SUM(EXTRACT(MINUTE FROM gr.gameStartTime)) * 60 +\r\n"
+			 		+ "        SUM(EXTRACT(HOUR FROM gr.gameStartTime)) * 3600 +\r\n"
+			 		+ "        SUM(EXTRACT(DAY FROM gr.gameStartTime)) * 86400\r\n"
+			 		+ "      )\r\n"
+			 		+ "    ) AS totalplaytime,\r\n"
+			 		+ "    -- 마지막 플레이 날짜 (MM월 DD일 형식)\r\n"
+			 		+ "    TO_CHAR(MAX(gr.gameEndTime), 'MM\"월\" DD\"일\"') AS recentPlayedDate\r\n"
+			 		+ "  FROM gameRecords gr\r\n"
+			 		+ "  JOIN games g ON gr.game_seq = g.seq\r\n"
+			 		+ "  WHERE gr.userId = ?\r\n"
+			 		+ "  GROUP BY g.seq, g.title, g.url\r\n"
+			 		+ "  ORDER BY MAX(gr.gameEndTime) DESC\r\n"
+			 		+ ")\r\n"
+			 		+ "WHERE ROWNUM <= 3";
+			 try(Connection con = this.getConnection(); PreparedStatement pstat = con.prepareStatement(sql)){
+					pstat.setString(1, loginId);
+					try(ResultSet rs = pstat.executeQuery()){
+						List<GameRecentDTO> list =  new ArrayList<>();
+						while(rs.next()) {
+							
+							String title = rs.getString("title");
+							String url = rs.getString("url");
+							String totalplaytime = rs.getString("totalplaytime");
+							String recentPlayedDate = rs.getString("recentPlayedDate");
+							
+							
+							GameRecentDTO gameRecentDTO = new GameRecentDTO(title,url,totalplaytime,recentPlayedDate);
+							list.add(gameRecentDTO);
+							//game_seq , userId, gameScore ,rank
+						}
+						
+						return list;
+						
+					}
+				}
+			 
+		 }
 	
 	
 	

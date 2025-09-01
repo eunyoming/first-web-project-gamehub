@@ -317,7 +317,7 @@ button {
 		    let idChecked = false;
 
 		    // 정규식
-		    const regex = {
+		    let regex = {
 		        id: /^(?=.*[a-z])(?=.*\d)[a-z0-9]{4,12}$/,
 		        pw: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{7,15}$/,
 		        name: /^[가-힣]{1,6}$/,
@@ -325,7 +325,7 @@ button {
 		        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 		    };
 
-		    const regexMessage = {
+		    let regexMessage = {
 		        id: "소문자+숫자 포함, 4~12자 이하",
 		        pw: "영문자+숫자+특수문자 포함, 7~15자 이하",
 		        pwCheck: "비밀번호를 다시 입력해주세요",
@@ -334,7 +334,7 @@ button {
 		        email: "이메일 형식으로 입력해주세요 ",
 		    };
 
-		    const fields = ["id", "pw", "pwCheck", "name", "phone", "email"];
+		    let fields = ["id", "pw", "pwCheck", "name", "phone", "email"];
 
 		    // 공통 메시지 출력 함수
 		    function showMessage(fieldId, type, message) {

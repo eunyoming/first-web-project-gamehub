@@ -207,6 +207,24 @@ public class ReplyDAO {
 	    }
 	    return "";
 	}
-
+	
+	// replySeq로 board_seq 얻는 함수
+	public int getBoardSeqByReplySeq(int replySeq) throws Exception {
+	    String sql = "select board_seq from replies where seq = ?";
+	    
+	    try (Connection con = this.getConnection();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+	        
+	        ps.setInt(1, replySeq);
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getInt("board_seq");
+	            }
+	        }
+	    }
+	    // 못 찾았을 경우
+	    return -1;
+	}
 
 }

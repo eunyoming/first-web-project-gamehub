@@ -5,297 +5,274 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!-- JSTL Functions 라이브러리 -->
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-
 <!-- header -->
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- bootstrap icon -->
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
 
 <!-- css -->
 <link href="/css/detail.css" rel="stylesheet" />
 
 <!-- fontawesome icon -->
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
-	integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
-	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+    integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- kakao -->
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js"
-	integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
-	crossorigin="anonymous"></script>
+    integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
+    crossorigin="anonymous"></script>
 <!-- kakao key -->
 <script>
-  Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력
+    Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력
 </script>
 
 
 <div class="container g-0">
-	<!-- 상단 헤더 -->
-	<div class="row header-board g-0">
-		<!-- 뒤로가기 -->
-		<div class="col-1">
-			<a href="javascript:history.back();" class="back-link"> <i
-				class="bi bi-arrow-left"></i>
-			</a>
-		</div>
-		<div class="col-3" id="board_category_refgame"></div>
-		<div class="col-4" id="board_title"></div>
-		<div class="col-3" id="board_created_at">
-			<fmt:formatDate value="${boardDto.created_at}"
-				pattern="yyyy-MM-dd HH:mm:ss" />
-		</div>
-		<div class="col-1" id="board_viewCount"></div>
-	</div>
-	<!-- 상단 작성자 -->
-	<div class="row header-writer g-0">
-		<div class="col-8 writer">
-			<div class="profile">
-				<!-- 프로필 이미지 -->
-				<img id="writer_profile_img" class="rounded-circle me-2" width="40"
-					height="40">
-				<!-- 아이디와 칭호 -->
-				<div class="d-none d-md-block text-end">
-					<div class="fw-bold text-purple" id="writer_userId"></div>
-					<div class="text-muted" id="writer_achiev"></div>
-				</div>
-			</div>
-		</div>
-		<div class="col-4 header-btns">
-			<div class="left-btn">
-				<button class="btn" id="share_btn" data-bs-toggle="modal"
-					data-bs-target="#shareModal">
-					<i class="bi bi-share"></i> 공유하기
-				</button>
+    <!-- 상단 헤더 -->
+    <div class="row header-board g-0">
+        <!-- 뒤로가기 -->
+        <div class="col-1">
+            <a href="javascript:history.back();" class="back-link"> <i class="bi bi-arrow-left"></i>
+            </a>
+        </div>
+        <div class="col-3" id="board_category_refgame"></div>
+        <div class="col-4" id="board_title"></div>
+        <div class="col-3" id="board_created_at">
+            <fmt:formatDate value="${boardDto.created_at}" pattern="yyyy-MM-dd HH:mm:ss" />
+        </div>
+        <div class="col-1" id="board_viewCount"></div>
+    </div>
+    <!-- 상단 작성자 -->
+    <div class="row header-writer g-0">
+        <div class="col-8 writer">
+            <div class="profile">
+                <!-- 프로필 이미지 -->
+                <img id="writer_profile_img" class="rounded-circle me-2" width="40" height="40">
+                <!-- 아이디와 칭호 -->
+                <div class="d-none d-md-block text-end">
+                    <div class="fw-bold text-purple" id="writer_userId"></div>
+                    <div class="text-muted" id="writer_achiev"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 header-btns">
+            <div class="left-btn">
+                <button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">
+                    <i class="bi bi-share"></i> 공유하기
+                </button>
 
-			</div>
-			<div class="right-btn">
-				<button class="btn" id="report_btn" data-bs-toggle="modal"
-					data-bs-target="#boardModal">
-					<img src="/asset/img/siren.png"> 신고하기
-				</button>
-			</div>
-		</div>
-	</div>
-	<!-- 글 내용 -->
-	<div class="row contents">
-		<div
-			class="col-12 content d-flex justify-content-between align-items-center"
-			id="board_content"></div>
-		<!-- 버튼들 -->
-		<div
-			class="col-12 board_btns d-flex justify-content-center align-items-center">
-			<%-- <c:choose>
-				<c:when test="${loginId != null}">
-					<div class="d-flex justify-content-end gap-2">
-						<div>
-							<button class="btn btn-outline-red-main" id="like_btn">
-								<i class="bi bi-heart"></i> 추천수
-							</button>
-						</div>
-						<div>
-							<button class="btn btn-outline-red-main" id="board-update_btn">수정</button>
-							<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>
-						</div>
-					</div>
-				</c:when>
-				<c:otherwise>
-					<div class="d-flex justify-content-center flex-grow-1 gap-2">
-						<button class="btn btn-outline-red-main" id="like_btn">
-							<i class="bi bi-heart"></i> 추천수
-						</button>
-						<button class="btn btn-outline-red-main" id="bookmark_btn">
-							<i class="bi bi-bookmark"></i> 북마크
-						</button>
-					</div>
-				</c:otherwise>
-			</c:choose> --%>
-		</div>
-	</div>
+            </div>
+            <div class="right-btn">
+                <button class="btn" id="report_btn" data-bs-toggle="modal" data-bs-target="#boardModal">
+                    <img src="/asset/img/siren.png"> 신고하기
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- 글 내용 -->
+    <div class="row contents">
+        <div class="col-12 content d-flex justify-content-between align-items-center" id="board_content"></div>
+        <!-- 버튼들 -->
+        <div class="col-12 board_btns d-flex justify-content-center align-items-center">
+            <%-- <c:choose>
+                <c:when test="${loginId != null}">
+                    <div class="d-flex justify-content-end gap-2">
+                        <div>
+                            <button class="btn btn-outline-red-main" id="like_btn">
+                                <i class="bi bi-heart"></i> 추천수
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-red-main" id="board-update_btn">수정</button>
+                            <button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>
+                        </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="d-flex justify-content-center flex-grow-1 gap-2">
+                        <button class="btn btn-outline-red-main" id="like_btn">
+                            <i class="bi bi-heart"></i> 추천수
+                        </button>
+                        <button class="btn btn-outline-red-main" id="bookmark_btn">
+                            <i class="bi bi-bookmark"></i> 북마크
+                        </button>
+                    </div>
+                </c:otherwise>
+                </c:choose> --%>
+        </div>
+    </div>
 
-	<!-- 댓글 컨테이너 -->
-	<div class="relys-container">
-		<!-- 댓글 작성 -->
-		<div class="replys-box">
-			<!-- 댓글 header -->
-			<div class="row replys-header g-0">
-				<c:choose>
-					<c:when test="${loginId == null}">
-						<div class="col-8 reply-writer fw-bold text-navy">비회원</div>
-					</c:when>
-					<c:otherwise>
-						<div class="col-8 reply-writer fw-bold text-navy">${loginId}</div>
-					</c:otherwise>
-				</c:choose>
-			</div>
-			<!-- 댓글 contents -->
-			<div class="row replys-contents g-0">
-				<!-- 댓글 왼쪽 content -->
-				<div class="col-8 reply-left_content" id="replyInput"
-					contenteditable="${loginId != null}">${loginId != null ? "댓글을 입력하세요" : "로그인 후 이용해주세요"}
-				</div>
-				<!-- 댓글 오른쪽 content 버튼들 -->
-				<div class="col-4 reply-right-content">
-					<div class="reply-footer_btns">
-						<button class="btn btn-outline-red-main" id="reply-input_btn">
-							<i class="bi bi-heart"></i> 등록
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+    <!-- 댓글 컨테이너 -->
+    <div class="replies-container">
+        <!-- 댓글 작성 -->
+        <div class="reply-box">
+            <!-- 댓글 header -->
+            <div class="row reply-header g-0">
+                <c:choose>
+                    <c:when test="${loginId == null}">
+                        <div class="col-8 reply-writer fw-bold text-navy">비회원</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="col-8 reply-writer fw-bold text-navy">${loginId}</div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+            <!-- 댓글 contents -->
+            <div class="row reply-contents g-0">
+                <!-- 댓글 왼쪽 content -->
+                <div class="col-8 reply-left_content" id="replyInput" contenteditable="${loginId != null}">${loginId !=
+                    null ? "댓글을 입력하세요" : "로그인 후
+                    이용해주세요"}
+                </div>
+                <!-- 댓글 오른쪽 content 버튼들 -->
+                <div class="col-4 reply-right-content">
+                    <div class="reply-footer_btns">
+                        <button class="btn btn-outline-red-main" id="reply-input_btn">
+                            등록
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-		<!-- 댓글 출력 -->
-		<div id="replyListArea"></div>
-	</div>
-	<!-- replys-container -->
+        <!-- 댓글 출력 -->
+        <div id="replyListArea"></div>
+    </div>
+    <!-- replies-container -->
 
 </div>
 <!-- container -->
 
 <!-- board Modal -->
-<div class="modal fade" id="boardModal" tabindex="-1"
-	aria-labelledby="boardModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title fw-bold" id="boardModalLabel">신고</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
-					aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form id="reportFrm">
-					<p class="fw-bold mb-3">신고 사유를 선택해주세요:</p>
+<div class="modal fade" id="boardModal" tabindex="-1" aria-labelledby="boardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="boardModalLabel">신고</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportFrm">
+                    <p class="fw-bold mb-3">신고 사유를 선택해주세요:</p>
 
-					<!-- 기본 신고 사유들 -->
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason1" value="괴롭힘 또는 폭력"> <label
-							class="form-check-label" for="reason1">괴롭힘 또는 폭력</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason2" value="유해하거나 위험한 행위"> <label
-							class="form-check-label" for="reason2">유해하거나 위험한 행위</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason3" value="정신 건강에 해로운 콘텐츠"> <label
-							class="form-check-label" for="reason3">정신 건강에 해로운 콘텐츠</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason4" value="잘못된 정보"> <label
-							class="form-check-label" for="reason4">잘못된 정보</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason5" value="아동 학대"> <label
-							class="form-check-label" for="reason5">아동 학대</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason6" value="테러 조장"> <label
-							class="form-check-label" for="reason6">테러 조장</label>
-					</div>
-					<div class="form-check">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason7" value="스팸 또는 혼동을 야기하는 콘텐츠"> <label
-							class="form-check-label" for="reason7">스팸 또는 혼동을 야기하는 콘텐츠</label>
-					</div>
-					<div class="form-check mb-2">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reason8" value="법적 문제"> <label
-							class="form-check-label" for="reason8">법적 문제</label>
-					</div>
+                    <!-- 기본 신고 사유들 -->
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason1" value="괴롭힘 또는 폭력">
+                        <label class="form-check-label" for="reason1">괴롭힘 또는
+                            폭력</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason2"
+                            value="유해하거나 위험한 행위"> <label class="form-check-label" for="reason2">유해하거나
+                            위험한 행위</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason3"
+                            value="정신 건강에 해로운 콘텐츠"> <label class="form-check-label" for="reason3">정신 건강에
+                            해로운 콘텐츠</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason4" value="잘못된 정보">
+                        <label class="form-check-label" for="reason4">잘못된 정보</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason5" value="아동 학대">
+                        <label class="form-check-label" for="reason5">아동 학대</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason6" value="테러 조장">
+                        <label class="form-check-label" for="reason6">테러 조장</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason7"
+                            value="스팸 또는 혼동을 야기하는 콘텐츠"> <label class="form-check-label" for="reason7">스팸
+                            또는 혼동을 야기하는 콘텐츠</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reason8" value="법적 문제">
+                        <label class="form-check-label" for="reason8">법적 문제</label>
+                    </div>
 
-					<!-- 기타 항목 -->
-					<div class="form-check mb-2">
-						<input class="form-check-input" type="radio" name="reportReason"
-							id="reasonEtc" value="기타"> <label
-							class="form-check-label" for="reasonEtc">기타</label>
-					</div>
+                    <!-- 기타 항목 -->
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="reportReason" id="reasonEtc" value="기타">
+                        <label class="form-check-label" for="reasonEtc">기타</label>
+                    </div>
 
-					<!-- 기타 입력창 (초기에는 숨김) -->
-					<div class="mb-3" id="etcDetailBox" style="display: none;">
-						<label for="etcDetail" class="form-label">세부 내용을 입력해주세요
-							(선택사항)</label>
-						<textarea class="form-control" id="etcDetail" name="etcDetail"
-							rows="3" placeholder="세부정보 추가..."></textarea>
-						<small class="text-muted">개인 정보나 질문은 포함하지 마세요.</small>
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-red-main" id="modal-report_btn">신고</button>
-			</div>
-		</div>
-	</div>
+                    <!-- 기타 입력창 (초기에는 숨김) -->
+                    <div class="mb-3" id="etcDetailBox" style="display: none;">
+                        <label for="etcDetail" class="form-label">세부 내용을 입력해주세요
+                            (선택사항)</label>
+                        <textarea class="form-control" id="etcDetail" name="etcDetail" rows="3"
+                            placeholder="세부정보 추가..."></textarea>
+                        <small class="text-muted">개인 정보나 질문은 포함하지 마세요.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-red-main" id="modal-report_btn">신고</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- 공유 모달 -->
-<div class="modal fade" id="shareModal" tabindex="-1"
-	aria-labelledby="shareModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
+<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-			<!-- 모달 헤더 -->
-			<div class="modal-header">
-				<h5 class="modal-title" id="shareModalLabel">공유하기</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal"
-					aria-label="닫기"></button>
-			</div>
+            <!-- 모달 헤더 -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="shareModalLabel">공유하기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+            </div>
 
-			<!-- 모달 바디 -->
-			<div class="modal-body">
-				<!-- 다른 플랫폼으로 공유하기 -->
-				<h6 class="mt-4">공유</h6>
-				<div class="d-flex flex-wrap gap-2">
-					<!-- 카카오톡 -->
-					<a id="kakaotalk-sharing-btn" href="javascript:shareMessage()">
-						<img
-						src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-						alt="카카오톡 공유 보내기 버튼" width="36" />
-					</a>
-					<!-- 페이스북 -->
-					<a id="facebook-sharing-btn" href="/" target="_blank"
-						aria-label="Facebook 공유"> <img
-						src="/asset/img/facebook-icon.png" alt="Facebook" width="36">
-					</a>
-					<!-- X -->
-					<a id="x-sharing-btn" href="/" target="_blank"> <img
-						src="/asset/img/x-icon.png" alt="Facebook" width="36">
-					</a>
-				</div>
+            <!-- 모달 바디 -->
+            <div class="modal-body">
+                <!-- 다른 플랫폼으로 공유하기 -->
+                <h6 class="mt-4">공유</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <!-- 카카오톡 -->
+                    <a id="kakaotalk-sharing-btn" href="javascript:shareMessage()">
+                        <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+                            alt="카카오톡 공유 보내기 버튼" width="36" />
+                    </a>
+                    <!-- 페이스북 -->
+                    <a id="facebook-sharing-btn" href="/" target="_blank" aria-label="Facebook 공유"> <img
+                            src="/asset/img/facebook-icon.png" alt="Facebook" width="36">
+                    </a>
+                    <!-- X -->
+                    <a id="x-sharing-btn" href="/" target="_blank"> <img src="/asset/img/x-icon.png" alt="Facebook"
+                            width="36">
+                    </a>
+                </div>
 
-				<div class="mt-4">
-					<input type="text" class="form-control" id="shareLink" value=""
-						readonly>
-					<button class="btn btn-primary mt-2 w-100" onclick="copyLink()">복사</button>
-				</div>
-			</div>
+                <div class="mt-4">
+                    <input type="text" class="form-control" id="shareLink" value="" readonly>
+                    <button class="btn btn-primary mt-2 w-100" onclick="copyLink()">복사</button>
+                </div>
+            </div>
 
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 
 <!-- Toast 메시지 -->
 <div class="position-fixed bottom-0 start-0 p-3" style="z-index: 1055">
-	<div id="copyToast"
-		class="toast align-items-center text-white bg-success border-0"
-		role="alert" aria-live="assertive" aria-atomic="true">
-		<div class="d-flex">
-			<div class="toast-body">링크가 복사되었습니다!</div>
-			<button type="button" class="btn-close btn-close-white me-2 m-auto"
-				data-bs-dismiss="toast" aria-label="닫기"></button>
-		</div>
-	</div>
+    <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">링크가 복사되었습니다!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="닫기"></button>
+        </div>
+    </div>
 </div>
 
 <script>
-    let loginId = "";
+    let loginId = '${loginId}';
     console.log("loginId : " + loginId);
     //문서(페이지)가 로딩 완료 됐을 때 이 코드를 실행하겠다.
     $(function () {
@@ -310,8 +287,6 @@
             dataType: "json"
         }).done(function (resp) { // board detail 값 채워주는 function
             loginId = resp.loginId;
-            console.log(loginId);
-            console.log("응답:", resp);
             // 게시글 정보
             $("#board_category_refgame").text("[ " + resp.boardDto.category + " ] | [ " + resp.boardDto.refgame + " ]");
             $("#board_title").text(resp.boardDto.title);
@@ -341,12 +316,12 @@
                 let buttons = "";
 
                 if (isWriter) {
-                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board.seq + '">';
+                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
                     buttons += '<i class="bi bi-heart"></i> 추천수</button>';
                     buttons += '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>';
                     buttons += '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>';
                 } else {
-                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board.seq + '">';
+                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
                     buttons += '<i class="bi bi-heart"></i> 추천수</button>';
                     buttons += '<button class="btn btn-outline-red-main" id="bookmark_btn">';
                     buttons += '<i class="bi bi-bookmark"></i> 북마크</button>';
@@ -356,18 +331,31 @@
             }
             // 댓글 렌더링
             renderReplies(resp.repliesList);
+            console.log($('.subReply-input_btn').length + " : " + $('.toggle-replies-btn').length);
         });
         // ----------------- 댓글
-        // 답글 버튼 클릭 시
-        $(document).on("click", ".reply-reply_btn", function () {
-            const parent_seq = $(this).data("parent-seq");
-            $("#reply-input_btn").data("parent-seq", parent_seq);
+        // 부모 댓글 입력창 placeholder 효과
+        $(document).on("focus", "#replyInput", function () {
+            if ($(this).text().trim() === "댓글을 입력하세요") {
+                $(this).text("");
+            }
         });
 
-        // 댓글 등록 버튼 클릭 시
+        $(document).on("blur", "#replyInput", function () {
+            if ($(this).text().trim() === "") {
+                $(this).text("댓글을 입력하세요");
+            }
+        });
+        // 부모 댓글 등록 버튼 클릭 시
         $(document).on("click", "#reply-input_btn", function () {
             const parent_seq = $(this).data("parent-seq") || 0;
             const reply_content = $("#replyInput").text().trim();
+
+            // 내용이 비어있거나 안내 문구 그대로면 막기
+            if (!reply_content || reply_content === "댓글을 입력하세요" || reply_content === "로그인 후 이용해주세요") {
+                alert("내용을 입력하세요!");
+                return;
+            }
 
             $.ajax({
                 url: "/insert.reply",
@@ -380,15 +368,206 @@
                     parent_seq: parent_seq
                 }
             }).done(function (resp) {
-                if (resp.result === "ok") {
-                    alert("댓글 등록 완료!");
+                if (resp.result != 0) {
                     renderReplies(resp.replies); // 댓글 다시 렌더링
-                    $("#replyInput").text(""); // 입력창 초기화
+                    $("#replyInput").text("댓글을 입력하세요"); // 입력창 초기화 + 안내문구 복원
                 } else {
-                    alert("댓글 등록 실패: " + resp.message);
+                    alert("댓글 등록 실패");
                 }
+            }).fail(function () {
+                alert("서버와 통신 중 오류가 발생했습니다.");
             });
         });
+
+
+     // 답글 더보기/접기 토글 이벤트
+        $(document).on('click', '.reply-more-btn', function () {
+            let $btn = $(this);
+            let targetId = $btn.data('target');
+            let count = parseInt($btn.data('count'), 10) || 0;
+            let expanded = $btn.attr('data-expanded') === 'true';
+            let $target = $('#' + targetId);
+
+            if (expanded) {
+                // 접기
+                $target.slideUp(150);
+                $btn.attr('data-expanded', 'false');
+                $btn.html('<span class="icon">▼</span> 답글 ' + count + '개 더보기');
+            } else {
+                // 펼치기
+                $target.slideDown(150);
+                $btn.attr('data-expanded', 'true');
+                $btn.html('<span class="icon">▲</span> 답글 접기');
+            }
+        });
+
+
+        // 답글 버튼 클릭시
+        $(document).on("click", ".subReply-input_btn", function () {
+            const parentSeq = $(this).data("parent-seq");
+            const parentWriter = $(this).data("writer");
+
+            // 답글 입력창 띄우기
+            showreplyInputDiv(this, parentSeq, parentWriter);
+        });
+
+        // 답글 입력창 포커스 / 입력 처리
+        $(document).on("focus", "#replyInputDiv", function () {
+            const text = $(this).text().trim();
+            if (text === "답글을 입력하세요" || text === "로그인 후 이용해주세요") {
+                $(this).text(""); // 안내 문구 제거
+            }
+        });
+
+        // 포커스가 빠졌을 때 아무것도 입력 안 하면 다시 안내 문구 복원
+        $(document).on("blur", "#replyInputDiv", function () {
+            const text = $(this).text().trim();
+            if (text === "") {
+                const isLoggedIn = loginId && loginId.trim() !== "";
+                $(this).text(isLoggedIn ? "답글을 입력하세요" : "로그인 후 이용해주세요");
+            }
+        });
+
+        // 답글 - 등록 버튼 클릭
+        $(document).on("click", ".reply-submit_btn", function () {
+            const parent_seq = $(this).data("parent-seq"); // 부모 댓글 번호
+            const reply_content = $("#replyInputDiv").text().trim();
+
+            if (!reply_content || reply_content === "답글을 입력하세요" || reply_content === "로그인 후 이용해주세요") {
+                alert("내용을 입력하세요!");
+                return;
+            }
+
+            $.ajax({
+                url: "/insert.reply",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    writer: loginId,
+                    contents: reply_content,
+                    board_seq: board_seq,
+                    parent_seq: parent_seq
+                }
+            }).done(function (resp) {
+                if (resp.result != 0) {
+                    renderReplies(resp.replies);  // 댓글 새로 렌더링
+                    $(".subReplyBox").remove(); // 입력창 닫기
+                } else {
+                    alert("댓글 등록 실패");
+                }
+            }).fail(function () {
+                alert("서버와 통신 중 오류가 발생했습니다.");
+            });
+        });
+
+
+
+        // 답글 - 취소 버튼 클릭
+        $(document).on("click", ".reply-cancel_btn", function () {
+            $(this).closest(".subReplyBox").remove();
+        });
+
+
+        // 댓글 추천 버튼 클릭 시
+        $(document).on("click", ".reply-like_btn", function () {
+            const reply_seq = $(this).data("reply-seq");
+            const icon = $(this).find("i");
+
+            icon.toggleClass("bi-heart bi-heart-fill");
+            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c !important" : "");
+
+            // 서버에 추천 요청 보내기
+            $.ajax({
+                url: "/like.reply",
+                method: "POST",
+                dataType: "json",
+                data: { reply_seq: reply_seq }
+            }).done(function (resp) {
+                console.log("추천 완료:", resp);
+            });
+        });
+        
+     // 댓글 삭제 버튼 클릭
+        $(document).on("click", ".reply-delete_btn", function () {
+            const reply_seq = $(this).data("reply-seq");
+
+            if (!confirm("정말 삭제하시겠습니까?")) return;
+
+            $.ajax({
+                url: "/delete.reply",
+                method: "POST",
+                dataType: "json",
+                data: { reply_seq: reply_seq }
+            }).done(function (resp) {
+                if (resp.result != 0) {
+                    renderReplies(resp.replies); // 댓글 새로 렌더링
+                } else {
+                    alert("댓글 삭제 실패");
+                }
+            }).fail(function () {
+                alert("서버와 통신 중 오류가 발생했습니다.");
+            });
+        });
+
+     // 수정 버튼 클릭
+        $(document).on("click", ".reply-update_btn", function () {
+            const replyBox = $(this).closest(".reply-box");
+            const reply_seq = $(this).data("reply-seq");
+            const replyContentDiv = replyBox.find(".reply-left_content");
+            const originalText = replyContentDiv.text().trim();
+
+            // 이미 수정 모드면 무시
+            if (replyBox.find(".reply-save_btn").length > 0) return;
+
+            // 수정 가능하게 변경
+            replyContentDiv.attr("contenteditable", "true").focus();
+
+            // 버튼 영역 교체
+            let btnArea = replyBox.find(".reply-header_btns");
+            btnArea.data("backup", btnArea.html()); // 원래 버튼 백업
+            btnArea.html(
+                '<button class="btn btn-outline-red-main reply-save_btn" data-reply-seq="' + reply_seq + '">저장</button>' +
+                '<button class="btn btn-outline-secondary reply-cancelEdit_btn" data-reply-seq="' + reply_seq + '">취소</button>'
+            );
+
+            // 취소 버튼 누르면 원상 복구
+            $(document).on("click", ".reply-cancelEdit_btn", function () {
+                replyContentDiv.attr("contenteditable", "false").text(originalText);
+                btnArea.html(btnArea.data("backup"));
+            });
+        });
+
+        // 저장 버튼 클릭 → update.reply 요청
+        $(document).on("click", ".reply-save_btn", function () {
+            const replyBox = $(this).closest(".reply-box");
+            const reply_seq = $(this).data("reply-seq");
+            const replyContentDiv = replyBox.find(".reply-left_content");
+            const newText = replyContentDiv.text().trim();
+
+            if (!newText) {
+                alert("내용을 입력하세요!");
+                return;
+            }
+
+            $.ajax({
+                url: "/update.reply",
+                method: "POST",
+                dataType: "json",
+                data: {
+                    reply_seq: reply_seq,
+                    contents: newText
+                }
+            }).done(function (resp) {
+                if (resp.result != 0) {
+                    renderReplies(resp.replies); // 댓글 다시 렌더링
+                } else {
+                    alert("댓글 수정 실패");
+                }
+            }).fail(function () {
+                alert("서버와 통신 중 오류가 발생했습니다.");
+            });
+        });
+
 
         // ----------------- 버튼들 클릭시
         // 글 추천 버튼 클릭시
@@ -405,25 +584,8 @@
             $.ajax({
                 url: "/like.board",
                 method: "POST",
+                dataType: "json",
                 data: { board_seq: board_seq }
-            }).done(function (resp) {
-                console.log("추천 완료:", resp);
-            });
-        });
-
-        // 댓글 추천 버튼 클릭 시
-        $(document).on("click", ".reply-like_btn", function () {
-            const reply_seq = $(this).data("reply-seq");
-            const icon = $(this).find("i");
-
-            icon.toggleClass("bi-heart bi-heart-fill");
-            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c !important" : "");
-
-            // 서버에 추천 요청 보내기
-            $.ajax({
-                url: "/like.reply",
-                method: "POST",
-                data: { reply_seq: reply_seq }
             }).done(function (resp) {
                 console.log("추천 완료:", resp);
             });
@@ -509,70 +671,193 @@
     });
 
 
-    // 댓글 렌더링 함수
+ // ===== 댓글 전체 렌더링 =====
     function renderReplies(replies) {
-        const replyListArea = $("#replyListArea"); // 댓글을 담을 영역
-        replyListArea.empty(); // 기존 댓글 지우기
+        let replyListArea = $('#replyListArea');
+        replyListArea.empty();
 
-        replies.forEach(reply => {
-            const depth = reply.path.split("/").length;
-            let mention = "";
-            if (depth === 2 && reply.parentWriter) {
-                mention = '<span class="mention">@' + reply.parentWriter + '</span>';
-            }
+        // 부모들 최신순
+        let parents = replies.filter(r => r.parent_seq === 0);
+        parents.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            const isWriter = loginId === reply.writer;
-            // 날짜 포맷팅
-            const created_at = new Date(reply.created_at);
-            const formatted = created_at.toLocaleString("ko-KR", {
-                year: "numeric", month: "2-digit", day: "2-digit",
-                hour: "2-digit", minute: "2-digit", second: "2-digit"
-            });
+        parents.forEach(function (parent) {
+            // 부모 출력
+            replyListArea.append(drawReply(parent, 1, false, replies));
 
-            // 버튼 조합
-            let buttons = "";
-
-            if (isWriter) {
-                buttons += '<button class="btn btn-outline-red-main reply-update_btn" data-reply-seq="' + reply.seq + '">수정</button>';
-                buttons += '<button class="btn btn-outline-red-main reply-delete_btn" data-reply-seq="' + reply.seq + '">삭제</button>';
-            } else {
-                buttons += '<button class="btn btn-outline-red-main reply-report_btn" data-reply-seq="' + reply.seq + '" data-bs-toggle="modal" data-bs-target="#boardModal">';
-                buttons += '<img src="/asset/img/siren.png"></button>';
-            }
-
-
-            let replyHtml =
-                '<div class="replys-box">' +
-                '<div class="row replys-header g-0">' +
-                '<div class="col-8 reply-writer fw-bold text-navy">' +
-                mention + reply.writer +
-                '</div>' +
-                '<div class="col-4 reply-header_btns">' +
-                '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
-                '<i class="bi bi-heart"></i> ' + reply.likeCount +
-                buttons +
-                '</button>' +
-                '</div>' +
-                '</div>' +
-                '<div class="row replys-contents g-0">' +
-                '<div class="col-8 reply-left_content" contenteditable="false">' +
-                reply.contents +
-                '</div>' +
-                '<div class="col-4 reply-right-content">' +
-                '<div class="reply-footer_btns">' +
-                buttons +
-                '</div>' +
-                '<div class="reply-created_at">' + formatted + '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>'
-
-            replyListArea.append(replyHtml);
+            // 부모의 자식 그룹 렌더링
+            renderChildrenGroup(replies, parent.seq, 2, replyListArea);
         });
-    };
-</script>
+    }
 
-// 댓글 아이콘
-<i class="bi bi-arrow-return-right"></i>
+    // 특정 parentSeq 아래 모든 자식 개수 구하기
+    function countAllDescendants(replies, parentSeq) {
+        let count = 0;
+        let stack = [parentSeq];
+        while (stack.length > 0) {
+            let current = stack.pop();
+            let children = replies.filter(r => r.parent_seq === current);
+            count += children.length;
+            children.forEach(c => stack.push(c.seq));
+        }
+        return count;
+    }
+
+    // ===== 자식 "묶음" 렌더링 =====
+    function renderChildrenGroup(replies, parentSeq, depth, container) {
+        let children = replies.filter(r => r.parent_seq === parentSeq);
+        children.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        if (children.length === 0) return;
+
+        let groupId = 'children-group-' + parentSeq;
+        let groupHtml = '<div class="children-group" id="' + groupId + '"></div>';
+        container.append(groupHtml);
+
+        let $group = $('#' + groupId);
+
+        children.forEach(child => {
+            $group.append(drawReply(child, depth, false, replies));
+            renderChildrenGroup(replies, child.seq, depth + 1, $group);
+        });
+
+        // "답글 n개 더보기"
+        let allDescendantsCount = countAllDescendants(replies, parentSeq);
+
+        if (allDescendantsCount >= 3) {
+            $group.hide();
+
+            // 버튼을 따로 만드는 대신 부모 footer 영역에 같이 출력되도록
+            let moreBtnHtml =
+                '<button class="btn btn-link text-navy small reply-more-btn" ' +
+                'data-target="' + groupId + '" data-count="' + allDescendantsCount + '" data-expanded="false">' +
+                '답글 ' + allDescendantsCount + '개 더보기 <span class="icon">▼</span>' +
+                '</button>';
+
+            // 부모 댓글 박스의 footer에 버튼 추가
+            let parentBox = container.find('.reply-box[data-reply-seq="' + parentSeq + '"]');
+            parentBox.find('.reply-footer .reply-footer-left').append(moreBtnHtml);
+        }
+    }
+
+    // ===== 댓글 박스 HTML =====
+    function drawReply(reply, depth, hidden = false, replies) {
+        let isWriter = loginId === reply.writer;
+
+        let mention = '';
+        if (depth >= 3) {
+            let parent = replies.find(r => r.seq === reply.parent_seq);
+            if (parent) {
+                mention = '<span class="mention">@' + parent.writer + '</span> ';
+            }
+        }
+
+        let created_at = new Date(reply.created_at);
+        let formatted = created_at.toLocaleString('ko-KR', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+
+        let likeCount = isNaN(parseInt(reply.likeCount)) ? 0 : reply.likeCount;
+
+        let controlBtns = '';
+        if (isWriter) {
+            controlBtns += '<button class="btn btn-outline-red-main reply-update_btn" data-reply-seq="' + reply.seq + '">수정</button>';
+            controlBtns += '<button class="btn btn-outline-red-main reply-delete_btn" data-reply-seq="' + reply.seq + '">삭제</button>';
+        }
+
+        let inputBtn = '<button class="btn btn-outline-red-main subReply-input_btn" data-reply-seq="' + reply.seq + '" data-parent-seq="' + reply.seq + '" data-writer="' + reply.writer + '">답글</button>';
+
+        let style = '';
+        if (depth >= 2) {
+            style = 'width: calc(100% - 60px); margin-left: auto;';
+        }
+
+        let hiddenClass = hidden ? ' d-none' : '';
+
+        let replyHtml =
+            '<div class="reply-box mb-2' + hiddenClass + '" data-depth="' + depth + '" data-reply-seq="' + reply.seq + '" style="' + style + '">' +
+                '<div class="row reply-header g-0">' +
+                    '<div class="col-8 reply-writer fw-bold text-navy">' +
+                        mention + reply.writer +
+                    '</div>' +
+                    '<div class="col-4 reply-header_btns text-end">' +
+                        '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
+                            '<i class="bi bi-heart"></i> ' + likeCount +
+                        '</button>' +
+                        controlBtns +
+                    '</div>' +
+                '</div>' +
+                '<div class="row reply-contents g-0 mt-1">' +
+                    '<div class="col-8 reply-left_content" contenteditable="false">' +
+                        reply.contents +
+                    '</div>' +
+                    '<div class="col-4 reply-right-content text-end">' +
+                        inputBtn +
+                    '</div>' +
+                '</div>' +
+                // ✅ footer: 날짜와 "답글 더보기" 같은 행
+                '<div class="row reply-footer g-0 justify-content-between align-items-center mt-1">' +
+                    '<div class="col-auto reply-footer-left"></div>' + // 답글 더보기 버튼 들어갈 자리
+                    '<div class="col-auto reply-footer-right text-muted small">' + formatted + '</div>' +
+                '</div>' +
+            '</div>';
+
+        return replyHtml;
+    }
+
+
+
+    function groupByParent(replies) {
+        const grouped = {};
+        replies.forEach(reply => {
+            const parent = reply.parent_seq;
+            if (!grouped[parent]) grouped[parent] = [];
+            grouped[parent].push(reply);
+        });
+        return grouped;
+    }
+
+    function showreplyInputDiv(button, parentSeq, parentWriter) {
+        // 기존 열려있는 입력창 제거
+        $('.subReplyBox').remove();
+
+        var isLoggedIn = loginId && loginId.trim() !== "";
+
+        var replyInputHtml = ''
+            + '<div class="subReplyBox reply-box mb-3" style="width: calc(100% - 60px); margin-left:auto;">'
+            + '    <div class="row reply-header g-0">'
+            + '        <div class="col-8 reply-writer fw-bold text-navy">'
+            + (isLoggedIn ? loginId : '비회원')
+            + '        </div>'
+            + '        <div class="col-4 text-end text-muted small">'
+            + '            → ' + parentWriter + ' 님께 답글'
+            + '        </div>'
+            + '    </div>'
+            + '    <div class="row reply-contents g-0 mt-2">'
+            + '        <div class="col-12 reply-left_content" '
+            + '             id="replyInputDiv" '
+            + '             contenteditable="' + isLoggedIn + '">'
+            + (isLoggedIn ? '답글을 입력하세요' : '로그인 후 이용해주세요')
+            + '        </div>'
+            + '    </div>'
+            + '    <div class="row mt-2">'
+            + '        <div class="col text-end">'
+            + '            <button class="btn btn-outline-red-main reply-submit_btn" '
+            + '                    data-parent-seq="' + parentSeq + '">등록</button>'
+            + '            <button class="btn btn-outline-secondary reply-cancel_btn">취소</button>'
+            + '        </div>'
+            + '    </div>'
+            + '</div>';
+
+        // 버튼 기준으로 가장 가까운 .reply-box 찾아서 바로 뒤에 삽입
+        let parentReplyBox = $(button).closest('.reply-box');
+        parentReplyBox.after(replyInputHtml);
+
+        // 포커스
+        if (isLoggedIn) {
+            $('#replyInputDiv').focus();
+        }
+    }
+</script>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

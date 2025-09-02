@@ -40,6 +40,22 @@ class Gameover extends Phaser.Scene{
 			console.log(resp);
 							
 			}); 
+			
+			$.ajax({
+			    url: "/api/point/gameOver",
+			    type: "POST",
+			    data: {
+			        seq: 6,               // POINT 테이블의 SEQ
+			        pointValue: this.finalPoint       // 클라이언트에서 계산된 포인트 값
+			    },
+			    success: function(response) {
+			        console.log("포인트 지급 성공:", response);
+			    },
+			    error: function(xhr) {
+			        console.error("에러 발생:", xhr.responseText);
+			    }
+			});
+
 
          this.add.text(
             this.cameras.main.width/2, 

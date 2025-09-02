@@ -115,7 +115,7 @@ public class MemberDAO {
 			return result;
 		}
 	}
-	// 회원가입 insert	
+	// 회원가입
 	public int insertMembers (MemberDTO dto) throws Exception {
 
 		String sql = "insert into members values (?,?,?,?,?,?,?,?,default,?,sysdate,sysdate)";
@@ -141,16 +141,44 @@ public class MemberDAO {
 			return result;
 		}
 	}
-	// ID 중복 확인
-	public boolean isIdExist (String id) throws Exception {
+	// ID 중복 확인 (회원 + 탈퇴회원)
+	public boolean isIdExist(String id) throws Exception {
+	    try (Connection con = getConnection()) {
 
-		String sql = "select * from members where id=?";
+	        // members 테이블 확인
+	        String sql1 = "select 1 from members where id=?";
+	        try (PreparedStatement pstat1 = con.prepareStatement(sql1)) {
+	            pstat1.setString(1, id);
+	            try (ResultSet rs1 = pstat1.executeQuery()) {
+	                if (rs1.next()) {
+	                    return true; // 회원 테이블에 존재
+	                }
+	            }
+	        }
 
+	        // withdraw_members 탈퇴회원 테이블 확인
+	        String sql2 = "select 1 from withdrawn_members where id=?";
+	        try (PreparedStatement pstat2 = con.prepareStatement(sql2)) {
+	            pstat2.setString(1, id);
+	            try (ResultSet rs2 = pstat2.executeQuery()) {
+	                if (rs2.next()) {
+	                    return true; // 탈퇴 회원 테이블에 존재
+	                }
+	            }
+	        }
+	    }
+	    return false; // 두 테이블 모두 없으면 false
+	}
+	// Email 중복 확인
+	public boolean isEmailExist (String email) throws Exception {
+		
+		String sql = "select * from members where email=?";
+		
 		try(
 				Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql)) {
 
-			pstat.setString(1, id);
+			pstat.setString(1, email);
 
 			try (ResultSet rs = pstat.executeQuery()) {
 				return rs.next();
@@ -158,7 +186,7 @@ public class MemberDAO {
 		}
 	}
 	// 회원정보 리스트
-	public MemberDTO selectAllMember (String loginId) throws Exception {
+	public MemberDTO selectAllMemberId (String loginId) throws Exception {
 
 		String sql = "select id,name,phone,email,zipcode,address,addressDetail from members where id=? ";
 
@@ -183,6 +211,48 @@ public class MemberDAO {
 			}
 		}
 		return null;
+	}
+	// 회원정보 수정 update테이블명By조건필드명
+	public int updateMemberById (MemberDTO dto) throws Exception {
+		
+		String sql = "update members set name=? , phone=? , email=? , zipcode=? , address=? , addressDetail=? where id=?";
+	
+		try (Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql);) {
+			
+			pstat.setString(1, dto.getName());
+			pstat.setString(2, dto.getPhone());
+			pstat.setString(3, dto.getEmail());
+			pstat.setString(4, dto.getZipcode());
+			pstat.setString(5, dto.getAddress());
+			pstat.setString(6, dto.getAddressDetail());
+			pstat.setString(7, dto.getId());
+			
+			int result = pstat.executeUpdate();
+			return result;
+		}
+	}
+	// 회원탈퇴 처리 , 탈퇴 테이블에 기록 + 기존 회원 테이블에서 데이터 삭제
+	public void withdrawMember(String id) throws Exception {
+	    String insertSql = "insert into withdrawn_members (id) values (?)";
+	    String deleteSql = "delete from members where id = ?";
+
+	    try (Connection conn = getConnection();
+	         PreparedStatement pstmt1 = conn.prepareStatement(insertSql);
+	         PreparedStatement pstmt2 = conn.prepareStatement(deleteSql)) {
+
+	        conn.setAutoCommit(false);
+
+	        // 1. 탈퇴 테이블에 기록
+	        pstmt1.setString(1, id);
+	        pstmt1.executeUpdate();
+
+	        // 2. 원래 회원 테이블에서 삭제
+	        pstmt2.setString(1, id);
+	        pstmt2.executeUpdate();
+
+	        conn.commit();
+	    } 
 	}
 	public SimpleUserProfileDTO login(String id, String pw) {
 		String sql = "SELECT m.id AS userId,\n"

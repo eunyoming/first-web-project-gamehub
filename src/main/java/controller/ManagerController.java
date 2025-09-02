@@ -27,6 +27,7 @@ import com.google.gson.JsonPrimitive;
 
 import commons.SessionManager;
 import dao.GameDAO;
+import dao.GameInfoDAO;
 import dao.ManagerDAO;
 import dao.MemberDAO;
 import dao.RoleDAO;
@@ -276,6 +277,22 @@ public class ManagerController extends HttpServlet {
 			        String json = gson.toJson(Collections.singletonMap("status", "success"));
 			        response.setContentType("application/json; charset=UTF-8");
 			        response.getWriter().write(json);
+			}else if(path.equals("/saveGameInfo")) {
+				
+				//관리자페이지 game탭에서 GameInfo를 수정하고, 저장합니다.
+				
+				request.setCharacterEncoding("UTF-8");
+		        int seq = Integer.parseInt(request.getParameter("seq"));
+		        String guide = request.getParameter("guide"); // <img> 포함 HTML
+
+		        if(GameInfoDAO.getInstance().updateGuide(seq, guide)) {
+		        	response.getWriter().write("success");
+		        }else {
+		        	response.getWriter().write("failed");
+		        }
+		        
+				
+				
 			}
 				
 			

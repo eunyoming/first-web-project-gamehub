@@ -39,6 +39,18 @@ public class GameInfoDAO {
 //			return result;
 //		}
 //	}
+	
+	
+	public boolean updateGuide(int seq, String guide) throws Exception  {
+		String sql = "update gameInfo set guide = ? where seq = ?";
+		try (Connection con = this.getConnection(); 
+				PreparedStatement pstat = con.prepareStatement(sql)) {
+			pstat.setString(1, guide);
+			pstat.setInt(2, seq);
+			
+			return pstat.executeUpdate() >1;
+		}
+	}
 
 	public GameInfoDTO selectGameInfoBySeq(int game_seq) throws Exception {
 		String sql = "select * from gameInfo where seq = ?";

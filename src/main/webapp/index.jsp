@@ -321,7 +321,7 @@ h2 {
 
 </section>
 <section class="strips strips-container">
-	<article class="strips__strip">
+	<article class="strips__strip" data-seq="1">
 		<div class="strip__content">
 			<h1 class="strip__title">게임1</h1>
 			<div class="strip__inner-text">
@@ -342,13 +342,13 @@ h2 {
 			</div>
 		</div>
 	</article>
-	<article class="strips__strip">
+	<article class="strips__strip" data-seq="2">
 		<div class="strip__content">
-			<h1 class="strip__title">스페이스 배틀</h1>
+			<h1 class="strip__title">게임2</h1>
 			<div class="strip__inner-text">
 				<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>스페이스 배틀</h2>
+						<h2>게임2</h2>
 						<p>게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
@@ -363,7 +363,7 @@ h2 {
 			</div>
 		</div>
 	</article>
-	<article class="strips__strip">
+	<article class="strips__strip" data-seq="3">
 		<div class="strip__content">
 			<h1 class="strip__title">게임3</h1>
 			<div class="strip__inner-text">
@@ -384,13 +384,13 @@ h2 {
 			</div>
 		</div>
 	</article>
-	<article class="strips__strip">
+	<article class="strips__strip" data-seq="4">
 		<div class="strip__content">
-			<h1 class="strip__title">테트리스</h1>
+			<h1 class="strip__title">게임4</h1>
 			<div class="strip__inner-text">
 			<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>테트리스</h2>
+						<h2>게임4</h2>
 						<p>게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
@@ -405,7 +405,7 @@ h2 {
 			</div>
 		</div>
 	</article>
-	<article class="strips__strip">
+	<article class="strips__strip" data-seq="5">
 		<div class="strip__content">
 			<h1 class="strip__title">게임5</h1>
 			<div class="strip__inner-text">
@@ -438,6 +438,35 @@ h2 {
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
+
+$(document).ready(function(){
+    $.ajax({
+        url: "/api/game/gameList",
+        type: "GET",
+        dataType: "json",
+        success: function(data){
+            data.forEach(game => {
+                // 해당 seq를 가진 article 찾기
+                let $strip = $('.strips__strip[data-seq="' + game.seq + '"]');
+
+                if ($strip.length > 0) {
+                    // 제목 교체
+                    $strip.find('.strip__title').text(game.title);
+                    $strip.find('h2').text(game.title);
+
+                    // 설명 교체
+                    $strip.find('p').text(game.description || '게임 설명 없음');
+
+                    // 링크 교체
+                    $strip.find('.strip__game').attr('href', '/api/game/main?game_seq=' + game.seq);
+                }
+            });
+        }
+    });
+});
+
+
+
 //Expand 모듈 (GSAP 버전)
 gsap.registerPlugin(ScrollTrigger);
 

@@ -2,6 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,11 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 
 import commons.SessionManager;
+import dao.GameDAO;
 import dao.ManagerDAO;
 import dao.MemberDAO;
 import dao.RoleDAO;
+import dto.game.GameDTO;
 import dto.member.ManagerMemberDTO;
 import dto.member.RoleDTO;
 import dto.member.SimpleUserProfileDTO;
@@ -40,7 +50,24 @@ public class ManagerController extends HttpServlet {
 		
 
 		ManagerDAO managerDAO = ManagerDAO.getInstance();
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().disableHtmlEscaping().registerTypeAdapter(Timestamp.class, new JsonDeserializer<Timestamp>() {
+			@Override
+			public Timestamp deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+					throws JsonParseException {
+				JsonPrimitive primitive = json.getAsJsonPrimitive();
+				if (primitive.isNumber()) {
+					return new Timestamp(primitive.getAsLong());
+				} else if (primitive.isString()) {
+					try {
+						return new Timestamp(Long.parseLong(primitive.getAsString()));
+					} catch (NumberFormatException e) {
+						throw new JsonParseException("Invalid timestamp format", e);
+					}
+				} else {
+					throw new JsonParseException("Unsupported timestamp format");
+				}
+			}
+		}).create();
 		try {
 			if(path == null || path.equals("/main")) {
 

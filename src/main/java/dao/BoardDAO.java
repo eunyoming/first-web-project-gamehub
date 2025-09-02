@@ -100,7 +100,7 @@ public class BoardDAO {
 
 	// select * from boards order by seq desc";
 	public List<BoardDTO> selectAllBoards() throws Exception{
-		String sql = "select * from boards order by seq desc";
+		String sql = "select * from boards where visibility = 'public' order by seq desc";
 		try(Connection con = this.getConnection();
 				PreparedStatement pst = con.prepareStatement(sql);
 				ResultSet rs = pst.executeQuery();){
@@ -162,7 +162,7 @@ public class BoardDAO {
 
 	// select * from boards where seq = ?
 	public BoardDTO selectBoardsBySeq(int seq) throws Exception{
-		String sql = "select * from boards where seq = ?";
+		String sql = "select * from boards where seq = ? and visibility = 'public'";
 		try(Connection con = this.getConnection();
 				PreparedStatement pst = con.prepareStatement(sql);){
 

@@ -346,10 +346,17 @@
                 $(this).text("댓글을 입력하세요");
             }
         });
-        // 부모 댓글 등록 버튼 클릭 시
+        
+     // 부모 댓글 등록 버튼 클릭 시
         $(document).on("click", "#reply-input_btn", function () {
             const parent_seq = $(this).data("parent-seq") || 0;
             const reply_content = $("#replyInput").text().trim();
+
+            // 로그인 안 된 경우
+            if (!loginId) {
+                alert("로그인 후 이용해주세요.");
+                return;
+            }
 
             // 내용이 비어있거나 안내 문구 그대로면 막기
             if (!reply_content || reply_content === "댓글을 입력하세요" || reply_content === "로그인 후 이용해주세요") {
@@ -378,6 +385,7 @@
                 alert("서버와 통신 중 오류가 발생했습니다.");
             });
         });
+
 
 
      // 답글 더보기/접기 토글 이벤트

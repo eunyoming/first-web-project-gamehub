@@ -21,6 +21,7 @@
 				<option>자유</option>
 				<option>공략</option>
 				<option>기타</option>
+				<option>Q&amp;A</option>
 			</select>
 		</div>
 		<div class="col-12 col-md-2">
@@ -30,6 +31,8 @@
 				<option>Game A</option>
 				<option>Game B</option>
 				<option>Game C</option>
+				<option>Game D</option>
+				<option>Game E</option>
 			</select>
 		</div>
 		<div class="col-2 col-md-none"></div>

@@ -48,6 +48,7 @@ public class ReplyController extends HttpServlet {
 						}
 
 						resultMap.put("replies", replies);
+						resultMap.put("result", result);
 						System.out.println("댓글등록완료");
 					} else {
 						resultMap.put("message", "댓글 등록 실패");
@@ -58,13 +59,63 @@ public class ReplyController extends HttpServlet {
 				}
 
 			}else if(cmd.equals("/update.reply")) {
+				
+				String contents = request.getParameter("contents");
+				int seq = Integer.parseInt(request.getParameter("reply_seq"));
+				
+				// 수정
+				int result = reply_dao.updateRepliesBySeq(contents, seq);
+				
+				// 응답 준비
+				response.setContentType("application/json; charset=UTF-8");
+				try (PrintWriter pw = response.getWriter()) {
+			        Map<String, Object> resultMap = new HashMap<>();
+			        resultMap.put("result", result);
 
+			        // 수정 성공 시 최신 댓글 목록도 내려주기
+			        if (result != 0) {
+			        	int board_seq = reply_dao.getBoardSeqByReplySeq(seq);
+			            List<ReplyDTO> replies = reply_dao.selectRepliesByBoardSeq(board_seq);
+			            for (ReplyDTO reply : replies) {
+			                String path = reply.getPath();
+			                String parentWriter = reply_dao.getParentWriterByPath(path);
+			                reply.setParentWriter(parentWriter);
+			            }
+			            resultMap.put("replies", replies);
+			        }
+
+			        String json = new Gson().toJson(resultMap);
+			        pw.print(json);
+			    }
+				
 			}else if(cmd.equals("/delete.reply")) {
+				int seq = Integer.parseInt(request.getParameter("reply_seq"));
+				int board_seq = reply_dao.getBoardSeqByReplySeq(seq);
+				// 삭제
+				int result = reply_dao.deleteRepliesBySeq(seq);
+				
+				// 응답 준비
+				response.setContentType("application/json; charset=UTF-8");
+				try (PrintWriter pw = response.getWriter()) {
+			        Map<String, Object> resultMap = new HashMap<>();
+			        resultMap.put("result", result);
 
-			}else if(cmd.equals("/like.reply")) {
+			        if (result != 0) {
+			            List<ReplyDTO> replies = reply_dao.selectRepliesByBoardSeq(board_seq);
+			            for (ReplyDTO reply : replies) {
+			                String path = reply.getPath();
+			                String parentWriter = reply_dao.getParentWriterByPath(path);
+			                reply.setParentWriter(parentWriter);
+			            }
+			            resultMap.put("replies", replies);
+			            System.out.println("댓글 삭제 완료");
+			        } else {
+			            resultMap.put("message", "댓글 삭제 실패");
+			        }
 
-			}else if(cmd.equals("")) {
-
+			        String json = new Gson().toJson(resultMap);
+			        pw.print(json);
+			    }
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

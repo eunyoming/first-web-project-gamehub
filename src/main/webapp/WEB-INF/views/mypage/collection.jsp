@@ -46,18 +46,18 @@ $.ajax({
 	  resp.forEach(function(game) {
 	    let $row = $(
 	      '<div class="row mb-3">' +
-	        '<div class="col-3"><img src="' + game.iconUrl + '" class="img-fluid" /></div>' +
+	        '<div class="col-3"><img src="' + game.url + '/thumbnail.png " width="150" height="150" class="img-fluid" /></div>' +
 	        '<div class="col-9">' +
 	          '<div class="row">' +
-	            '<div class="col-6">' + game.title + '</div>' +
+	            '<div class="col-6"><h5>' + game.title + '</h5></div>' +
 	            '<div class="col-2"></div>' +
 	            '<div class="col-4">' +
 	              '<div class="row">' +
-	                '<div class="col-12 gamePlayTime">' + game.playTime + '</div>' +
-	                '<div class="col-12 lastPlayed">' + game.lastPlayedDate + '</div>' +
+	                '<div class="col-12 gamePlayTime">총 플레이 시간' + game.totalplaytime + '</div>' +
+	                '<div class="col-12 lastPlayed">최근 플레이 날짜' + game.recentPlayedDate + '</div>' +
 	              '</div>' +
 	            '</div>' +
-	            '<div class="col-12 achievementProgress">' + game.achievement + '</div>' +
+	            
 	          '</div>' +
 	        '</div>' +
 	      '</div>'

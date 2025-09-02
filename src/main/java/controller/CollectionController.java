@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.List;
@@ -51,6 +52,7 @@ public class CollectionController extends HttpServlet {
 						}
 					}
 				}).create();
+		
 		String loginId = (String) request.getSession().getAttribute("loginId"); // 로그인 아이디
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 		GameDAO gameDAO = GameDAO.getInstance();
@@ -59,10 +61,10 @@ public class CollectionController extends HttpServlet {
 			if (path == null || path.equals("/recentlyPlayedGames")) {
 				System.out.println("들어옴");
 				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId);
+				response.setContentType("text/html; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
 				
-				
-				
-				
+				pw.append(g.toJson(gameRecentDTOList));
 				
 			}
 		} catch (Exception e) {

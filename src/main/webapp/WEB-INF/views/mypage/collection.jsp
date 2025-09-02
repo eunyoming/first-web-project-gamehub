@@ -55,6 +55,7 @@ $.ajax({
 	              '<div class="row">' +
 	                '<div class="col-12 gamePlayTime">총 플레이 시간' + game.totalplaytime + '</div>' +
 	                '<div class="col-12 lastPlayed">최근 플레이 날짜' + game.recentPlayedDate + '</div>' +
+	                
 	              '</div>' +
 	            '</div>' +
 	            

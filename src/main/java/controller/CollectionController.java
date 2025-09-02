@@ -20,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import dao.AchievementDAO;
 import dao.GameDAO;
 import dao.GameRecordDAO;
 import dto.game.GameDTO;
@@ -56,15 +57,21 @@ public class CollectionController extends HttpServlet {
 		String loginId = (String) request.getSession().getAttribute("loginId"); // 로그인 아이디
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 		GameDAO gameDAO = GameDAO.getInstance();
+		AchievementDAO achievementDAO = AchievementDAO.getInstance();
 		System.out.println("요청 path: " + path);
 		try {
 			if (path == null || path.equals("/recentlyPlayedGames")) {
 				System.out.println("들어옴");
-				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId);
+				//int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
+				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
+				//int totalAchievement = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId);
+				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); // 업적을 제외한 나머지 작업
+				
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
 				
 				pw.append(g.toJson(gameRecentDTOList));
+				 
 				
 			}
 		} catch (Exception e) {

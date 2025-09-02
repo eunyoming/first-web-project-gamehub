@@ -100,36 +100,37 @@ public class AchievementDAO {
 
 	}
 
-	public int CountAchievementByGame_Seq(int game_seq) throws Exception {
-		String sql = "select count(*) as totalAch from(select * from ACHIEVEMENT where game_seq = ?)";
-		try (Connection conn = this.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, game_seq);
-
-			try (ResultSet rs = pstmt.executeQuery()) {
-
-				if (rs.next()) {
-
-				}
-				return rs.getInt("totalAch");
-			}
-		}
-	}
-
-	public int CountAchievementByGame_SeqAndLoginId(String loginId, int game_seq) throws Exception {
-		String sql = "select count(*) as currentAch from(SELECT a.*\r\n" + "FROM achievement a\r\n"
-				+ "JOIN userAchievement ua ON a.seq = ua.achiev_seq\r\n" + "WHERE ua.userId = ? AND a.game_seq = ?);";
-		try (Connection conn = this.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, loginId);
-			pstmt.setInt(2, game_seq);
-			try (ResultSet rs = pstmt.executeQuery()) {
-
-				if (rs.next()) {
-					return rs.getInt("currentAch");
-				}
-				
-			}
-		}
-
-	}
+//	public int CountAchievementByGame_Seq(int game_seq) throws Exception {
+//		String sql = "select count(*) as totalAch from(select * from ACHIEVEMENT where game_seq = ?)";
+//		try (Connection conn = this.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//			pstmt.setInt(1, game_seq);
+//
+//			try (ResultSet rs = pstmt.executeQuery()) {
+//
+//				if (rs.next()) {
+//					return rs.getInt("totalAch");
+//				}
+//				
+//			}
+//		}return 0;
+//	}
+//
+//	public int CountAchievementByGame_SeqAndLoginId(String loginId, int game_seq) throws Exception {
+//		String sql = "select count(*) as currentAch from(SELECT a.*\r\n" + "FROM achievement a\r\n"
+//				+ "JOIN userAchievement ua ON a.seq = ua.achiev_seq\r\n" + "WHERE ua.userId = ? AND a.game_seq = ?);";
+//		try (Connection conn = this.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//			pstmt.setString(1, loginId);
+//			pstmt.setInt(2, game_seq);
+//			try (ResultSet rs = pstmt.executeQuery()) {
+//
+//				if (rs.next()) {
+//					return rs.getInt("currentAch");
+//				}
+//				
+//			}
+//		}
+//		return 0;
+//
+//	}
 
 }

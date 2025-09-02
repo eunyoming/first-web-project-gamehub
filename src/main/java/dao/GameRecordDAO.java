@@ -60,6 +60,7 @@ public class GameRecordDAO {
 		
 		
 	}
+		
 	
 		 public List<GameRecentDTO> selectGameRecordsByLoginId(String loginId)throws Exception{
 //			 String sql = "SELECT * FROM (SELECT  g.title AS title, g.url AS gameIcon,\r\n"

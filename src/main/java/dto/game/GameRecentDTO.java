@@ -6,6 +6,8 @@ public class GameRecentDTO {
 	private  String url;
 	private  String totalplaytime;
 	private  String recentPlayedDate;
+//	private int currentAchievement;
+//	private int totalAchievement;
 	
 	
 	
@@ -13,13 +15,17 @@ public class GameRecentDTO {
 	
 	
 	
-	public GameRecentDTO(String title, String url, String totalplaytime, String recentPlayedDate) {
+	
+	
+	public GameRecentDTO(String title, String url, String totalplaytime, String recentPlayedDate
+			) {
 		super();
 		this.title = title;
 		this.url = url;
 		this.totalplaytime = totalplaytime;
 		this.recentPlayedDate = recentPlayedDate;
-		
+//		this.currentAchievement = currentAchievement;
+//		this.totalAchievement = totalAchievement;
 	}
 	public String getTitle() {
 		return title;
@@ -45,6 +51,17 @@ public class GameRecentDTO {
 	public void setRecentPlayedDate(String recentPlayedDate) {
 		this.recentPlayedDate = recentPlayedDate;
 	}
-	
+//	public int getCurrentAchievement() {
+//		return currentAchievement;
+//	}
+//	public void setCurrentAchievement(int currentAchievement) {
+//		this.currentAchievement = currentAchievement;
+//	}
+//	public int getTotalAchievement() {
+//		return totalAchievement;
+//	}
+//	public void setTotalAchievement(int totalAchievement) {
+//		this.totalAchievement = totalAchievement;
+//	}
 	
 }		

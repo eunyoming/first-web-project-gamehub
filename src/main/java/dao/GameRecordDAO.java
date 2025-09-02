@@ -60,30 +60,34 @@ public class GameRecordDAO {
 		
 		
 	}
+		
 	
 		 public List<GameRecentDTO> selectGameRecordsByLoginId(String loginId)throws Exception{
-			 String sql = "SELECT * FROM (SELECT  g.title AS title, g.url AS gameIcon,\r\n"
-			 		+ "    FLOOR(\r\n"
-			 		+ "      (\r\n"
-			 		+ "        SUM(EXTRACT(SECOND FROM gr.gameEndTime)) +\r\n"
-			 		+ "        SUM(EXTRACT(MINUTE FROM gr.gameEndTime)) * 60 +\r\n"
-			 		+ "        SUM(EXTRACT(HOUR FROM gr.gameEndTime)) * 3600 +\r\n"
-			 		+ "        SUM(EXTRACT(DAY FROM gr.gameEndTime)) * 86400\r\n"
-			 		+ "      ) -\r\n"
-			 		+ "      (\r\n"
-			 		+ "        SUM(EXTRACT(SECOND FROM gr.gameStartTime)) +\r\n"
-			 		+ "        SUM(EXTRACT(MINUTE FROM gr.gameStartTime)) * 60 +\r\n"
-			 		+ "        SUM(EXTRACT(HOUR FROM gr.gameStartTime)) * 3600 +\r\n"
-			 		+ "        SUM(EXTRACT(DAY FROM gr.gameStartTime)) * 86400\r\n"
-			 		+ "      )\r\n"
-			 		+ "    ) AS totalplaytime,\r\n"
-			 		+ "    -- 마지막 플레이 날짜 (MM월 DD일 형식)\r\n"
-			 		+ "    TO_CHAR(MAX(gr.gameEndTime), 'MM\"월\" DD\"일\"') AS recentPlayedDate\r\n"
-			 		+ "  FROM gameRecords gr\r\n"
-			 		+ "  JOIN games g ON gr.game_seq = g.seq\r\n"
-			 		+ "  WHERE gr.userId = ?\r\n"
-			 		+ "  GROUP BY g.seq, g.title, g.url\r\n"
-			 		+ "  ORDER BY MAX(gr.gameEndTime) DESC\r\n"
+			 String sql ="SELECT * FROM (\r\n"
+			 		+ "    SELECT  \r\n"
+			 		+ "        g.seq AS game_seq,\r\n"
+			 		+ "        g.title AS title,\r\n"
+			 		+ "        g.url AS gameIcon,\r\n"
+			 		+ "        -- 시간/분 단위 문자열로 변환\r\n"
+			 		+ "        TRUNC(SUM(\r\n"
+			 		+ "            EXTRACT(DAY FROM (gr.gameEndTime - gr.gameStartTime)) * 86400 +\r\n"
+			 		+ "            EXTRACT(HOUR FROM (gr.gameEndTime - gr.gameStartTime)) * 3600 +\r\n"
+			 		+ "            EXTRACT(MINUTE FROM (gr.gameEndTime - gr.gameStartTime)) * 60 +\r\n"
+			 		+ "            EXTRACT(SECOND FROM (gr.gameEndTime - gr.gameStartTime))\r\n"
+			 		+ "        ) / 3600) || '시간 ' ||\r\n"
+			 		+ "        TRUNC(MOD(SUM(\r\n"
+			 		+ "            EXTRACT(DAY FROM (gr.gameEndTime - gr.gameStartTime)) * 86400 +\r\n"
+			 		+ "            EXTRACT(HOUR FROM (gr.gameEndTime - gr.gameStartTime)) * 3600 +\r\n"
+			 		+ "            EXTRACT(MINUTE FROM (gr.gameEndTime - gr.gameStartTime)) * 60 +\r\n"
+			 		+ "            EXTRACT(SECOND FROM (gr.gameEndTime - gr.gameStartTime))\r\n"
+			 		+ "        ), 3600) / 60) || '분' AS totalplaytime,\r\n"
+			 		+ "        \r\n"
+			 		+ "        TO_CHAR(MAX(gr.gameEndTime), 'MM\"월\"DD\"일\"') AS recentPlayedDate\r\n"
+			 		+ "    FROM gameRecords gr\r\n"
+			 		+ "    JOIN games g ON gr.game_seq = g.seq \r\n"
+			 		+ "    WHERE gr.userId = ? \r\n"
+			 		+ "    GROUP BY g.seq, g.title, g.url \r\n"
+			 		+ "    ORDER BY MAX(gr.gameEndTime) DESC\r\n"
 			 		+ ")\r\n"
 			 		+ "WHERE ROWNUM <= 3";
 			 try(Connection con = this.getConnection(); PreparedStatement pstat = con.prepareStatement(sql)){
@@ -91,14 +95,14 @@ public class GameRecordDAO {
 					try(ResultSet rs = pstat.executeQuery()){
 						List<GameRecentDTO> list =  new ArrayList<>();
 						while(rs.next()) {
-							
+							int game_seq = rs.getInt("game_seq");
 							String title = rs.getString("title");
-							String url = rs.getString("url");
+							String url = rs.getString("gameIcon");
 							String totalplaytime = rs.getString("totalplaytime");
 							String recentPlayedDate = rs.getString("recentPlayedDate");
+							//여기다가 업적진행도도 삽입하면 좋을거같습니다.
 							
-							
-							GameRecentDTO gameRecentDTO = new GameRecentDTO(title,url,totalplaytime,recentPlayedDate);
+							GameRecentDTO gameRecentDTO = new GameRecentDTO(game_seq,title,url,totalplaytime,recentPlayedDate);
 							list.add(gameRecentDTO);
 							//game_seq , userId, gameScore ,rank
 						}

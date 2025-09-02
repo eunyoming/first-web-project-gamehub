@@ -45,22 +45,32 @@ public class BoardDAO {
 	}
 
 	// insert
-	public int insertBoards(BoardDTO dto) throws Exception{
-		String sql = "insert to boards values (boards_seq.nextval, ?, ?, ?, ?, ?, ?, ?, default, sysdate)";
+	public int insertBoards(BoardDTO dto) throws Exception {
+		String sql = "insert into boards values (boards_seq.nextval, ?, ?, ?, ?, ?, 0, 0, 'public', sysdate)";
 
-		try(Connection con = this.getConnection();
-				PreparedStatement pst = con.prepareStatement(sql);){
-			pst.setString(1, dto.getWriter());
-			pst.setString(2, dto.getTitle());
-			pst.setString(3, dto.getContents());
-			pst.setString(4, dto.getCategory());
-			pst.setString(5, dto.getRefgame());
-			pst.setInt(6, dto.getViewCount());
-			pst.setInt(7, dto.getLikeCount());
+		try (Connection con = getConnection();
+				PreparedStatement ps = con.prepareStatement(sql, new String[]{"seq"})) {
 
-			return pst.executeUpdate();
+			ps.setString(1, dto.getWriter());
+			ps.setString(2, dto.getTitle());
+			ps.setString(3, dto.getContents());
+			ps.setString(4, dto.getCategory());
+			ps.setString(5, dto.getRefgame());
+
+			int result = ps.executeUpdate();
+
+			if(result != 0) {
+				// 생성된 seq 가져오기
+				try (ResultSet rs = ps.getGeneratedKeys()) {
+					if (rs.next()) {
+						return rs.getInt(1);  // 방금 insert된 seq
+					}
+				}
+			}
+			return 0;
 		}
 	}
+
 
 	// delete by seq ( 작성자 본인이 본인글 삭제시 )
 	public int deleteBoardsBySeq(int seq) throws Exception{

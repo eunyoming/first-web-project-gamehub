@@ -66,6 +66,8 @@ public class BoardController extends HttpServlet {
 
 			}else if(cmd.equals("/detailPage.board")) {
 				
+				int seq = Integer.parseInt(request.getParameter("seq"));
+				request.setAttribute("seq", seq);
 				request.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(request, response);
 			
 			}else if(cmd.equals("/detail.board")) {
@@ -101,6 +103,32 @@ public class BoardController extends HttpServlet {
 
 					String json = new Gson().toJson(result);
 					pw.print(json);
+				}
+
+			}else if(cmd.equals("/write.board")) {
+				// 로그인 정보 가져오기
+				String loginId = (String)request.getSession().getAttribute("loginId");
+				
+				request.setAttribute("loginId", loginId);
+				request.getRequestDispatcher("/WEB-INF/views/board/write.jsp").forward(request, response);
+			
+			}else if(cmd.equals("/insert.board")) {
+				// 로그인 정보 가져오기
+				String loginId = (String)request.getSession().getAttribute("loginId");
+				
+				// 글 내용 가져오기
+				String title = request.getParameter("title");
+				String category = request.getParameter("category");
+				String refgame = request.getParameter("refgame");
+				String contents = request.getParameter("contents");
+				
+				BoardDTO dto = new BoardDTO(0, loginId, title, contents, category, refgame, 0, 0, null, null);
+				int seq = board_dao.insertBoards(dto);
+				
+				if(seq != 0) {
+					response.sendRedirect("/detailPage.board?seq=" + seq);
+				}else {
+					response.sendRedirect("/error.jsp");
 				}
 
 			}else if(cmd.equals("/update.board")) {

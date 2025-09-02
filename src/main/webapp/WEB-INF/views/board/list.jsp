@@ -73,8 +73,7 @@
 						</div>
 						<div class="col-1">${dto.writer}</div>
 						<div class="col-2">
-							<fmt:formatDate value="${dto.created_at}"
-								pattern="yyyy-MM-dd" />
+							<fmt:formatDate value="${dto.created_at}" pattern="yyyy-MM-dd" />
 						</div>
 						<div class="col-1">${dto.viewCount}</div>
 						<div class="col-1">${dto.likeCount}</div>
@@ -83,28 +82,39 @@
 			</c:otherwise>
 		</c:choose>
 	</div>
-	<div class="pageNavi">
-		<c:if test="${navi.jumpPrev}">
-			<a href="/list.board?cpage=${navi.currentPage - naviCountPerPage}">≪</a>
-		</c:if>
-		<c:if test="${navi.needPrev}">
-			<a href="/list.board?cpage=${navi.currentPage - 1}">&lt;</a>
-		</c:if>
+	<div class="board-footer row">
+		<div class="pageNavi col-10">
+			<c:if test="${navi.jumpPrev}">
+				<a href="/list.board?cpage=${navi.currentPage - naviCountPerPage}">≪</a>
+			</c:if>
+			<c:if test="${navi.needPrev}">
+				<a href="/list.board?cpage=${navi.currentPage - 1}">&lt;</a>
+			</c:if>
 
-		<c:forEach var="i" begin="${navi.startNavi}" end="${navi.endNavi}">
-			<a href="/list.board?cpage=${i}"
-				class="${i == navi.currentPage ? 'active' : ''}">${i}</a>
-		</c:forEach>
+			<c:forEach var="i" begin="${navi.startNavi}" end="${navi.endNavi}">
+				<a href="/list.board?cpage=${i}"
+					class="${i == navi.currentPage ? 'active' : ''}">${i}</a>
+			</c:forEach>
 
-		<c:if test="${navi.needNext}">
-			<a href="/list.board?cpage=${navi.currentPage + 1}">&gt;</a>
-		</c:if>
-		<c:if test="${navi.jumpNext}">
-			<a href="/list.board?cpage=${navi.currentPage + naviCountPerPage}">≫</a>
-		</c:if>
+			<c:if test="${navi.needNext}">
+				<a href="/list.board?cpage=${navi.currentPage + 1}">&gt;</a>
+			</c:if>
+			<c:if test="${navi.jumpNext}">
+				<a href="/list.board?cpage=${navi.currentPage + naviCountPerPage}">≫</a>
+			</c:if>
+		</div>
+		<div class="board-footer-btn col-2">
+			<c:if test="${loginId}">
+				<a href="/write.board">
+					<button class="btn btn-dark" id="write_btn">글 작성하기</button>
+				</a>
+			</c:if>
+		</div>
 	</div>
 </div>
 
-
+<script>
+	
+</script>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

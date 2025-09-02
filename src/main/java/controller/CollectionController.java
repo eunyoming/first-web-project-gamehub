@@ -61,11 +61,27 @@ public class CollectionController extends HttpServlet {
 		System.out.println("요청 path: " + path);
 		try {
 			if (path == null || path.equals("/recentlyPlayedGames")) {
-				System.out.println("들어옴");
-				//int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
+				
+				
 				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
 				//int totalAchievement = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId);
-				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); // 업적을 제외한 나머지 작업
+				
+				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); 
+				for (GameRecentDTO dto : gameRecentDTOList) {
+				    int seq = dto.getGameSeq();
+
+				    int totalAch   = achievementDAO.CountAchievementByGame_Seq(seq);
+				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId, seq);
+				    dto.setTotalAchievement(totalAch);
+				    dto.setCurrentAchievement(currAch);
+				    
+				}
+
+				
+				
+				
+				
+				
 				
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();

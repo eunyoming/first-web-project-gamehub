@@ -1,13 +1,13 @@
 package dto.game;
 
 public class GameRecentDTO {
-	
+	private int gameSeq;
 	private  String title;
 	private  String url;
 	private  String totalplaytime;
 	private  String recentPlayedDate;
-//	private int currentAchievement;
-//	private int totalAchievement;
+	private int currentAchievement;
+	private int totalAchievement;
 	
 	
 	
@@ -17,9 +17,10 @@ public class GameRecentDTO {
 	
 	
 	
-	public GameRecentDTO(String title, String url, String totalplaytime, String recentPlayedDate
+	public GameRecentDTO(int gameSeq,String title, String url, String totalplaytime, String recentPlayedDate
 			) {
 		super();
+		this.gameSeq = gameSeq;
 		this.title = title;
 		this.url = url;
 		this.totalplaytime = totalplaytime;
@@ -27,6 +28,14 @@ public class GameRecentDTO {
 //		this.currentAchievement = currentAchievement;
 //		this.totalAchievement = totalAchievement;
 	}
+	public int getGameSeq() {
+		return gameSeq;
+	}
+	public void setGameSeq(int gameSeq) {
+		this.gameSeq = gameSeq;
+	}
+	
+	
 	public String getTitle() {
 		return title;
 	}
@@ -51,17 +60,17 @@ public class GameRecentDTO {
 	public void setRecentPlayedDate(String recentPlayedDate) {
 		this.recentPlayedDate = recentPlayedDate;
 	}
-//	public int getCurrentAchievement() {
-//		return currentAchievement;
-//	}
-//	public void setCurrentAchievement(int currentAchievement) {
-//		this.currentAchievement = currentAchievement;
-//	}
-//	public int getTotalAchievement() {
-//		return totalAchievement;
-//	}
-//	public void setTotalAchievement(int totalAchievement) {
-//		this.totalAchievement = totalAchievement;
-//	}
+	public int getCurrentAchievement() {
+		return currentAchievement;
+	}
+	public void setCurrentAchievement(int currentAchievement) {
+		this.currentAchievement = currentAchievement;
+	}
+	public int getTotalAchievement() {
+		return totalAchievement;
+	}
+	public void setTotalAchievement(int totalAchievement) {
+		this.totalAchievement = totalAchievement;
+	}
 	
 }		

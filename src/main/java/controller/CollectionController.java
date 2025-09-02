@@ -74,20 +74,14 @@ public class CollectionController extends HttpServlet {
 				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId, seq);
 				    dto.setTotalAchievement(totalAch);
 				    dto.setCurrentAchievement(currAch);
-				    
-				}
-
-				
-				
-				
-				
-				
-				
+				}			
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
 				
 				pw.append(g.toJson(gameRecentDTOList));
-				 
+			}else if( path.equals("/userAchievement")) {
+				
+				
 				
 			}
 		} catch (Exception e) {

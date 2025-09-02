@@ -59,197 +59,227 @@ public class GameController extends HttpServlet {
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 		GameDAO gameDAO = GameDAO.getInstance();
 		GameInfoDAO gameInfoDAO = GameInfoDAO.getInstance();
-		System.out.println("요청 path: " + path);
 
-		if (path == null || path.equals("/main")) {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		
 
-			int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
-
-			System.out.println("파렌트 시퀀스=" + game_seq);
-
-			try {
-				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
-				GameReviewDTO wroteGameReviewDTO = gameReviewDAO.selectGameReviewsBygame_seqAndWriter(game_seq,
-						loginId);
-				request.setAttribute("game_seq", game_seq);
-
-				request.setAttribute("gameReviewList", gameReviewDTOList);
-				GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
-				GameInfoDTO gameInfoDTO = gameInfoDAO.selectGameInfoBySeq(game_seq);
-				request.setAttribute("infoList", gameInfoDTO);
-				request.setAttribute("gameList", gameDTO);
-				// game_seq 에 따른 gamedto 가져오는 메소드 제작하기 ex) gamedto.???
-
-				request.setAttribute("wroteGameReviewDTO", wroteGameReviewDTO);
-				request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("에러!!");
-			}
-
-			// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
-			// response);
-		}
-
-		else if (path == null || path.equals("/main/reviewInsert")) {
-			// ajax로 리뷰 등록하기 처리.
-			try {
-				String title = request.getParameter("title");
-				String content = request.getParameter("content");
-				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
-				int rating = Integer.parseInt(request.getParameter("rating"));
-
-				GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, title, content, game_seq, rating, null);
-				int result = gameReviewDAO.insertGameReviews(gameReviewDTO);
-
-				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
-
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(gameReviewDTOList));
-				System.out.println(g.toJson(gameReviewDTOList));
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("에러!!");
-			}
-		} else if (path.equals("/main/reviewView")) {
-			// ajax로 리뷰 리스트 전달 처리.
-			try {
-				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
-
-				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
-
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(gameReviewDTOList));
-				System.out.println(g.toJson(gameReviewDTOList));
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("에러!!");
-			}
-
-		} else if (path.equals("/main/reviewUpdate")) {
-			// ajax로 리뷰 업데이트 처리.
-			try {
-				String title = request.getParameter("title");
-				String content = request.getParameter("content");
-				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
-				int rating = Integer.parseInt(request.getParameter("rating"));
-				GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, title, content, game_seq, rating, null);
-
-				int updateResult = gameReviewDAO.updateGameReviewsBygame_seqAndWriter(gameReviewDTO);
-
-				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
-
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(gameReviewDTOList));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
-			}
-
-		} else if (path.equals("/main/record")) { // 상위5등까지 기록한 점수 보기
-
-			int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
-
-			try {
-				List<GameRecordDTO> gameRecordDTOList = gameRecordDAO.selectGameRecordsByRank(game_seq);
-
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(gameRecordDTOList));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("에러!!");
-			}
-		} else if (path.equals("/recordInsert")) { // 내 점수 기록하기
-			// GameDataDto dto = gson.fromJson(sb.toString(), GameDataDto.class);
-
-//			 BufferedReader reader = request.getReader();
-//			  StringBuilder sb = new StringBuilder();
-//			  String line;
-//			  while ((line = reader.readLine()) != null) {
-//			      sb.append(line);
-//			  } 이게 아래에 이거임
-
-			GameRecordDTO gameRecordDTO = g.fromJson(request.getReader(), GameRecordDTO.class); // ajax 받고
-			try {
-				int result = gameRecordDAO.insertGameRecords(gameRecordDTO);
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-				pw.append(g.toJson(result)); // ajax 보내기
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				request.getRequestDispatcher("/error/gameRecordError").forward(request, response);
-			}
-
-			// insertGameRecords
-		} else if (path.equals("/main/reviewDelete")) {
-			// ajax로 리뷰 삭제 처리.
-			try {
-				int game_seq = Integer.parseInt(request.getParameter("game_seq"));
-
-				int delResult = gameReviewDAO.deleteGameReviewsBygame_seqAndWriter(game_seq, loginId);
-
-				List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
-
-				response.setContentType("text/html; charset=UTF-8");
-				PrintWriter pw = response.getWriter();
-
-				pw.append(g.toJson(gameReviewDTOList));
-			} catch (Exception e) {
-				e.printStackTrace();
-				request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
-			}
-
-		} else if (path.equals("/info")) {
-			// ajax로 게임제목, 배경, 사진들
-
-			// try{
-			// int game_seq = Integer.parseInt(request.getParameter("game_seq"));
-
-			// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
-			// response);
-
-			// }catch(Exception e) {
-			// e.printStackTrace();
-			// System.out.println("에러!!");
-			// }
-
-		} else if (path.equals("/guide")) {
-			System.out.println("잘들어오잖아");
-			GameInfoDTO gameInfoDTO = g.fromJson(request.getReader(), GameInfoDTO.class); // ajax로 작성된 데이터 받아와서 dto에 저장
+		try {
 			
-			int game_seq = gameInfoDTO.getSeq();
-			try {
-			
-					GameInfoDTO result = gameInfoDAO.selectGameInfoBySeq(game_seq); // 문장들 다 뽑고
-					response.setContentType("application/json; charset=UTF-8");
-					PrintWriter pw = response.getWriter();
-					System.out.println(result);
-					System.out.println("직렬화 테스트: " + g.toJson(result));
-					pw.append(g.toJson(result)); // ajax 보내기
+		
+			if (path == null || path.equals("/main")) {
+	
+				int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
+	
+				System.out.println("파렌트 시퀀스=" + game_seq);
+	
+				try {
+					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
+					GameReviewDTO wroteGameReviewDTO = gameReviewDAO.selectGameReviewsBygame_seqAndWriter(game_seq,
+							loginId);
+					request.setAttribute("game_seq", game_seq);
+	
+					request.setAttribute("gameReviewList", gameReviewDTOList);
+					GameDTO gameDTO = gameDAO.selectGamesBySeq(game_seq);
+					GameInfoDTO gameInfoDTO = gameInfoDAO.selectGameInfoBySeq(game_seq);
+					request.setAttribute("infoList", gameInfoDTO);
+					request.setAttribute("gameList", gameDTO);
+					// game_seq 에 따른 gamedto 가져오는 메소드 제작하기 ex) gamedto.???
+	
+					request.setAttribute("wroteGameReviewDTO", wroteGameReviewDTO);
+					request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request, response);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("에러!!");
+				}
+	
+				// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
+				// response);
+			}else if(path.equals("/gameList")) {
 				
-
-			} catch (Exception e) {
-			    e.printStackTrace();
-			    response.setContentType("application/json; charset=UTF-8");
-			    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			    PrintWriter pw = response.getWriter();
-			    pw.append("{\"error\":\"서버 오류 발생\"}");
+				List<GameDTO> games;
+				
+					
+					games = gameDAO.getAllGames();
+					String json = g.toJson(games);
+			        response.getWriter().write(json);
+				
+	
+	
+			}else if(path.equals("/gameInfo")) {
+				int seq = Integer.parseInt(request.getParameter("seq"));
+	
+		        GameInfoDTO info;
+			
+				info = GameInfoDAO.getInstance().selectGameInfoBySeq(seq);
+				response.getWriter().write(g.toJson(info));
+	
+				
 			}
-
-
-			// ajax로 게시판 내용들 가져오기
-
+	
+			else if (path == null || path.equals("/main/reviewInsert")) {
+				// ajax로 리뷰 등록하기 처리.
+				try {
+					String title = request.getParameter("title");
+					String content = request.getParameter("content");
+					int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+					int rating = Integer.parseInt(request.getParameter("rating"));
+	
+					GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, title, content, game_seq, rating, null);
+					int result = gameReviewDAO.insertGameReviews(gameReviewDTO);
+	
+					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
+	
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+	
+					pw.append(g.toJson(gameReviewDTOList));
+					System.out.println(g.toJson(gameReviewDTOList));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("에러!!");
+				}
+			} else if (path.equals("/main/reviewView")) {
+				// ajax로 리뷰 리스트 전달 처리.
+				try {
+					int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+	
+					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
+	
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+	
+					pw.append(g.toJson(gameReviewDTOList));
+					System.out.println(g.toJson(gameReviewDTOList));
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("에러!!");
+				}
+	
+			} else if (path.equals("/main/reviewUpdate")) {
+				// ajax로 리뷰 업데이트 처리.
+				try {
+					String title = request.getParameter("title");
+					String content = request.getParameter("content");
+					int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+					int rating = Integer.parseInt(request.getParameter("rating"));
+					GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, title, content, game_seq, rating, null);
+	
+					int updateResult = gameReviewDAO.updateGameReviewsBygame_seqAndWriter(gameReviewDTO);
+	
+					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
+	
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+	
+					pw.append(g.toJson(gameReviewDTOList));
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+					request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
+				}
+	
+			} else if (path.equals("/main/record")) { // 상위5등까지 기록한 점수 보기
+	
+				int game_seq = Integer.parseInt(request.getParameter("game_seq")); // 게시글 번호
+	
+				try {
+					List<GameRecordDTO> gameRecordDTOList = gameRecordDAO.selectGameRecordsByRank(game_seq);
+	
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+	
+					pw.append(g.toJson(gameRecordDTOList));
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("에러!!");
+				}
+			} else if (path.equals("/recordInsert")) { // 내 점수 기록하기
+				// GameDataDto dto = gson.fromJson(sb.toString(), GameDataDto.class);
+	
+	//			 BufferedReader reader = request.getReader();
+	//			  StringBuilder sb = new StringBuilder();
+	//			  String line;
+	//			  while ((line = reader.readLine()) != null) {
+	//			      sb.append(line);
+	//			  } 이게 아래에 이거임
+	
+				GameRecordDTO gameRecordDTO = g.fromJson(request.getReader(), GameRecordDTO.class); // ajax 받고
+				try {
+					int result = gameRecordDAO.insertGameRecords(gameRecordDTO);
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+					pw.append(g.toJson(result)); // ajax 보내기
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+					request.getRequestDispatcher("/error/gameRecordError").forward(request, response);
+				}
+	
+				// insertGameRecords
+			} else if (path.equals("/main/reviewDelete")) {
+				// ajax로 리뷰 삭제 처리.
+				try {
+					int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+	
+					int delResult = gameReviewDAO.deleteGameReviewsBygame_seqAndWriter(game_seq, loginId);
+	
+					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);
+	
+					response.setContentType("text/html; charset=UTF-8");
+					PrintWriter pw = response.getWriter();
+	
+					pw.append(g.toJson(gameReviewDTOList));
+				} catch (Exception e) {
+					e.printStackTrace();
+					request.getRequestDispatcher("/error/gameReviewError").forward(request, response);
+				}
+	
+			} else if (path.equals("/info")) {
+				// ajax로 게임제목, 배경, 사진들
+	
+				// try{
+				// int game_seq = Integer.parseInt(request.getParameter("game_seq"));
+	
+				// request.getRequestDispatcher("/WEB-INF/views/game/main.jsp").forward(request,
+				// response);
+	
+				// }catch(Exception e) {
+				// e.printStackTrace();
+				// System.out.println("에러!!");
+				// }
+	
+			} else if (path.equals("/guide")) {
+				System.out.println("잘들어오잖아");
+				GameInfoDTO gameInfoDTO = g.fromJson(request.getReader(), GameInfoDTO.class); // ajax로 작성된 데이터 받아와서 dto에 저장
+				
+				int game_seq = gameInfoDTO.getSeq();
+				try {
+				
+						GameInfoDTO result = gameInfoDAO.selectGameInfoBySeq(game_seq); // 문장들 다 뽑고
+						response.setContentType("application/json; charset=UTF-8");
+						PrintWriter pw = response.getWriter();
+						System.out.println(result);
+						System.out.println("직렬화 테스트: " + g.toJson(result));
+						pw.append(g.toJson(result)); // ajax 보내기
+					
+	
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    response.setContentType("application/json; charset=UTF-8");
+				    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				    PrintWriter pw = response.getWriter();
+				    pw.append("{\"error\":\"서버 오류 발생\"}");
+				}
+	
+	
+				// ajax로 게시판 내용들 가져오기
+	
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+			request.getRequestDispatcher("/error").forward(request, response);
 		}
 	}
 

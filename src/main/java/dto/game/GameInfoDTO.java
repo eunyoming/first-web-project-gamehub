@@ -8,7 +8,9 @@ public class GameInfoDTO {
 	private String creatorComment;
 	private String guide;
 	
-	
+	public GameInfoDTO() {
+		
+	}
 	
 	public GameInfoDTO(int seq, String screenshot, String creator, String creatorComment, String guide) {
 		super();

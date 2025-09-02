@@ -22,8 +22,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import dao.AchievementDAO;
+import dao.PointDAO;
 import dto.game.AchievementDTO;
 import dto.game.UserAchievementDTO;
+import dto.point.PointDTO;
 
 
 @WebServlet("/api/achievement/*")
@@ -74,6 +76,8 @@ public class AchievementController extends HttpServlet {
 				String achievementId = json.get("achievementId").getAsString();
 				JsonElement unlocked_json = json.get("unlocked_at");
 				Timestamp unlocked_at= gson.fromJson(unlocked_json, Timestamp.class);
+				
+				PointDAO pointDao = PointDAO.getInstance();
 
 				
 				//업적 아이디를 기반으로 업적 검색
@@ -97,8 +101,14 @@ public class AchievementController extends HttpServlet {
 				      
 				        //그다음 ,achievDto에 적힌 point_seq에 따른 pointDTO 가져오고
 				        
+				        PointDTO pointDTO = pointDao.selectPointByAchievementSeq(achievDto.getSeq());
+				        
 				        //point_dto의 값만큼 point_log에 기록 후, 사용자의 point 증가
 				        
+				        pointDao.addPoint(userId, pointDTO.getValue(), "게임 업적 달성"+achievDto.getId(), pointDTO.getType());
+				        
+				        
+				        request.getSession().setAttribute("currentPoint", pointDao.getCurrentPoints(userId));
 
 				        result.addProperty("status", success ? "success" : "fail");
 				        

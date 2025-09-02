@@ -3,22 +3,22 @@ package dto.member;
 import java.sql.Timestamp;
 
 public class MemberDTO {
-    private String id;
-    private String pw;
-    private String name;
-    private String phone;
-    private String email;
-    private String zipcode;
-    private String address;
-    private String addressDetail;
-    private int point;
-    private char privacyAgreed;
-    private Timestamp created_at;
-    private Timestamp privacy_agreed_at;
-    
-    public MemberDTO() {
-    	
-    }
+	private String id;
+	private String pw;
+	private String name;
+	private String phone;
+	private String email;
+	private String zipcode;
+	private String address;
+	private String addressDetail;
+	private int point;
+	private char privacyAgreed;
+	private Timestamp created_at;
+	private Timestamp privacy_agreed_at;
+
+	public MemberDTO() {
+
+	}
 
 	public MemberDTO(String id, String pw, String name, String phone, String email, String zipcode, String address,
 			String addressDetail, int point, char privacyAgreed, Timestamp created_at, Timestamp privacy_agreed_at) {
@@ -35,6 +35,16 @@ public class MemberDTO {
 		this.privacyAgreed = privacyAgreed;
 		this.created_at = created_at;
 		this.privacy_agreed_at = privacy_agreed_at;
+	}
+	public MemberDTO(String id, String name, String phone, String email, 
+			String zipcode, String address, String addressDetail) {
+		this.id = id;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+		this.zipcode = zipcode;
+		this.address = address;
+		this.addressDetail = addressDetail;
 	}
 
 	public String getId() {

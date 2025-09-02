@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import dao.AchievementDAO;
 import dao.GameDAO;
 import dao.GameRecordDAO;
 import dto.game.GameDTO;
@@ -51,18 +53,41 @@ public class CollectionController extends HttpServlet {
 						}
 					}
 				}).create();
+		
 		String loginId = (String) request.getSession().getAttribute("loginId"); // 로그인 아이디
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
 		GameDAO gameDAO = GameDAO.getInstance();
+		AchievementDAO achievementDAO = AchievementDAO.getInstance();
 		System.out.println("요청 path: " + path);
 		try {
 			if (path == null || path.equals("/recentlyPlayedGames")) {
-				System.out.println("들어옴");
-				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId);
+				
+				
+				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
+				//int totalAchievement = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId);
+				
+				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); 
+				for (GameRecentDTO dto : gameRecentDTOList) {
+				    int seq = dto.getGameSeq();
+
+				    int totalAch   = achievementDAO.CountAchievementByGame_Seq(seq);
+				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId, seq);
+				    dto.setTotalAchievement(totalAch);
+				    dto.setCurrentAchievement(currAch);
+				    
+				}
+
 				
 				
 				
 				
+				
+				
+				response.setContentType("text/html; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+				
+				pw.append(g.toJson(gameRecentDTOList));
+				 
 				
 			}
 		} catch (Exception e) {

@@ -141,13 +141,13 @@ public class MemberController extends HttpServlet {
 			}
 			// 이메일 중복 체크
 			else if (path.equals("/emailCheck")) {
-				
-				String email  = request.getParameter("email");
+			    String email = request.getParameter("email");
+			    String userId = (String) request.getSession().getAttribute("loginId"); // 세션에서 현재 로그인 아이디 가져옴
 
-				boolean result = dao.isEmailExist (email);
+			    boolean result = dao.isEmailExist(email, userId);
 
-				PrintWriter pw = response.getWriter();
-				pw.write("{\"result\": " + result + "}");
+			    PrintWriter pw = response.getWriter();
+			    pw.write("{\"result\": " + result + "}");
 			}
 			// 회원가입
 			else if(path.equals("/insert")) {

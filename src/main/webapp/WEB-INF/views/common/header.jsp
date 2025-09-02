@@ -30,12 +30,16 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav ms-auto">
-						<li class="nav-item"><a class="nav-link active" href="/">Main
+						<li class="nav-item"><a class="nav-link" href="/">Main
 								Page</a></li>
 						<li class="nav-item"><a class="nav-link"
 							href="/api/game/main?game_seq=1">Game</a></li>
 						<li class="nav-item"><a class="nav-link" href="/list.board">Community</a></li>
 						<li class="nav-item"><a class="nav-link" href="/api/point/pointPage">Store</a></li>
+						<c:if test="${not empty simpleProfile and  simpleProfile.category eq 'Manager'}">
+							<li class="nav-item"><a class="nav-link" href="/api/manage/main">Manager</a></li>
+						</c:if>
+					
 					</ul>
 					<c:choose>
 						<c:when test="${loginId == null }">

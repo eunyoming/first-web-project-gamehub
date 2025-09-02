@@ -264,62 +264,6 @@ h2 {
 }
 </style>
 
-<section class="container-fluid p-5 main-section bg-main-waves">
-	<div class="mb-4">
-		<h2>버튼 모음</h2>
-		<p>기본적으로 btn 클래스는 무조건 포함임</p>
-	</div>
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<button class="btn btn-blue-main">btn-blue-main</button>
-		<button class="btn btn-purple-main">btn-purple-main</button>
-		<button class="btn btn-outline-blue-main">btn-outline-blue-main</button>
-		<button class="btn btn-outline-purple-main">btn-outline-purple-main</button>
-
-	</div>
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<button class="btn btn-red-main">btn-red-main</button>
-		<button class="btn btn-yellow-main">btn-yellow-main</button>
-		<button class="btn btn-outline-red-main">btn-outline-red-main</button>
-		<button class="btn btn-outline-yellow-main">btn-outline-yellow-main</button>
-
-	</div>
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<button class="btn btn-green-main">btn-green-main</button>
-		<button class="btn btn-peach-main">btn-peach-main</button>
-		<button class="btn btn-outline-green-main">btn-outline-green-main</button>
-		<button class="btn btn-outline-peach-main">btn-outline-peach-main</button>
-
-	</div>
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<button class="btn btn-navy-main">btn-navy-main</button>
-		<button class="btn btn-gray-main">btn-gray-main</button>
-		<button class="btn btn-outline-navy-main">btn-outline-navy-main</button>
-		<button class="btn btn-outline-gray-main">btn-outline-gray-main</button>
-
-	</div>
-
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<button class="btn btn-gradient btn-blue-purple">btn-blue-purple</button>
-		<button class="btn btn-gradient btn-red-peach">btn-red-peach</button>
-		<button class="btn btn-gradient btn-yellow-green">btn-yellow-green</button>
-		<button class="btn btn-gradient btn-navy-blue">btn-navy-blue</button>
-		<button class="btn btn-gradient btn-gray-purple">btn-gray-purple</button>
-
-	</div>
-
-	<div class="d-flex justify-content-center gap-3 mb-4">
-		<a href="/api/manage/main"><button class="btn btn-blue-main">관리자
-				페이지 확인용</button></a> <a href="/api/member/mypage?section=collection&userId=${loginId}"><button
-				class="btn btn-purple-main">마이페이지 확인용</button></a>
-					<form action="/api/friends/request" method="post">
-				<input type="hidden" name="toUser" value="friend001">
-				  <input type="hidden" name="fromUser" value="${loginId}">
-				  <button type="submit" class="btn btn-outline-blue-main"> friend001에게 친구 요청</button>
-	</form> 
-	</div>
-
-
-</section>
 <section class="strips strips-container">
 	<article class="strips__strip" data-seq="1">
 		<div class="strip__content">
@@ -429,8 +373,43 @@ h2 {
 	<i class="fa fa-close strip__close"></i>
 </section>
 
-<section class="container-fluid hero">
-	<img src="/asset/img/stacked-peaks.png" alt="배경" class="responsive-img">
+<section class="container-fluid p-5 main-section bg-main-waves">
+	<div class="container d-flex flex-column align-items-center">
+  <img src="/asset/img/game_controller.svg" class="image-box mb-4 p-5" />
+
+  <div   class="welcome-box text-center mb-5">
+    <h1 class="font_YeogiOttae">
+    
+		<span class="line fw-bolder">쉽게 찾고</span>
+		<span class="line fw-bolder">쉽게 플레이하세요</span>
+	</h1>
+
+    <h5 class="font_gowooDodum" class="text-center">
+      <span class="line">사용자들과 경험을 나누고</span>
+      <span class="line">자신의 취향을 공유하세요</span>
+    </h5>
+  </div>
+  <div  class="welcome-box text-center">
+   
+
+    <h3 class="font_gowooDodum" class="text-center">
+      <span class="line">오늘까지 게시판에 올라온 게시글 갯수는...!</span>
+ 		 <span class="line post-count">0</span>
+    </h3>
+  </div>
+</div>
+
+
+</section>
+<section class="container-fluid p-5 main-section">
+	
+<p>섹션2</p>
+
+</section>
+
+<section class="container-fluid p-5 main-section bg-main-stacked">
+<p>섹션3</p>
+
 </section>
 
 <script
@@ -463,6 +442,7 @@ $(document).ready(function(){
             });
         }
     });
+
 });
 
 
@@ -492,18 +472,64 @@ strips.forEach((strip, index) => {
   }, index * 0.3); // 기존 delay 반영
 });
 
+gsap.to(".image-box", {
+    scrollTrigger: {
+      trigger: ".image-box",
+      start: "top 80%", 
+      toggleActions: "play none none none", 
+    },
+    opacity: 1,
+    y: 0,
+    duration: 1
+  });
+  
+gsap.to(".image-box", { 
+	  rotation: 360,
+	  duration: 2,
+	  repeat: -1,
+	  repeatDelay: 2,
+	  ease: 'bounce.out'
+	});
 
-ScrollTrigger.create({
-  trigger: ".strips-container",
-  start: "top top",               // trigger의 top이 뷰포트 top에 닿을 때 시작
-  end: "bottom top",
-  scrub: true,
-  pin:true,
-  pinSpacing: true,
-  animation: stripsTimeline,
-  invalidateOnRefresh: true
+gsap.utils.toArray(".welcome-box .line").forEach((el, i) => {
+	  gsap.to(el, {
+	    scrollTrigger: {
+	      trigger: ".welcome-box",
+	      start: "top 70%",
+	      toggleActions: "play none none none"
+	    },
+	    opacity: 1,
+	    y: 0,
+	    duration: 0.8,
+	    delay: i * 0.5,
+	    ease: "power2.out"
+	  });
+	});
+	
 
-});
+function animatePostCount(targetCount) {
+	  const counter = { value: 0 };
+	  const $display = $('.post-count');
+
+	  gsap.to(counter, {
+	    value: targetCount,
+	    duration: 4,
+	    ease: "none",
+	    scrollTrigger: {
+	      trigger: ".post-count",
+	      start: "top 80%",
+	      toggleActions: "play none none none"
+	    },
+	    onUpdate: function() {
+	      $display.text(Math.floor(counter.value) + "개!");
+	    } ,onComplete: function () {
+	    
+	    }
+	  });
+	  
+	  
+	}
+
 
 var Expand = (function() {
     var tile = $('.strips__strip');
@@ -571,7 +597,14 @@ Expand.init();
 if ('scrollRestoration' in history) {
 	  history.scrollRestoration = 'manual';
 	}
-
+$.ajax({
+	  url: '/api/manage/total-board-count',
+	  method: 'GET',
+	  dataType: 'json',
+	  success: function(data) {
+	    animatePostCount(data.count);
+	  }
+	});
         </script>
 <!-- </body></html> -->
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

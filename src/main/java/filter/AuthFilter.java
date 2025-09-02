@@ -45,19 +45,30 @@ public class AuthFilter implements Filter {
 				return;
 			}
 		}
+		
+	    String uri = req.getRequestURI();
+
 
 		// 로그인 한 상태라면 category 검사
 		if (loginUser != null) {
-			if ("Banned".equalsIgnoreCase(loginUser.getCategory())) {
-				// 밴 유저 → 로그아웃 처리 + 안내 페이지로 이동
+	        String category = loginUser.getCategory();
 
-				session.invalidate();
-				SessionManager.getInstance().removeSession(loginUser.getUserId());
+	        if ("Banned".equalsIgnoreCase(category)) {
+	            session.invalidate();
+	            SessionManager.getInstance().removeSession(loginUser.getUserId());
+	            res.sendRedirect(req.getContextPath() + "/banned.jsp");
+	            return;
+	        }
 
-				res.sendRedirect(req.getContextPath() + "/banned.jsp");
-				return;
-			}
-		}
+	        // Manager가 아닌 경우 /api/manage/* 접근 제한
+	        if (uri.startsWith(req.getContextPath() + "/api/manage/") &&
+	            !"Manager".equalsIgnoreCase(category)) {
+	            res.sendError(HttpServletResponse.SC_FORBIDDEN, "관리자만 접근 가능합니다.");
+	            return;
+	        }
+	    }
+
+
 
 		// 밴이 아니면 정상 진행
 		chain.doFilter(request, response);

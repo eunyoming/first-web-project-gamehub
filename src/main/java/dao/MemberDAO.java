@@ -170,21 +170,29 @@ public class MemberDAO {
 	    return false; // 두 테이블 모두 없으면 false
 	}
 	// Email 중복 확인
-	public boolean isEmailExist (String email) throws Exception {
+	public boolean isEmailExist (String email, String userId) throws Exception {
 		
-		String sql = "select * from members where email=?";
+		String sql = "select * from members where email=? and id=?";
 		
 		try(
 				Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql)) {
 
 			pstat.setString(1, email);
+			pstat.setString(2, userId);
 
-			try (ResultSet rs = pstat.executeQuery()) {
-				return rs.next();
-			}
+			 try (ResultSet rs = pstat.executeQuery()) {
+		            if (rs.next()) {
+		            	
+		                String foundId = rs.getString("id");
+		                // 찾은 이메일이 본인(userId)의 것이면 중복 아님
+		                return !foundId.equals(userId);
+		            }
+		            // 이메일 없음 → 중복 아님
+		            return false;
+		        }
+		    }
 		}
-	}
 	// 회원정보 리스트
 	public MemberDTO selectAllMemberId (String loginId) throws Exception {
 

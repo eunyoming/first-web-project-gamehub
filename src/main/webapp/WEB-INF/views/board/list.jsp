@@ -3,7 +3,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!-- JSTL 날짜 포맷 라이브러리 -->
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%
+request.setAttribute("pageTitle", "게시판 리스트");
+%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- bootstrap icon -->

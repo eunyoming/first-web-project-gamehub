@@ -9,9 +9,22 @@ public class UserAchievementDTO{
     private String isEquip;
     private Timestamp unlocked_At;
     // Getters and Setters
+    
+    
+    public UserAchievementDTO(int seq, String userId, String achievementId, String isEquip, Timestamp unlocked_At) {
+		super();
+		this.seq = seq;
+		this.userId = userId;
+		this.achievementId = achievementId;
+		this.isEquip = isEquip;
+		this.unlocked_At = unlocked_At;
+	}
+    
+    
 	public int getSeq() {
 		return seq;
 	}
+	
 	public void setSeq(int seq) {
 		this.seq = seq;
 	}

@@ -23,6 +23,7 @@ import com.google.gson.JsonPrimitive;
 import dao.AchievementDAO;
 import dao.GameDAO;
 import dao.GameRecordDAO;
+import dto.game.AchievementDTO;
 import dto.game.GameDTO;
 import dto.game.GameRecentDTO;
 import dto.game.GameRecordDTO;
@@ -56,31 +57,40 @@ public class CollectionController extends HttpServlet {
 		
 		String loginId = (String) request.getSession().getAttribute("loginId"); // 로그인 아이디
 		GameRecordDAO gameRecordDAO = GameRecordDAO.getInstance();
-		GameDAO gameDAO = GameDAO.getInstance();
+		
 		AchievementDAO achievementDAO = AchievementDAO.getInstance();
 		System.out.println("요청 path: " + path);
 		try {
-			if (path == null || path.equals("/recentlyPlayedGames")) {
+			if (path == null || path.equals("/recentlyPlayedGames")||path.equals("/userAchievement")) {
 				
 				
 				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
 				//int totalAchievement = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId);
 				
+				
+				
+				
 				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); 
+				List<AchievementDTO> achievementDTOList = achievementDAO.selectAchievementByLoginId(loginId);
 				for (GameRecentDTO dto : gameRecentDTOList) {
 				    int seq = dto.getGameSeq();
-
+				    
 				    int totalAch   = achievementDAO.CountAchievementByGame_Seq(seq);
 				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId, seq);
 				    dto.setTotalAchievement(totalAch);
 				    dto.setCurrentAchievement(currAch);
-				}			
+				}	
+				
+				
+				
 				response.setContentType("text/html; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
 				
 				pw.append(g.toJson(gameRecentDTOList));
-			}else if( path.equals("/userAchievement")) {
-				
+			
+		        	
+		        	
+		        
 				
 				
 			}

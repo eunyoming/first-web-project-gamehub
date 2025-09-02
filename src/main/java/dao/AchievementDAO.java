@@ -5,12 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.game.AchievementDTO;
+import dto.game.GameRecordDTO;
 import dto.game.UserAchievementDTO;
 
 public class AchievementDAO {
@@ -110,9 +113,10 @@ public class AchievementDAO {
 				if (rs.next()) {
 					return rs.getInt("totalAch");
 				}
-				
+
 			}
-		}return 0;
+		}
+		return 0;
 	}
 
 	public int CountAchievementByGame_SeqAndLoginId(String loginId, int game_seq) throws Exception {
@@ -126,11 +130,31 @@ public class AchievementDAO {
 				if (rs.next()) {
 					return rs.getInt("currentAch");
 				}
-				
+
 			}
 		}
 		return 0;
 
 	}
 
+	public List<AchievementDTO> selectAchievementByLoginId(String loginId) throws Exception {
+		String sql = "";
+		try (Connection con = this.getConnection(); PreparedStatement pstat = con.prepareStatement(sql)) {
+			pstat.setString(1, loginId);
+			try (ResultSet rs = pstat.executeQuery()) {
+				List<AchievementDTO> list = new ArrayList<>();
+				while (rs.next()) {
+					
+					;
+
+					AchievementDTO achievementdto = new AchievementDTO();
+					list.add(achievementdto);
+					// game_seq , userId, gameScore ,rank
+				}
+
+				return list;
+			}
+		}
+
+	}
 }

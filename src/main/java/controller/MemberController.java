@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import commons.SessionManager;
 import dao.MemberDAO;
 import dto.member.MemberDTO;
@@ -26,6 +28,8 @@ public class MemberController extends HttpServlet {
 
 		String path = request.getPathInfo(); 
 		MemberDAO dao = MemberDAO.getInstance();
+		Gson g = new Gson ();
+		
 		try {
 			if(path.equals("/loginPage")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response);
@@ -155,6 +159,21 @@ public class MemberController extends HttpServlet {
 				if(result != 0) {
 					response.sendRedirect("/api/member/loginPage");
 				}
+			}
+			// 마이페이지 회원정보
+			else if (path.equals("/userInpo")) {
+					
+				String loginId =(String)request.getSession().getAttribute("loginId");
+				System.out.println(loginId);
+				
+				MemberDTO dto = dao.selectAllMember(loginId);
+				
+				response.setContentType("application/json; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+				
+				String result = g.toJson(dto);
+				pw.append(result);
+				
 			}
 			//로그아웃
 			else if(path.equals("/logout")) {

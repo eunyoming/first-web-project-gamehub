@@ -192,5 +192,22 @@
             </div>
     </div>
     <script>
-
+	$(function() {
+		$.ajax ({
+			url : "/api/member/userInpo",
+			method : "post",
+			dataType : "json"
+		}).done(function(resp){
+			
+			let result =resp;
+			
+			$("#id").text(result.id);
+			$("#name").text(result.name);
+			$("#phone").text(result.phone);
+			$("#email").text(result.email);
+			$("#zipcode").text(result.zipcode);
+			$("#address").text(result.address);
+			$("#addressDetail").text(result.addressDetail);
+		})
+	})
     </script>

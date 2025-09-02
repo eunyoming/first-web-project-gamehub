@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+/* container */
+.container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  padding-bottom:0px;
+  width: 80vw;
+  max-width: 1000px;
+  min-height: 750px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  background: #fff;
+}
+
+/* contents */
+.contents{
+	height:55vh;
+	margin-top: 10px;
+}
+
+.contentsDiv{
+	height:90%;
+}
+
+/* footer-btns */
+.footer-btns .col{
+	margin:8px;
+	display: flex;
+	justify-content: end;
+	align-items: center;
+	gap:6px;
+}
+
+
+/* Summernote 스타일 */
+.note-frame{
+	padding: 12px;
+}
+.note-editable * {
+	margin: 0 !important;
+}
+/* 아래 높이조절바 없애기 */
+.note-resize, .note-statusbar, .note-editor .note-resizebar {
+	display: none !important;
+}
+.note-toolbar .dropdown-toggle::after {
+  display: none !important;
+}
+.note-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* 전체 에디터 높이 */
+}
+
+.note-toolbar {
+  flex-shrink: 0;
+}
+
+.note-editable {
+  flex-grow: 1;
+  overflow-y: auto;
+}

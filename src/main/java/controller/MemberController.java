@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import commons.SessionManager;
 import dao.MemberDAO;
 import dao.PointDAO;
@@ -27,6 +29,8 @@ public class MemberController extends HttpServlet {
 
 		String path = request.getPathInfo(); 
 		MemberDAO dao = MemberDAO.getInstance();
+		Gson g = new Gson ();
+		
 		try {
 			if(path.equals("/loginPage")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response);
@@ -135,7 +139,17 @@ public class MemberController extends HttpServlet {
 			else if(path.equals("/join")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/join.jsp").forward(request, response);
 			}
-			// 회원가입 insert
+			// 이메일 중복 체크
+			else if (path.equals("/emailCheck")) {
+				
+				String email  = request.getParameter("email");
+
+				boolean result = dao.isEmailExist (email);
+
+				PrintWriter pw = response.getWriter();
+				pw.write("{\"result\": " + result + "}");
+			}
+			// 회원가입
 			else if(path.equals("/insert")) {
 				request.setCharacterEncoding("UTF-8");
 
@@ -157,7 +171,67 @@ public class MemberController extends HttpServlet {
 					response.sendRedirect("/api/member/loginPage");
 				}
 			}
-			//로그아웃
+			// 마이페이지 회원정보
+			else if (path.equals("/userInpo")) {
+					
+				String loginId =(String)request.getSession().getAttribute("loginId");
+				System.out.println(loginId);
+				
+				MemberDTO dto = dao.selectAllMemberId(loginId);
+				
+				response.setContentType("application/json; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+				
+				String result = g.toJson(dto);
+				pw.append(result);
+				
+			}
+			// 마이페이지 회원정보 수정
+			else if (path.equals("/userInpoUpdate")) {
+			    
+			    String loginId = (String) request.getSession().getAttribute("loginId");
+			    
+			    String name = request.getParameter("name");
+			    String phone = request.getParameter("phone");
+			    String email = request.getParameter("email");
+			    String zipcode = request.getParameter("zipcode");
+			    String address = request.getParameter("address");
+			    String addressDetail = request.getParameter("addressDetail");
+			    
+			    // 로그인 아이디 포함해서 DTO 생성
+			    MemberDTO dto = new MemberDTO(loginId, name, phone, email, zipcode, address, addressDetail);
+			    
+			    dao.updateMemberById(dto);
+			    
+			    // 업데이트 후 다시 DB 조회해서 최신 데이터 가져오기
+			    MemberDTO updatedDto = dao.selectAllMemberId(loginId);
+			    
+			    // JSON 응답
+			    response.setContentType("application/json; charset=UTF-8");
+			    PrintWriter pw = response.getWriter();
+			    String result = g.toJson(updatedDto); 
+			    pw.append(result);
+			}
+			// 회원탈퇴
+			else if (path.equals("/userSecession")) {
+				
+				 String loginId = (String) request.getSession().getAttribute("loginId");
+
+		            if (loginId == null) {
+		                response.sendRedirect("/login.jsp"); // 로그인 안 된 경우
+		                return;
+		            }
+
+		            // 회원 탈퇴 처리
+		            dao.withdrawMember(loginId);
+
+		            // 세션 만료 (로그아웃 처리)
+		            request.getSession().invalidate();
+
+		            // 탈퇴 완료 페이지 or 메인으로 이동
+		            response.sendRedirect("/");
+			}
+			// 로그아웃
 			else if(path.equals("/logout")) {
 
 				//세션 매니저에서 제거

@@ -1,8 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
      <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%
+request.setAttribute("pageTitle", "관리자 통계 페이지");
+%>
 <jsp:include page="/WEB-INF/views/common/manage_header.jsp" />
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  <script src="https://cdn.plot.ly/plotly-3.1.0.min.js" charset="utf-8"></script>
+
+
 <div class="container">
   <h2 class="mb-4">관리자 대시보드</h2>
   <div>

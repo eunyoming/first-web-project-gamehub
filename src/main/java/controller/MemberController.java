@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import commons.SessionManager;
 import dao.MemberDAO;
+import dao.PointDAO;
 import dto.member.MemberDTO;
 import dto.member.SimpleUserProfileDTO;
 
@@ -52,7 +53,7 @@ public class MemberController extends HttpServlet {
 
 					request.getSession().setAttribute("simpleProfile", loginDto);
 					request.getSession().setAttribute("loginId", userId);
-					request.getSession().setAttribute("currentPoint", 0);
+					request.getSession().setAttribute("currentPoint", PointDAO.getInstance().getCurrentPoints(userId));
 
 					//세션 메니저에 세션 등록
 					SessionManager.getInstance().addSession(userId, request.getSession());	

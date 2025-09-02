@@ -2,6 +2,7 @@ package dto.member;
 
 import java.sql.Timestamp;
 
+// 회원탈퇴 DTO
 public class WithdrawnMemberDTO {
 
 	private String id;

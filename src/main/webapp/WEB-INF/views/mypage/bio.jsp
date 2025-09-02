@@ -28,16 +28,17 @@ h1 {
 
 .form-group {
   display: flex;
-  align-items: flex-start; /* 라벨은 위쪽, input-wrap은 옆으로 */
+  align-items: center; /* 인풋과 라벨 세로 중앙 정렬 */
   margin-bottom: 20px;
+  margin-left: 30px;
 }
 
 .form-group label {
   font-weight: bold;
-  width: 120px; /* 라벨 고정 너비 */
+  width: 100px;  /* 조금 줄여서 여백 균형 맞춤 */
   text-align: right;
-  margin-right: 10px;
-  line-height: 38px; /* input 높이에 맞춤 */
+  margin-right: 15px; /* 균형 잡힌 여백 */
+  line-height: normal; /* 따로 지정 안 하고 flex에 맡김 */
 }
 
 .input-wrap {
@@ -57,7 +58,18 @@ input[type="text"], input[type="email"] {
 .input-button-wrap {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px; /* 버튼과 인풋 사이 여백 */
+  width: 350px; /* 라벨 맞춘 input 기준 width 유지 */
+}
+
+.input-button-wrap input {
+  flex: 1;         /* 버튼 뺀 나머지 공간 차지 */
+  min-width: 0;    /* 넘치면 줄바꿈 방지 */
+}
+
+.input-button-wrap button {
+  flex-shrink: 0;  /* 버튼 크기 고정 */
+  white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
 }
 
 button {
@@ -97,13 +109,137 @@ button {
   color: green;
   display: none;
 }
+
+/* side menu */
+
+.page-wrapper {
+  display: flex;
+  max-width: 1200px;
+  margin: 40px auto;
+  gap: 20px;
+  padding-left: 40px;
+  align-items: flex-start; /* 위쪽 라인 맞춤 */
+}
+
+.sidebar {
+  width: 200px;
+  background: #f7f7f7;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* height: fit-content; 삭제 */
+  position: sticky;
+  top: 0; /* 헤더 고정 말고 그냥 위에서 시작 */
+  margin-top: 100px; /* container의 margin-top과 동일하게 */
+}
+/* h2 → 메뉴처럼 동작 */
+.sidebar h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.sidebar h2 a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.sidebar h2 a:hover,
+.sidebar h2 a.active {
+  background: #ddd;
+  font-weight: bold;
+}
+
+/* ul (서브메뉴) */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  display: none; /* 기본 숨김 */
+}
+
+.sidebar ul li {
+  margin-bottom: 8px;
+}
+
+.sidebar ul li a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background: #ddd;
+  font-weight: bold;
+}
+
 </style>
+
+<div class="page-wrapper">
+  <!-- 왼쪽 사이드 메뉴 -->
+  <aside class="sidebar">
+    <h2><a href="">Collection</a></h2>
+    <h2><a href="bio.html">Bio</a></h2>
+    <ul>
+      <li><a href="mypage.html">내 정보</a></li>
+      <li><a href="withdraw.html">회원 탈퇴</a></li>
+    </ul>
+    <h2><a href="">Bookmark</a></h2>
+    <h2><a href="">Friend</a></h2>
+  </aside>
+  
+  <script>
+  $(function(){
+	  // h2 클릭 시 ul 토글
+	  $(".sidebar h2").on("click", function(e){
+	    e.preventDefault();
+	    let $ul = $(this).next("ul");
+
+	    // 이미 열려 있으면 닫고 클래스 제거
+	    if($ul.hasClass("open")){
+	      $ul.removeClass("open").slideUp(200);
+	    } else {
+	      // 다른 ul은 닫기
+	      $(".sidebar ul.open").removeClass("open").slideUp(200);
+	      // 현재 것만 열기
+	      $ul.addClass("open").slideDown(200);
+	    }
+	  });
+
+	  // li 클릭 시 ul 고정 유지
+	  $(".sidebar ul li a").on("click", function(){
+	    let $parentUl = $(this).closest("ul");
+	    $(".sidebar ul").not($parentUl).removeClass("open").slideUp(200); // 다른건 닫기
+	    $parentUl.addClass("open").show(); // 클릭한 ul은 고정
+	  });
+
+	  // 바깥 영역 클릭 시 닫기
+	  $(document).on("click", function(e){
+	    if(!$(e.target).closest(".sidebar").length){
+	      $(".sidebar ul").removeClass("open").slideUp(200);
+	    }
+	  });
+	});
+  </script>
 
 <div class="container">
 	<main>
   <h1>회원정보</h1>
-
-  <div class="form-group">
+ <div class="form-group">
     <label for="id">ID</label>
     <div class="input-wrap">
       <input type="text" id="id" name="id" readonly>
@@ -352,3 +488,4 @@ $(function() {
 
 });
 </script>
+<%@ include file="/WEB-INF/views/common/footer.jsp" %>

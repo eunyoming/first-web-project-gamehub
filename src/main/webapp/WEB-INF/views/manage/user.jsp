@@ -297,8 +297,8 @@ function loadMembers(page) {
     			      ' | 가입일: ' + m.createdAt + '</span>' +
     			    '</div>' +
     			    '<div>' +
-    			      '<button class="btn btn-sm btn-outline-primary me-2" onclick="openMypage(\'' + m.id + '\')">마이페이지</button>' +
-    			      '<button class="btn btn-sm btn-outline-danger" onclick="banUser(\'' + m.id + '\')">BAN</button>' +
+    			      '<button class="btn btn-sm btn-blue-main me-2" onclick="openMypage(\'' + m.id + '\')">마이페이지</button>' +
+    			      '<button class="btn btn-sm btn-red-main" onclick="banUser(\'' + m.id + '\')">BAN</button>' +
     			    '</div>' +
     			  '</li>'
     			);
@@ -319,7 +319,7 @@ function makePagination(totalCount, currentPage) {
   for (let i = 1; i <= totalPage; i++) {
     let btn = 
       '<button class="btn btn-sm ' +
-      (i === currentPage ? 'btn-primary' : 'btn-outline-primary') +
+      (i === currentPage ? 'btn-peach-main' : 'btn-outline-peach-main') +
       ' me-1" onclick="loadMembers(' + i + ')">' +
       i +
       '</button>';
@@ -340,7 +340,7 @@ function addPoints() {
 	  }
     
     $.ajax({
-        url: '/api/point/addPointsUsersByManager,
+        url: '/api/point/addPointsUsersByManager',
         type: 'POST',
 	    data: {
 	      ids: ids,

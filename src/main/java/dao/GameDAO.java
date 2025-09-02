@@ -3,12 +3,15 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.game.GameDTO;
+import dto.game.GameInfoDTO;
 public class GameDAO {
 //대상 DTO : GameDTO, GameRecordDTO, 
 	/*
@@ -49,6 +52,33 @@ public class GameDAO {
 			}
 		}
 	}
+	
+	public List<GameDTO> getAllGames() throws Exception{
+		List<GameDTO> result = new ArrayList<GameDTO>();
+		String sql = "select * from games";
+		try (Connection con = this.getConnection(); 
+				PreparedStatement pstat = con.prepareStatement(sql);
+						ResultSet rs = pstat.executeQuery();) {	
+			
+			while(rs.next()) {
+				int seq = rs.getInt("seq");
+				String title = rs.getString("title");
+				String content = rs.getString("content");
+				String url = rs.getString("url");
+				String creator = rs.getString("creator");
+
+				GameDTO dto = new GameDTO(seq,title,content,url,creator);
+				result.add(dto);
+			
+		}
+		
+			return result;
+			
+		}
+		
+		
+	}
+	
 
 //	[ 우리끼리의 DAO 메서드명 컨벤션 ]
 	// ( select )

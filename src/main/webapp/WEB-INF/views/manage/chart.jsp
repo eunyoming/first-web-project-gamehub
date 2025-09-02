@@ -151,8 +151,8 @@
                   label: function(context) {
                     const value = context.raw;
                     return value === maxValue
-                      ? `🔥 최고 가입 수: ${value}`
-                      : `가입 수: ${value}`;
+                      ? '🔥 최고 가입 수: '+value
+                      : '가입 수: '+value;
                   }
                 }
               }
@@ -204,8 +204,8 @@
                   label: function(context) {
                     const value = context.raw;
                     return value === maxValue
-                      ? `📌 최고 게시글 수: ${value}`
-                      : `게시글 수: ${value}`;
+                      ? '📌 최고 게시글 수:'+value
+                      : '게시글 수: '+value
                   }
                 }
               }
@@ -261,8 +261,8 @@
                   label: function(context) {
                     const value = context.raw;
                     return value === maxValue
-                      ? `👑 최고 기록: ${value}`
-                      : `게임 횟수: ${value}`;
+                      ? '👑 최고 기록: '+value
+                      : '게임 횟수: '+value;
                   }
                 }
               }

@@ -80,7 +80,8 @@
 				<div class="row">
 					<div class="col-6">
 						<input type="number" id="pointInput" placeholder="포인트 입력">
-						<button class="btn btn-blue-purple" onclick="addPoints()">선택회원 포인트 적립</button>
+						<input type="text" id="pointDesc" placeholder="포인트 지급 설명">
+						<button class="btn btn-blue-purple" type="button" onclick="addPoints()">선택회원 포인트 적립</button>
 					</div>
 					<div class="col-6">
 						<select id="roleSelect">
@@ -88,7 +89,7 @@
 							<option value="Manager">Manager</option>
 							<option value="Banned">Banned</option>
 						</select>
-						<button class="btn btn-red-peach" onclick="updateRole()">선택회원 권한 변경</button>
+						<button class="btn btn-red-peach" type="button" onclick="updateRole()">선택회원 권한 변경</button>
 					</div>
 				</div>
 
@@ -327,29 +328,36 @@ function makePagination(totalCount, currentPage) {
 }
 
 function addPoints() {
-	  let ids = $(".chk:checked").map(function() { return this.value; }).get();
-	  let point = $("#pointInput").val();
+	 let ids = $(".chk:checked").map(function() { return this.value; }).get();
 
-	  if (ids.length === 0) {
+    var points = $('#pointInput').val();
+    var description = $('#pointDesc').val() || "포인트 지급";
+    var typeCode = 'admin'; 
+
+    if (ids.length === 0) {
 	    alert("적용할 회원을 선택하세요.");
 	    return;
 	  }
-
-	  $.ajax({
-	    url: "/admin/member",
-	    type: "POST",
+    
+    $.ajax({
+        url: '/api/point/addPointsUsersByManager,
+        type: 'POST',
 	    data: {
-	      action: "addPoints",
 	      ids: ids,
-	      point: point
+	      points:points,
+	      description: description,
+	      typeCode: typeCode
 	    },
-	    traditional: true, // 배열 전송 시 필요
-	    success: function(res) {
-	      alert("포인트 적립 완료");
-	      loadMembers(1); // 새로고침
-	    }
-	  });
-	}
+	    traditional: true,
+        success: function(res) {
+            alert('포인트가 지급되었습니다.');
+            loadMembers(currentPage);
+        },
+        error: function() {
+            alert('포인트 지급에 실패했습니다.');
+        }
+    });
+}
 
 function openMypage(id) {
 	  location.href = '/api/member/mypage?section=collection&userId=' + encodeURIComponent(id);

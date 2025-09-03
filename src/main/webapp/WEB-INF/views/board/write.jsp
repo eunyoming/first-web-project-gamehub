@@ -9,8 +9,11 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- Summernote cdn -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
+<link
+	href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.js"></script>
 
 <!-- css -->
 <link href="/css/write.css" rel="stylesheet" />
@@ -33,19 +36,18 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 			<div class="col-6">
 				<label for="category" class="form-label">카테고리</label> <select
 					id="category" name="category" class="form-select">
-					<option value="">전체</option>
-					<option>자유</option>
-					<option>공략</option>
-					<option>기타</option>
+					<option value="자유" selected>자유</option>
+					<option value="공략">공략</option>
+					<option value="기타">기타</option>
 				</select>
 			</div>
 			<div class="col-6">
 				<label for="relatedGame" class="form-label">관련 게임</label> <select
 					id="refgame" name="refgame" class="form-select">
-					<option value="">없음</option>
-					<option>Game A</option>
-					<option>Game B</option>
-					<option>Game C</option>
+					<option value="">선택</option>
+					<option value="Game A">Game A</option>
+					<option value="Game B">Game B</option>
+					<option value="Game C">Game C</option>
 				</select>
 			</div>
 		</div>
@@ -58,10 +60,9 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 		<div class="row footer-btns">
 			<!-- 버튼 -->
 			<div class="col">
-				<button class="btn btn-gradient btn-navy-blue" id="okBtn">완료</button>
-				<a href="/list.board">
-					<button class="btn btn-gradient btn-navy-blue">취소</button>
-				</a>
+				<button type="button" class="btn btn-gradient btn-navy-blue"
+					id="okBtn">완료</button>
+				<a href="/list.board" class="btn btn-gradient btn-navy-blue">취소</a>
 			</div>
 		</div>
 	</form>
@@ -113,6 +114,23 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 								                    ['insert', ['link', 'picture', 'video']],
 								                    ['view', ['fullscreen', 'codeview', 'help']]
 								                  ],
+								                  callbacks: {
+								                	    onImageUpload: function(files) {
+								                	        for (var i = 0; i < files.length; i++) {
+								                	            uploadImage(files[i]);
+								                	        }
+								                	    },
+								                	    onDrop: function(e) {
+								                	        e.preventDefault();
+								                	        var dataTransfer = e.originalEvent.dataTransfer;
+								                	        if (dataTransfer && dataTransfer.files.length) {
+								                	            for (var i = 0; i < dataTransfer.files.length; i++) {
+								                	                uploadImage(dataTransfer.files[i]);
+								                	            }
+								                	        }
+								                	    }
+								                	}
+
 										});
 						// note-editable 영역 (에디터 본문) 높이 조정
 						$(".note-editable")
@@ -121,33 +139,78 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 						// 초기화 후 강제로 숨기기
 						$(".note-resize").css("display", "none");
 					});
+	
+	// 파일 업로드 함수
+	function uploadImage(file) {
+	    var data = new FormData();
+	    data.append("file", file);
 
+	    $.ajax({
+	        url: '/api/board/UploadImage',
+	        type: 'POST',
+	        data: data,
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        success: function(resp) {
+	            $('#summernote').summernote('insertImage', resp.url);
+	        }
+	    });
+	};
+	    
 	// 작성완료 버튼 눌렀을 때
-	$("#okBtn").on("click", function(e) {
-		e.preventDefault(); // 기본 submit 막기
-		// 제목 값
+	$("#okBtn").on("click", function (e) {
+	    e.preventDefault();
+
 	    let title = $("#title").val().trim();
+	    let category = $("#category").val();
+	    let refGame = $("#refgame").val();
 
-	    // 에디터 내용
+	    // summernote 내용 (HTML 전체)
 	    let contents = $("#summernote").summernote("code");
-	    let contentsText = $("<div>").html(contents).text().trim(); 
-	    // summernote는 <p><br></p> 같은 태그가 들어있을 수 있어서 텍스트만 비교
 
-	    // 제목 유효성 검사
+	    // 제목 검사
 	    if (title === "") {
 	        alert("제목을 입력하세요.");
 	        $("#title").focus();
 	        return;
 	    }
 
-	    // 내용 유효성 검사
-	    if (contentsText === "") {
+	    // 내용 검사 (사진만 있어도 등록 가능하도록)
+	    if (contents === "" || contents === "<p><br></p>") {
 	        alert("내용을 입력하세요.");
-	        $("#summernote").summernote("focus"); // summernote 내부 focus
+	        $("#summernote").summernote("focus");
 	        return;
 	    }
-		$("#contents").val(contents);
-		$("#insert-Frm").submit();
+
+	    // 관련 게임 검사
+	    if (!refGame || refGame === "") {
+	        alert("관련 게임을 선택하세요.");
+	        $("#refgame").focus();
+	        return;
+	    }
+
+	    $("#contents").val(contents);
+
+	    // 폼 데이터 직렬화
+	    let formData = $("#insert-Frm").serialize();
+
+	    $.ajax({
+	        url: "/insert.board",
+	        method: "POST",
+	        data: formData,
+	        dataType: "json", 
+	        success: function (resp) {
+	            if (resp.success) {
+	                location.href = "/detailPage.board?seq=" + resp.seq;
+	            } else {
+	                alert("글 작성에 실패했습니다.");
+	            }
+	        },
+	        error: function () {
+	            alert("서버 오류가 발생했습니다.");
+	        }
+	    });
 	});
 </script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

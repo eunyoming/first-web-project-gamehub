@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -61,7 +62,7 @@ public class CollectionController extends HttpServlet {
 		AchievementDAO achievementDAO = AchievementDAO.getInstance();
 		System.out.println("요청 path: " + path);
 		try {
-			if (path == null || path.equals("/recentlyPlayedGames")||path.equals("/userAchievement")) {
+			if (path == null || path.equals("/recentlyPlayedGames")) {
 				
 				
 				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
@@ -71,7 +72,7 @@ public class CollectionController extends HttpServlet {
 				
 				
 				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); 
-				List<AchievementDTO> achievementDTOList = achievementDAO.selectAchievementByLoginId(loginId);
+				//List<AchievementDTO> achievementDTOList = achievementDAO.selectAchievementByLoginId(loginId);
 				for (GameRecentDTO dto : gameRecentDTOList) {
 				    int seq = dto.getGameSeq();
 				    
@@ -93,7 +94,15 @@ public class CollectionController extends HttpServlet {
 		        
 				
 				
+			}else if(path.equals("/userAchievement")) {
+				List<Map<String, Object>> list = achievementDAO.selectUserAchievements(loginId);
+				response.setContentType("application/json; charset=UTF-8");
+		        PrintWriter pw = response.getWriter();
+		        pw.append(g.toJson(list));
+		        
 			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("에러!!");

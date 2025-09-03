@@ -138,10 +138,58 @@ public class AchievementDAO {
 		return 0;
 
 	}
+	
+	public String equipTitle(String userId, int achievSeq) throws Exception {
+	    String equippedTitle = null;
+
+	    try (Connection conn = this.getConnection()) {
+	        conn.setAutoCommit(false);
+
+	        try (
+	            PreparedStatement pstmt1 = conn.prepareStatement(
+	                "UPDATE USERACHIEVEMENT SET ISEQUIP = 'N' WHERE USERID = ?"
+	            );
+	            PreparedStatement pstmt2 = conn.prepareStatement(
+	                "UPDATE USERACHIEVEMENT SET ISEQUIP = 'Y' WHERE USERID = ? AND ACHIEV_SEQ = ?"
+	            );
+	            PreparedStatement pstmt3 = conn.prepareStatement(
+	                "SELECT a.title FROM achievement a WHERE a.seq = ?"
+	            )
+	        ) {
+	            // 1. 모든 칭호 해제
+	            pstmt1.setString(1, userId);
+	            pstmt1.executeUpdate();
+
+	            // 2. 선택한 칭호 장착
+	            pstmt2.setString(1, userId);
+	            pstmt2.setInt(2, achievSeq);
+	            pstmt2.executeUpdate();
+
+	            // 3. 장착된 칭호 제목 조회
+	            pstmt3.setInt(1, achievSeq);
+	            try (ResultSet rs = pstmt3.executeQuery()) {
+	                if (rs.next()) {
+	                    equippedTitle = rs.getString("title");
+	                }
+	            }
+
+	            conn.commit();
+	        } catch (Exception e) {
+	            conn.rollback();
+	            throw e;
+	        }
+	    }
+
+	    return equippedTitle;
+	}
+		
+		
+	
+	
 	public List<Map<String, Object>> selectUserAchievements(String userId) throws Exception {
 	    String sql = 
 	        "SELECT a.game_seq, g.title AS game_title, " +
-	        "       a.title AS achievement_title, a.description, a.icon_url, ua.unlocked_at " +
+	        "       a.title AS achievement_title, a.description, a.icon_url,ua.ISEQUIP as ISEQUIP, ua.ACHIEV_SEQ as achiev_seq , ua.unlocked_at " +
 	        "FROM achievement a " +
 	        "JOIN games g ON a.game_seq = g.seq " +
 	        "LEFT JOIN userAchievement ua " +
@@ -162,6 +210,8 @@ public class AchievementDAO {
 	                row.put("description", rs.getString("description"));
 	                row.put("iconUrl", rs.getString("icon_url"));
 	                row.put("unlockedAt", rs.getTimestamp("unlocked_at"));
+	                row.put("achievSeq", rs.getInt("achiev_seq"));
+	                row.put("isequip", rs.getString("ISEQUIP"));
 	                list.add(row);
 	            }
 	            return list;

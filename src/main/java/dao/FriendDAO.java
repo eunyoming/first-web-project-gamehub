@@ -87,6 +87,8 @@ public class FriendDAO {
 		}
 	
 	
+	
+	
 	//친구 테이블에 내 요청 이력이 있는지 확인
 	public FriendshipDTO selectFriendShipByID(String userId) throws Exception{
 		String sql = "SELECT *  FROM FRIENDSHIPS WHERE userIDA = ? or userIDB = ?";

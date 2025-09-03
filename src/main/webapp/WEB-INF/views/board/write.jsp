@@ -23,7 +23,7 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 	<form id="insert-Frm" action="/insert.board" method="post">
 		<div class="row">
 			<div class="col-12 col-md-6 pe-3">
-				<label for="searchInput" class="form-label">제목</label>
+				<label for="title" class="form-label">제목</label>
 				<div class="title-group">
 					<input type="text" class="form-control" id="title" name="title"
 						placeholder="Value">
@@ -34,20 +34,18 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 		<!-- 카테고리 / 관련 게임 -->
 		<div class="row g-3 align-items-end mt-2">
 			<div class="col-6">
-				<label for="category" class="form-label">카테고리</label> <select
-					id="category" name="category" class="form-select">
+				<label for="category" class="form-label">카테고리</label>
+				<select id="category" name="category" class="form-select">
 					<option value="자유" selected>자유</option>
 					<option value="공략">공략</option>
 					<option value="기타">기타</option>
+					<option value="Q&A">Q&amp;A</option>
 				</select>
 			</div>
 			<div class="col-6">
-				<label for="relatedGame" class="form-label">관련 게임</label> <select
-					id="refgame" name="refgame" class="form-select">
+				<label for="refgame" class="form-label">관련 게임</label>
+				<select id="refgame" name="refgame" class="form-select">
 					<option value="">선택</option>
-					<option value="Game A">Game A</option>
-					<option value="Game B">Game B</option>
-					<option value="Game C">Game C</option>
 				</select>
 			</div>
 		</div>
@@ -73,6 +71,32 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 	$(document)
 			.ready(
 					function() {
+						// 관련 게임 목록 불러오기
+					    $.ajax({
+						    url: "/api/game/gameList",
+						    type: "GET",
+						    dataType: "json",
+						    success: function(data) {
+						        let $select = $("#refgame");
+						        $select.empty();
+						        $select.append('<option value="">선택</option>');
+						        
+						        data.forEach(function(game) {
+						            $select.append(
+						                '<option value="' + game.title + '" data-seq="' + game.seq + '">' 
+						                + game.title + 
+						                '</option>'
+						            );
+						        });
+						    },
+						    error: function(xhr, status, error) {
+						        console.error("게임 목록 불러오기 실패:", error);
+						    }
+						});
+
+						
+						
+						// ----- Summernote 
 						// 1. contents 영역 높이 가져오기
 						let contentsHeight = $(".contents").height();
 
@@ -138,6 +162,64 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 
 						// 초기화 후 강제로 숨기기
 						$(".note-resize").css("display", "none");
+						
+						// 작성완료 버튼 눌렀을 때
+						$("#okBtn").on("click", function (e) {
+						    e.preventDefault();
+
+						    let title = $("#title").val().trim();
+						    let category = $("#category").val();
+						    let refGame = $("#refgame").val();
+
+						    // summernote 내용 (HTML 전체)
+						    let contents = $("#summernote").summernote("code");
+
+						    // 제목 검사
+						    if (title === "") {
+						        alert("제목을 입력하세요.");
+						        $("#title").focus();
+						        return;
+						    }
+
+						    // 내용 검사 (사진만 있어도 등록 가능하도록)
+						    if (contents === "" || contents === "<p><br></p>") {
+						        alert("내용을 입력하세요.");
+						        $("#summernote").summernote("focus");
+						        return;
+						    }
+
+							// 관련 게임 검사 (선택 안 하면 전체로)
+						    if (!refGame || refGame === "") {
+						        refGame = "전체"; // 기본값
+						    }
+							
+						 	// hidden input에 Summernote 내용 넣기
+						    $("#contents").val(contents);
+							
+						 	// formData 직렬화 전에 refGame 값을 반영
+						    $("#refgame").val(refGame);
+						 	
+						    // 폼 데이터 직렬화
+						    let formData = $("#insert-Frm").serialize();
+
+						    $.ajax({
+						        url: "/insert.board",
+						        method: "POST",
+						        data: formData,
+						        dataType: "json", 
+						        success: function (resp) {
+						            if (resp.success) {
+						                location.href = "/detailPage.board?seq=" + resp.seq;
+						            } else {
+						                alert("글 작성에 실패했습니다.");
+						            }
+						        },
+						        error: function () {
+						            alert("서버 오류가 발생했습니다.");
+						        }
+						    });
+						});
+						
 					});
 	
 	// 파일 업로드 함수
@@ -158,59 +240,6 @@ request.setAttribute("pageTitle", "게시글 작성하기");
 	    });
 	};
 	    
-	// 작성완료 버튼 눌렀을 때
-	$("#okBtn").on("click", function (e) {
-	    e.preventDefault();
-
-	    let title = $("#title").val().trim();
-	    let category = $("#category").val();
-	    let refGame = $("#refgame").val();
-
-	    // summernote 내용 (HTML 전체)
-	    let contents = $("#summernote").summernote("code");
-
-	    // 제목 검사
-	    if (title === "") {
-	        alert("제목을 입력하세요.");
-	        $("#title").focus();
-	        return;
-	    }
-
-	    // 내용 검사 (사진만 있어도 등록 가능하도록)
-	    if (contents === "" || contents === "<p><br></p>") {
-	        alert("내용을 입력하세요.");
-	        $("#summernote").summernote("focus");
-	        return;
-	    }
-
-	    // 관련 게임 검사
-	    if (!refGame || refGame === "") {
-	        alert("관련 게임을 선택하세요.");
-	        $("#refgame").focus();
-	        return;
-	    }
-
-	    $("#contents").val(contents);
-
-	    // 폼 데이터 직렬화
-	    let formData = $("#insert-Frm").serialize();
-
-	    $.ajax({
-	        url: "/insert.board",
-	        method: "POST",
-	        data: formData,
-	        dataType: "json", 
-	        success: function (resp) {
-	            if (resp.success) {
-	                location.href = "/detailPage.board?seq=" + resp.seq;
-	            } else {
-	                alert("글 작성에 실패했습니다.");
-	            }
-	        },
-	        error: function () {
-	            alert("서버 오류가 발생했습니다.");
-	        }
-	    });
-	});
+	
 </script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

@@ -15,6 +15,14 @@
 	text-align: center;
 }
 
+/* 제목 */
+.title-ellipsis {
+    white-space: nowrap;        /* 줄바꿈 안 함 */
+    overflow: hidden;           /* 넘친 글자 숨김 */
+    text-overflow: ellipsis;    /* ... 으로 표시 */
+    display: block;             /* a 태그는 inline이라 block 처리 */
+}
+
 /* contents*/
 .contents {
 	border: 1px solid gray;

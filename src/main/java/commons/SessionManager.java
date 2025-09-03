@@ -7,14 +7,19 @@ import javax.servlet.http.HttpSession;
 
 public class SessionManager {
 	
-	private static SessionManager instance; 
-	public static SessionManager getInstance() {
-		if(instance==null) {
-			instance = new SessionManager();
-		}
-        return instance;
-    }
-	
+	 private static volatile SessionManager instance;
+
+	    public static SessionManager getInstance() {
+	        if (instance == null) {
+	            synchronized (SessionManager.class) {
+	                if (instance == null) {
+	                    instance = new SessionManager();
+	                }
+	            }
+	        }
+	        return instance;
+	    }
+
 	
 
     private Map<String, HttpSession> sessionMap = new ConcurrentHashMap<>();
@@ -28,6 +33,12 @@ public class SessionManager {
     public void removeSession(String userId) {
         sessionMap.remove(userId);
     }
+    
+    //중복 로그인 체커
+    public boolean isLoggedIn(String userId) {
+        return sessionMap.containsKey(userId);
+    }
+
 
     // 세션 무효화를 위한 함수
     public void invalidateSession(String userId) {

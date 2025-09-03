@@ -19,6 +19,10 @@
 	 --navy-color: #9BB4FF;     
 	  --gray-color: #D1D1D1; 
 	  --peach-color: #FFD1B4;
+	  
+	  
+ --color1: #efb2fb;
+  --color2: #acc6f8;
 }
 
 
@@ -291,6 +295,14 @@ body{
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
   
+  .image-box2 {
+ 
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  
 
 .welcome-box .line {
 	line-height: 1.2;
@@ -306,6 +318,84 @@ body{
 
 .welcome-box h5 {
   line-height: 1.1;
+}
+
+.welcome-box2 .line {
+	line-height: 1.2;
+  display: block;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+
+.welcome-box2 h1 {
+  line-height: 1.2;
+}
+
+.welcome-box2 h5 {
+  line-height: 1.1;
+}
+
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+  border-radius: 8px;
+  overflow: hidden; /* 오버레이가 이미지 밖으로 안나가게 */
+}
+
+.image-wrapper img {
+  width: 250px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  
+  box-shadow:
+    -20px -20px 30px -25px var(--color1),
+    20px 20px 30px -25px var(--color2),
+    -7px -7px 10px -5px var(--color1),
+    7px 7px 10px -5px var(--color2),
+    0 0 13px 4px rgba(255,255,255,0.3),
+    0 55px 35px -20px rgba(0, 0, 0, 0.5);
+}
+
+.image-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/asset/img/hhholographic.png");
+  background-size: 200% 200%; /* 확대해서 무늬가 흘러가게 */
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+  mix-blend-mode: screen;
+  opacity: 0.15;
+  animation: holoShift 8s linear infinite;
+  pointer-events: none;
+}
+
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.0; }
+  50%      { opacity: 0.7; }
+}
+
+@keyframes holoShift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.image-grid img {
+  filter: brightness(1) contrast(1);;
+  opacity: 1;
 }
 
 .line {

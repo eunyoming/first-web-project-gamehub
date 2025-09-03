@@ -22,10 +22,15 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import dao.AchievementDAO;
+import dao.MemberDAO;
+import dao.NotificationDAO;
 import dao.PointDAO;
 import dto.game.AchievementDTO;
 import dto.game.UserAchievementDTO;
+import dto.member.SimpleUserProfileDTO;
+import dto.notification.NotificationDTO;
 import dto.point.PointDTO;
+import websocket.NotificationServer;
 
 
 @WebServlet("/api/achievement/*")
@@ -133,7 +138,38 @@ public class AchievementController extends HttpServlet {
 				    response.getWriter().print(result.toString());
 				}
 				
-	        }	
+	        }else if(path.equals("/equipAchiev")) {
+	        	
+
+	        	 int achievSeq = Integer.parseInt(request.getParameter("achievSeq"));
+	        	 
+
+	        	 
+	             String title=  AchievementDAO.getInstance().equipTitle(loginId, achievSeq);
+	             
+	             SimpleUserProfileDTO simpleProfile = (SimpleUserProfileDTO) request.getSession().getAttribute("simpleProfile");
+
+	             System.out.println(simpleProfile.getEquipedAchiev());
+	             
+	             if (simpleProfile != null && title != null) {
+	                 simpleProfile.setEquipedAchiev(title); // 필드 업데이트
+	             }
+
+	              
+	             boolean success = (title != null);
+
+	             response.setContentType("application/json");
+	             response.getWriter().write("{\"success\": " + success + "}");
+
+	             //그냥 장착한 업적만 빠르게 찾기, 근데 이미 만든 dto 쓰는...
+	        }else if(path.equals("/findEquipAchiev")) {
+	        	
+	        	String userId = request.getParameter("userId");
+	      
+	        	response.setContentType("application/json; charset=UTF-8");
+	        	response.getWriter().write("{\"data\": " + MemberDAO.getInstance().getSimpleUserProfile(userId).getEquipedAchiev()+ "}");
+	        }
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("/error.jsp");

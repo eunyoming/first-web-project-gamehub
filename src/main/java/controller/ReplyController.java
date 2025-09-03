@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import dao.BoardDAO;
+import dao.RepliesLikesDAO;
 import dao.ReplyDAO;
 import dto.board.ReplyDTO;
 
@@ -25,6 +26,7 @@ public class ReplyController extends HttpServlet {
 		String cmd = request.getRequestURI();
 		BoardDAO board_dao = BoardDAO.getInstance();
 		ReplyDAO reply_dao = ReplyDAO.getInstance();
+		RepliesLikesDAO replies_likes_dao = RepliesLikesDAO.getInstance();
 
 		try {
 			if (cmd.equals("/insert.reply")) {
@@ -116,7 +118,63 @@ public class ReplyController extends HttpServlet {
 					String json = new Gson().toJson(resultMap);
 					pw.print(json);
 				}
+				
+			}else if (cmd.equals("/like/toggle.reply")) {
+			    // 로그인 정보 가져오기
+			    String loginId = (String) request.getSession().getAttribute("loginId");
+			    int reply_seq = Integer.parseInt(request.getParameter("reply_seq"));
+			    System.out.println("댓글 추천 토글: reply_seq = " + reply_seq + ", userId = " + loginId);
+
+			    boolean isLiked = replies_likes_dao.isLiked(reply_seq, loginId);
+
+			    Map<String, Object> result = new HashMap<>();
+
+			    if (isLiked) { // 이미 좋아요 눌렀으면 → 삭제
+			        int deleted = replies_likes_dao.deleteLike(reply_seq, loginId);
+			        result.put("success", deleted > 0);
+			        result.put("action", "delete");
+			    } else { // 아직 안 눌렀으면 → 추가
+			        int inserted = replies_likes_dao.insertLike(reply_seq, loginId);
+			        result.put("success", inserted > 0);
+			        result.put("action", "insert");
+			    }
+
+			    // 최신 likeCount 가져오기
+			    int likeCount = replies_likes_dao.countLikes(reply_seq);
+
+			    // replies 테이블의 like_count 컬럼 업데이트
+			    reply_dao.updateRepliesLikeCount(reply_seq, likeCount);
+
+			    result.put("likeCount", likeCount);
+
+			    response.setContentType("application/json; charset=UTF-8");
+			    response.getWriter().write(new Gson().toJson(result));
+
+			} else if (cmd.equals("/isLiked.reply")) {
+			    String loginId = (String) request.getSession().getAttribute("loginId");
+			    int reply_seq = Integer.parseInt(request.getParameter("reply_seq"));
+			    response.setContentType("application/json; charset=UTF-8");
+
+			    Map<String, Object> result = new HashMap<>();
+			    try {
+			        boolean isLiked = replies_likes_dao.isLiked(reply_seq, loginId);
+			        int likeCount = replies_likes_dao.countLikes(reply_seq);
+
+			        result.put("isLiked", isLiked);
+			        result.put("likeCount", likeCount);
+			        result.put("success", true);
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			        result.put("isLiked", false);
+			        result.put("likeCount", 0);
+			        result.put("success", false);
+			        result.put("error", e.getMessage());
+			    }
+
+			    response.getWriter().write(new Gson().toJson(result));
 			}
+
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500

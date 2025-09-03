@@ -66,9 +66,9 @@ public class BookmarkController extends HttpServlet {
 				int result = bookmarkDAO.deleteBookmarkByBoard_seqAndUserId(board_seq,loginId);
 				
 				
-			}else if(path.equals("/api/bookmark/toggle")) {
+			}else if(path.equals("/toggle")) {
 				int board_seq = Integer.parseInt(request.getParameter("board_seq"));
-
+				System.out.println("북마크");
 		        response.setContentType("application/json; charset=UTF-8");
 		        Map<String, Object> result = new HashMap<>();
 
@@ -76,16 +76,19 @@ public class BookmarkController extends HttpServlet {
 		            boolean isBookmarked = bookmarkDAO.isBookmarked(loginId, board_seq);
 
 		            if (isBookmarked) {
+		            	System.out.println("북마크 삭제");
 		                int deleted = bookmarkDAO.deleteBookmark(loginId, board_seq);
 		                result.put("success", deleted > 0);
 		                result.put("action", "delete");
 		            } else {
+		            	System.out.println("북마크 추가");
 		                int inserted = bookmarkDAO.insertBookmark(new BookmarkDTO(0, loginId, board_seq));
 		                result.put("success", inserted > 0);
 		                result.put("action", "insert");
 		            }
 
 		        } catch (Exception e) {
+		        	System.out.println("북마크 오류");
 		            e.printStackTrace();
 		            result.put("success", false);
 		            result.put("error", e.getMessage());

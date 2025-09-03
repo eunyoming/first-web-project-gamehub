@@ -30,6 +30,7 @@
 <!-- kakao key -->
 <script>
     Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력
+    console.log(Kakao.isInitialized());
 </script>
 
 
@@ -42,7 +43,10 @@
                 <i class="bi bi-arrow-left"></i>
             </a>
         </div>
-        <div class="col-3" id="board_category_refgame"></div>
+        <div class="col-3 d-flex justify-content-between align-items-center" id="board_category_refgame">
+        	<span class="badge btn-gradient btn-yellow-green me-1">자유</span>
+    		<span class="badge btn-gradient btn-red-peach">전체</span>
+        </div>
         <div class="col-4" contenteditable="false" id="board_title"></div>
         <div class="col-3" id="board_created_at">
             <fmt:formatDate value="${boardDto.created_at}" pattern="yyyy-MM-dd HH:mm:ss" />
@@ -64,10 +68,10 @@
         </div>
         <div class="col-4 header-btns">
             <div class="left-btn">
-                <button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">
-                    <i class="bi bi-share"></i> 공유하기
-                </button>
-
+                <!-- 공유 버튼 -->
+				<button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">
+				    <i class="bi bi-share"></i> 공유하기
+				</button>
             </div>
             <div class="right-btn">
                 <button class="btn" id="report_btn" data-bs-toggle="modal" data-bs-target="#boardModal">
@@ -217,18 +221,18 @@
             <div class="modal-body">
                 <!-- 다른 플랫폼으로 공유하기 -->
                 <h6 class="mt-4">공유</h6>
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-5 justify-content-center align-items-center">
                     <!-- 카카오톡 -->
-                    <a id="kakaotalk-sharing-btn" href="javascript:shareMessage()">
-                        <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
-                            alt="카카오톡 공유 보내기 버튼" width="36" />
-                    </a>
+                    <a id="kakaotalk-sharing-btn" href="#" onclick="shareMessage(); return false;">
+					    <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png" alt="카카오톡 공유 보내기 버튼" width="36" />
+					</a>
+
                     <!-- 페이스북 -->
-                    <a id="facebook-sharing-btn" href="/" target="_blank" aria-label="Facebook 공유"> <img
+                    <a id="facebook-sharing-btn" target="_blank" aria-label="Facebook 공유"> <img
                             src="/asset/img/facebook-icon.png" alt="Facebook" width="36">
                     </a>
                     <!-- X -->
-                    <a id="x-sharing-btn" href="/" target="_blank"> <img src="/asset/img/x-icon.png" alt="Facebook"
+                    <a id="x-sharing-btn" target="_blank"> <img src="/asset/img/x-icon.png" alt="Facebook"
                             width="36">
                     </a>
                 </div>
@@ -299,6 +303,7 @@
             currentCategory = resp.boardDto.category;
             currentRefgame = resp.boardDto.refgame;
             currentTitle = resp.boardDto.title;
+            
             // 날짜 포맷팅
             const created_at = resp.boardDto.created_at;
             const date = new Date(created_at);
@@ -307,13 +312,22 @@
                 hour: "2-digit", minute: "2-digit", second: "2-digit"
             });
             $("#board_created_at").text(formatted);
+			
+         	// --- 여기에서 카테고리/게임 뱃지 출력 ---
+            let $badges = $("#board_category_refgame");
+            $badges.empty();
 
+            let categoryBadge = '<span class="badge btn-gradient btn-navy-blue">' + currentCategory + '</span>';
+            let refgameBadge = '<span class="badge btn-gradient btn-red-peach">' + currentRefgame + '</span>';
+
+            $badges.html(categoryBadge + refgameBadge);
+            
             // 작성자 프로필
             $("#writer_profile_img").attr("src", resp.writerProfile.profileImage); // 이미지 없을 경우 대비
             $("#writer_userId").text(resp.writerProfile.userId);
             $("#writer_achiev").text(resp.writerProfile.equipedAchiev);
 
-            // 버튼 조합
+         // 버튼 조합
             const isWriter = loginId === resp.writerProfile.userId;
             const board_btns = $(".board_btns");
             board_btns.empty();
@@ -321,15 +335,15 @@
             if (loginId) {
                 let buttons = "";
 
+                // 공통 버튼 (좋아요 + 추천수)
+                buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
+                buttons += '<i class="bi bi-heart"></i> <span class="like-count">' + resp.likeCount + '</span>';
+                buttons += '</button>';
+
                 if (isWriter) {
-                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
-                    buttons += '<i class="bi bi-heart"></i> 추천수</button>';
                     buttons += '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>';
                     buttons += '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>';
                 } else {
-                    buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
-                    buttons += '<i class="bi bi-heart"></i> 추천수</button>';
-                 	// data-bookmarked = true/false
                     buttons += '<button class="btn btn-outline-red-main" id="bookmark_btn" data-board-id="' + board_seq + '" data-bookmarked="false">';
                     buttons += '<i class="bi bi-bookmark"></i> 북마크</button>';
                 }
@@ -337,7 +351,15 @@
                 board_btns.html(buttons);
             }
 
-            // 댓글 개수 표시
+            // 하트 상태 반영
+            let $icon = $(".board_like_btn i");
+            if (resp.isLiked) {
+                $icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+            } else {
+                $icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+            }
+            
+			// 댓글 개수 표시
             $(".reply-count").text("댓글 " + resp.replyCount + "개");
 
             // 댓글 렌더링
@@ -409,6 +431,7 @@
                 '<option value="자유">자유</option>' +
                 '<option value="공략">공략</option>' +
                 '<option value="기타">기타</option>' +
+                '<option value="Q&A">Q&A</option>' +
                 '</select>' +
                 '</div>' +
                 '<div class="col-6">' +
@@ -487,7 +510,7 @@
             	$('#summernote').summernote('destroy');
                 $('#summernote').attr('id', 'board_content').html(originalContent);
 				
-             // 제목 원복 (중요!)
+             	// 제목 원복 (중요!)
                 $('#board_title').text(originalTitle).attr('contenteditable', 'false');
 
                 // header-btns ( 공유, 신고 버튼 복구 )
@@ -504,13 +527,18 @@
                     '</div>'
                 );
 
-                // ( 추천수, 수정, 삭제 버튼 복구 )
-                boardBtns.html(
-                    '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">' +
-                    '<i class="bi bi-heart"></i> 추천수</button>' +
-                    '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>' +
-                    '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>'
-                );
+	             // ( 추천수, 수정, 삭제 버튼 복구 )
+	             // 기존 추천수 유지 (resp.likeCount 활용)
+	             boardBtns.html(
+	                 '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">' +
+	                     '<i class="bi bi-heart"></i> <span class="like-count"></span>' +
+	                 '</button>' +
+	                 '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>' +
+	                 '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>'
+	             );
+
+	          	// ⭐ 최신 추천수 반영
+	            checkBoardLikeStatus(board_seq);
             });
 
             // 본글 수정 - 저장 버튼
@@ -518,7 +546,7 @@
             	const updatedTitle = titleDiv.text();
             	const updatedContent = $('#summernote').summernote('code');
             	let updatedCategory = $('#category').val();
-            	const updatedRefgame = $('#refgame').val();
+            	let updatedRefgame = $('#refgame').val();
 	            
             	// 유효성 검사
             	if (updatedTitle === '') {    
@@ -532,9 +560,7 @@
 	                return;
 	            }
 	            if (!updatedRefgame || updatedRefgame === '') {
-	                alert('관련 게임을 선택하세요.');
-	                $('#refgame').focus();
-	                return;
+	            	updatedRefgame = '전체';
 	            }
 	            if (!updatedCategory || updatedCategory === '') {
 	                updatedCategory = '자유'; // 기본값
@@ -574,13 +600,18 @@
                             '</div>'
                         );
 
-                        // 추천수, 수정, 삭제 버튼 복구
-                        boardBtns.html(
-                            '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">' +
-                            '<i class="bi bi-heart"></i> 추천수</button>' +
-                            '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>' +
-                            '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>'
-                        );
+                     	// ( 추천수, 수정, 삭제 버튼 복구 )
+                     	// 기존 추천수 유지 (resp.likeCount 활용)
+                     	boardBtns.html(
+	                         '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">' +
+	                             '<i class="bi bi-heart"></i> <span class="like-count"></span>' +
+	                         '</button>' +
+	                         '<button class="btn btn-outline-red-main me-2" id="board-update_btn">수정</button>' +
+	                         '<button class="btn btn-outline-red-main" id="board-delete_btn">삭제</button>'
+                     	);
+						
+                     	// ⭐ 최신 추천수 반영
+                        checkBoardLikeStatus(board_seq);
                     } else {
                         alert('수정 실패');
                     }
@@ -589,10 +620,6 @@
                 });
             });
         });
-
-
-
-
 
         // ----------------- 댓글
         // 부모 댓글 입력창 placeholder 효과
@@ -748,22 +775,33 @@
         });
 
 
-        // 댓글 추천 버튼 클릭 시
+     // 댓글 추천 버튼 클릭 시
         $(document).on("click", ".reply-like_btn", function () {
-            const reply_seq = $(this).data("reply-seq");
-            const icon = $(this).find("i");
+            const $btn = $(this);
+            const reply_seq = $btn.data("reply-seq");
+            const icon = $btn.find("i");
 
-            icon.toggleClass("bi-heart bi-heart-fill");
-            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c" : "");
-
-            // 서버에 추천 요청 보내기
             $.ajax({
-                url: "/like.reply",
+                url: "/like/toggle.reply",
                 method: "POST",
                 dataType: "json",
                 data: { reply_seq: reply_seq }
             }).done(function (resp) {
-                console.log("추천 완료:", resp);
+                if (resp.success) {
+                    // 아이콘 상태 갱신
+                    if (resp.action === "insert") {
+                        icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+                    } else {
+                        icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+                    }
+
+                    // 버튼 텍스트에 추천 수 반영
+                    $btn.contents().last()[0].textContent = " " + resp.likeCount;
+                } else {
+                    alert("추천 처리 실패");
+                }
+            }).fail(function () {
+                alert("서버 오류 발생");
             });
         });
 
@@ -857,25 +895,42 @@
 
         // ----------------- 버튼들 클릭시
         // 글 추천 버튼 클릭시
-        $(document).on("click", ".board_like_btn", function () {
+		$(document).on("click", ".board_like_btn", function () {
+		    const btn = $(this);
+		    const icon = btn.find("i");
+		    const board_seq = btn.data("board-id");
 
-            // 아이콘 색 변경
-            const icon = $(this).find("i");
-            icon.toggleClass("bi-heart bi-heart-fill");
-            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c" : "");
+	    // 즉시 토글 효과 (사용자 경험 ↑)
+	    icon.toggleClass("bi-heart bi-heart-fill");
+	    icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c" : "");
+	
+	    // 서버에 추천 요청 보내기
+	    $.ajax({
+	        url: "/like/toggle.board",
+	        method: "POST",
+	        dataType: "json",
+	        data: { board_seq: board_seq }
+		    }).done(function (resp) {
+		        if (resp.success) {
+		            // 서버 응답에 맞춰 최종 보정
+		            if (resp.action === "insert") {
+		                icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+		            } else if (resp.action === "delete") {
+		                icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+		            }
+		
+		            // 추천수 갱신
+		            if (typeof resp.likeCount !== "undefined") {
+		                btn.html('<i class="' + icon.attr("class") + '" style="' + icon.attr("style") + '"></i> ' + resp.likeCount);
+		            }
+		        } else {
+		            alert("추천 처리 실패");
+		        }
+		    }).fail(function () {
+		        alert("서버 오류로 추천 처리에 실패했습니다.");
+		    });
+		});
 
-            // 시퀀스 보내기
-            const board_seq = $(this).data("board-id");
-            //서버에 추천 요청 보내기
-            $.ajax({
-                url: "/like.board",
-                method: "POST",
-                dataType: "json",
-                data: { board_seq: board_seq }
-            }).done(function (resp) {
-                console.log("추천 완료:", resp);
-            });
-        });
 		
      	// ----------------- 북마크 관련   
      	// 북마크 버튼 클릭
@@ -923,50 +978,42 @@
             }, 200); // 1000ms = 1초
         });
 
-        // kakao 공유하기
-        function shareMessage() {
-            // board_content 가져오기
-            let content = $("#board_title").html();
+     	// 페이스북, X(Twitter) 공유하기
+        let currentUrl = window.location.href;
+    let pageTitle = $('#board_title').html() || '공유 게시물';
 
+ 	// Facebook
+    $('#facebook-sharing-btn').on('click', function (e) {
+        e.preventDefault();
+        let encoded_fb = encodeURIComponent(currentUrl);
+        window.open(
+            'https://www.facebook.com/sharer/sharer.php?u=' + encoded_fb,
+            '_blank'
+        );
+    });
+
+    // Twitter (X)
+    $('#x-sharing-btn').on('click', function (e) {
+        e.preventDefault();
+        let xText = encodeURIComponent(pageTitle + ' - ' + currentUrl);
+        window.open(
+            'https://twitter.com/intent/tweet?text=' + xText,
+            '_blank'
+        );
+    });
+
+    // 복사하기 버튼 위에 현재 페이지 링크 넣기
+    $("#shareLink").val(currentUrl);
+
+     	// 공유 모달이 열릴 때 이벤트
+        $('#shareModal').on('show.bs.modal', function () {
             // 현재 페이지 URL 가져오기
             let currentUrl = window.location.href;
-            Kakao.Share.sendDefault({
-                objectType: 'text',
-                text: content,
-                link: {
-                    mobileWebUrl: currentUrl,
-                    webUrl: currentUrl,
-                },
-            });
-        };
 
-        // 페이스북, x.com 공유하기
-        document.addEventListener('DOMContentLoaded', () => {
-            let currentUrl = window.location.href;
-            let pageTitle = $('#board_title').html() || '공유 게시물';
-
-            // Facebook
-            let encoded_fb = encodeURIComponent(currentUrl);
-            $('#facebook-sharing-btn').attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + encoded_fb);
-
-            // X (Twitter)
-            let xUrl = pageTitle + ' - ' + currentUrl;
-            let encoded_x = encodeURIComponent(xUrl);
-            $('#x-sharing-btn').attr('href', 'https://twitter.com/intent/tweet?text=' + encoded_x);
-
-            // 복사하기 버튼 위에 링크
-            $("#shareLink").val(currentUrl);
+            // input value에 넣기
+            $('#shareLink').val(currentUrl);
         });
 
-        // 공유하기 - 복사 function
-        function copyLink() {
-            let linkInput = $("#shareLink");
-            navigator.clipboard.writeText(linkInput.value).then(() => {
-                let toastId = $("#copyToast");
-                let toast = new bootstrap.Toast(toastId);
-                toast.show();
-            });
-        };
 
         // ----------------- 신고하기 관련
         // 게시글 신고 버튼 클릭 → 모달 hidden input 채우기
@@ -1092,7 +1139,18 @@
 
             // 부모의 자식 그룹 렌더링
             renderChildrenGroup(replies, parent.seq, 2, replyListArea);
+        
+         	// 부모 댓글 좋아요 상태 체크
+            checkReplyLikeStatus(parent.seq);
         });
+        
+     	// (안전망) 전부 렌더 후 한 번 더 일괄 체크
+        setTimeout(() => {
+            $('.reply-like_btn').each(function () {
+                const seq = $(this).data('reply-seq');
+                checkReplyLikeStatus(seq);
+            });
+        }, 0);
     }
 
     // 특정 parentSeq 아래 모든 자식 개수 구하기
@@ -1110,7 +1168,13 @@
 
     // ===== 자식 "묶음" 렌더링 =====
     function renderChildrenGroup(replies, parentSeq, depth, container) {
-        let children = replies.filter(r => r.parent_seq === parentSeq);
+        
+    	if (!container || !container.find) {
+            console.error("renderChildrenGroup: container가 유효하지 않음", container);
+            return;
+        }
+    	
+    	let children = replies.filter(r => r.parent_seq === parentSeq);
         children.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
         if (children.length === 0) return;
@@ -1122,7 +1186,13 @@
         let $group = $('#' + groupId);
 
         children.forEach(child => {
+            // 댓글 HTML 그리기
             $group.append(drawReply(child, depth, false, replies));
+
+            // 자식 댓글 좋아요 상태 체크
+            checkReplyLikeStatus(child.seq);
+
+            // 재귀 호출로 손자/증손 댓글까지 처리
             renderChildrenGroup(replies, child.seq, depth + 1, $group);
         });
 
@@ -1153,7 +1223,7 @@
         if (depth >= 3) {
             let parent = replies.find(r => r.seq === reply.parent_seq);
             if (parent) {
-                mention = '<span class="mention">@' + parent.writer + '</span> ';
+                mention = '<span class="mention text-green">@' + parent.writer + '</span> ';
             }
         }
 
@@ -1165,6 +1235,9 @@
 
         let likeCount = isNaN(parseInt(reply.likeCount)) ? 0 : reply.likeCount;
 		
+     	// 처음에는 무조건 빈 하트
+        let likeIcon = "bi-heart";
+        
         // 작성자 일 때 수정, 삭제 버튼
         let controlBtns = '';
         if (isWriter) {
@@ -1198,7 +1271,7 @@
             '</div>' +
             '<div class="col-4 reply-header_btns text-end">' +
             '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
-            '<i class="bi bi-heart"></i> ' + likeCount +
+            '<i class="bi ' + likeIcon + '"></i> ' + likeCount +
             '</button>' +
             reportBtn +
             controlBtns +
@@ -1212,16 +1285,87 @@
             inputBtn +
             '</div>' +
             '</div>' +
-            // footer: 날짜와 "답글 더보기" 같은 행
             '<div class="row reply-footer g-0 justify-content-between align-items-center mt-1">' +
-            '<div class="col-auto reply-footer-left"></div>' + // 답글 더보기 버튼 들어갈 자리
+            '<div class="col-auto reply-footer-left"></div>' +
             '<div class="col-auto reply-footer-right text-muted small">' + formatted + '</div>' +
             '</div>' +
             '</div>';
 
         return replyHtml;
     }
+	
+    // like 추천한 글인지 확인하는 함수
+    function checkBoardLikeStatus(board_seq) {
+    $.ajax({
+        url: "/isLiked.board",
+        method: "GET",
+        data: { board_seq: board_seq },
+        dataType: "json"
+    }).done(function(resp) {
+        let button = $(".board_like_btn[data-board-id='" + board_seq + "']");
 
+        if (!button || button.length === 0) {
+            console.warn("board_like_btn 버튼을 못 찾음. board_seq:", board_seq);
+            return;
+        }
+
+        let icon = button.find("i");
+        let count = button.find(".like-count");
+
+        if (resp.isLiked) {
+            icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+        } else {
+            icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+        }
+
+        // 추천수 업데이트
+        count.text(resp.likeCount);
+
+    }).fail(function(xhr) {
+        console.error("isLiked 체크 실패:", xhr);
+    });
+}
+	
+ 	// 댓글 추천 상태 확인 함수
+    function checkReplyLikeStatus(reply_seq) {
+        $.ajax({
+            url: "/isLiked.reply",   // ← 서버에서 댓글 좋아요 상태 확인용 API 필요
+            method: "GET",
+            data: { reply_seq: reply_seq },
+            dataType: "json"
+        }).done(function(resp) {
+            let button = $(".reply-like_btn[data-reply-seq='" + reply_seq + "']");
+
+            if (!button || button.length === 0) {
+                console.warn("reply-like_btn 버튼을 못 찾음. reply_seq:", reply_seq);
+                return;
+            }
+
+            let icon = button.find("i");
+
+            if (resp.isLiked) {
+                icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+            } else {
+                icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+            }
+
+            // 추천수 업데이트
+            button.find(".like-count").text(resp.likeCount);
+
+        }).fail(function(xhr) {
+            console.error("isLiked.reply 체크 실패:", xhr);
+        });
+    }
+
+    
+    function appendReply(reply, depth, hidden, replies) {
+        let replyHtml = drawReply(reply, depth, hidden, replies);
+        $("#reply-container").append(replyHtml);
+
+        // 추가된 요소에서 버튼 찾아서 좋아요 상태 확인
+        let button = $("#reply-container .reply-box[data-reply-seq='" + reply.seq + "'] .reply-like_btn");
+        checkReplyLikeStatus(reply.seq, button);
+    }
 
 	// 부모 시퀀스끼리 그룹화
     function groupByParent(replies) {
@@ -1276,6 +1420,66 @@
             $('#replyInputDiv').focus();
         }
     }
+    
+ 	// kakao 공유하기
+    function shareMessage() {
+        // board_content 가져오기
+        let content = $("#board_title").html();
+
+        // 현재 페이지 URL 가져오기
+        let currentUrl = window.location.href;
+        Kakao.Share.sendDefault({
+            objectType: 'text',
+            text: content,
+            link: {
+                mobileWebUrl: currentUrl,
+                webUrl: currentUrl,
+            },
+        });
+    };
+    
+ 	// 공유 - 복사 함수
+    function copyLink() {
+	    let copyText = document.getElementById("shareLink").value;
+	    navigator.clipboard.writeText(copyText).then(() => {
+	        alert("링크가 복사되었습니다!");
+	    }).catch(err => {
+	        console.error("복사 실패:", err);
+	    });
+	}
+    
+ 	// 게시글 추천 상태 확인 함수
+    function checkBoardLikeStatus(board_seq) {
+    $.ajax({
+        url: "/isLiked.board",
+        method: "GET",
+        data: { board_seq: board_seq },
+        dataType: "json"
+    }).done(function(resp) {
+        console.log("isLiked.board 응답:", resp);
+
+        const $btn = $(".board_like_btn");
+        const $icon = $btn.find("i");
+        const $count = $btn.find(".like-count");
+
+        // 하트 상태 반영
+        if (resp.isLiked) {
+            $icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
+        } else {
+            $icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+        }
+
+        // 추천수 업데이트 (여기!)
+        $count.text(resp.likeCount);
+
+	    }).fail(function(xhr) {
+	        console.error("isLiked 체크 실패:", xhr);
+	    });
+	}
+
+
+
+
 </script>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

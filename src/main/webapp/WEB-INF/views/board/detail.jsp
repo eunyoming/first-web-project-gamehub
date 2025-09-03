@@ -5,6 +5,9 @@
             <!-- JSTL Functions 라이브러리 -->
             <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- header -->
+<%
+request.setAttribute("pageTitle", "게시글 상세보기");
+%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -27,6 +30,7 @@
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js"
     integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
     crossorigin="anonymous"></script>
+    
 <!-- kakao key -->
 <script>
     Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력

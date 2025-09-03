@@ -271,6 +271,43 @@ body{
   background-image: url('/asset/img/layered-waves.png');
 }
 
+.bg-main-stacked {
+  background-image: url('/asset/img/stacked-peaks.png');
+	
+}
+
+
+  .image-box {
+   filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.5));
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+
+.welcome-box .line {
+	line-height: 1.2;
+  display: block;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+
+.welcome-box h1 {
+  line-height: 1.2;
+}
+
+.welcome-box h5 {
+  line-height: 1.1;
+}
+
+.line {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+
+
 .hero {
   position: relative;
   width: 100%;
@@ -293,6 +330,30 @@ body{
     font-weight: normal;
     font-display: swap;
 }
+
+@font-face {
+    font-family: 'GowoonDodum';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunDodum-Regular.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YeogiOttaeJalnanGothic';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+
+.font_YeogiOttae {
+	
+	 font-family: 'YeogiOttaeJalnanGothic';
+}
+
+.font_gowooDodum{
+	 font-family: 'GowoonDodum';
+}
+
 
 .font-simple {
   font-family: 'Danjo', sans-serif;

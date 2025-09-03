@@ -3,6 +3,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!-- main header -->
+<%
+request.setAttribute("pageTitle", "게시글 작성하기");
+%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- Summernote cdn -->

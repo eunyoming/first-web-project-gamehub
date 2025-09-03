@@ -3,22 +3,32 @@ package dto.board;
 import java.sql.Timestamp;
 
 public class BoardDTO {
-    private int seq = 0;
-    private String writer;
-    private String title;
-    private String contents;
-    private String category;
-    private String refgame;
-    private int viewCount = 0;
-    private int likeCount = 0;
-    private String visibility;
-    private Timestamp created_at;
-    
-    public BoardDTO() {
+	private int seq = 0;
+	private String writer;
+	private String title;
+	private String contents;
+	private String category;
+	private String refgame;
+	private int viewCount = 0;
+	private int likeCount = 0;
+	private String visibility;
+	private Timestamp created_at;
+
+	// DB 테이블에는 없는 필드
+	private int replyCount = 0;
+	
+	public int getReplyCount() {
+		return replyCount;
 	}
-    
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
+	}
+
+	public BoardDTO() {
+	}
+
 	public BoardDTO(int seq, String writer, String title, String contents, String category, String refgame,
-		int viewCount, int likeCount, String visibility, Timestamp created_at) {
+			int viewCount, int likeCount, String visibility, Timestamp created_at) {
 		this.seq = seq;
 		this.writer = writer;
 		this.title = title;
@@ -30,7 +40,7 @@ public class BoardDTO {
 		this.visibility = visibility;
 		this.created_at = created_at;
 	}
-	
+
 	// Getters and Setters
 	public int getSeq() {
 		return seq;

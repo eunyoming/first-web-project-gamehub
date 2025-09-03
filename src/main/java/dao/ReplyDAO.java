@@ -57,51 +57,51 @@ public class ReplyDAO {
 	public int insertReplies(ReplyDTO dto) throws Exception{
 		String insertSql = "insert into replies values(replies_seq.nextval, ?, ?, 0, ?, ?, '0', 'public', sysdate)";
 		String updateSql = "update replies set path = ? where seq = ?";
-		
+
 		int result = 0;
-	    int mySeq = 0;
-	    
+		int mySeq = 0;
+
 		// 트랜잭션 시작
 		try (Connection con = this.getConnection()) {
 			// AutoCommit 기능 끄기
-	        con.setAutoCommit(false);
+			con.setAutoCommit(false);
 
-	        try (PreparedStatement insertPst = con.prepareStatement(insertSql, new String[] {"seq"});) {
-	            insertPst.setString(1, dto.getWriter());
-	            insertPst.setString(2, dto.getContents());
-	            insertPst.setInt(3, dto.getBoard_seq());
-	            insertPst.setInt(4, dto.getParent_seq());
+			try (PreparedStatement insertPst = con.prepareStatement(insertSql, new String[] {"seq"});) {
+				insertPst.setString(1, dto.getWriter());
+				insertPst.setString(2, dto.getContents());
+				insertPst.setInt(3, dto.getBoard_seq());
+				insertPst.setInt(4, dto.getParent_seq());
 
-	            result = insertPst.executeUpdate();
+				result = insertPst.executeUpdate();
 
-	            try (ResultSet rs = insertPst.getGeneratedKeys()) {
-	                if (rs.next()) {
-	                    mySeq = rs.getInt(1);
-	                }
-	            }
+				try (ResultSet rs = insertPst.getGeneratedKeys()) {
+					if (rs.next()) {
+						mySeq = rs.getInt(1);
+					}
+				}
 
-	            String path;
-	            if (dto.getParent_seq() == 0) {
-	                path = String.valueOf(mySeq);
-	            } else {
-	                path = selectRepliesPathBySeq(dto.getParent_seq(), con) + "/" + mySeq;
-	            }
+				String path;
+				if (dto.getParent_seq() == 0) {
+					path = String.valueOf(mySeq);
+				} else {
+					path = selectRepliesPathBySeq(dto.getParent_seq(), con) + "/" + mySeq;
+				}
 
-	            try (PreparedStatement updatePst = con.prepareStatement(updateSql)) {
-	                updatePst.setString(1, path);
-	                updatePst.setInt(2, mySeq);
-	                updatePst.executeUpdate();
-	            }
+				try (PreparedStatement updatePst = con.prepareStatement(updateSql)) {
+					updatePst.setString(1, path);
+					updatePst.setInt(2, mySeq);
+					updatePst.executeUpdate();
+				}
 
-	            con.commit(); // 성공 시 커밋
-	        } catch (Exception e) {
-	            con.rollback(); // 실패 시 롤백
-	            throw e;
-	        }
-	    }
+				con.commit(); // 성공 시 커밋
+			} catch (Exception e) {
+				con.rollback(); // 실패 시 롤백
+				throw e;
+			}
+		}
 
-	    return result;
-		
+		return result;
+
 	}
 
 	// "select * from replies";
@@ -146,16 +146,16 @@ public class ReplyDAO {
 				while(rs.next()) {
 					ReplyDTO dto = new ReplyDTO(
 							rs.getInt("seq"),
-		                    rs.getString("writer"),
-		                    rs.getString("contents"),
-		                    rs.getInt("likeCount"),
-		                    rs.getInt("board_seq"),
-		                    rs.getInt("parent_seq"),
-		                    rs.getString("path"),
-		                    rs.getString("visibility"),
-		                    rs.getTimestamp("created_at")
+							rs.getString("writer"),
+							rs.getString("contents"),
+							rs.getInt("likeCount"),
+							rs.getInt("board_seq"),
+							rs.getInt("parent_seq"),
+							rs.getString("path"),
+							rs.getString("visibility"),
+							rs.getTimestamp("created_at")
 							);
-					
+
 					replies_list.add(dto);
 				}
 				return replies_list;
@@ -164,16 +164,41 @@ public class ReplyDAO {
 	}
 
 	// delete
-	public int deleteRepliesBySeq(int seq) throws Exception{
-		String sql = "delete from replies where seq = ?";
+	public int deleteRepliesBySeq(int seq) throws Exception {
+		String checkSql = "select parent_seq from replies where seq = ?";
+		String softDeleteSql = "update replies set contents = '삭제된 댓글입니다.', visibility = 'deleted' where seq = ?";
+		String hardDeleteSql = "delete from replies where seq = ?";
 
-		try(Connection con = this.getConnection();
-				PreparedStatement pst = con.prepareStatement(sql)){
-			pst.setInt(1, seq);
+		try (Connection con = this.getConnection()) {
+			int parentSeq = -1;
 
-			return pst.executeUpdate();
+			// 먼저 parent_seq 조회
+			try (PreparedStatement checkPst = con.prepareStatement(checkSql)) {
+				checkPst.setInt(1, seq);
+				try (ResultSet rs = checkPst.executeQuery()) {
+					if (rs.next()) {
+						parentSeq = rs.getInt("parent_seq");
+					}
+				}
+			}
+
+			// 최상위 댓글이면 soft delete
+			if (parentSeq == 0) {
+				try (PreparedStatement pst = con.prepareStatement(softDeleteSql)) {
+					pst.setInt(1, seq);
+					return pst.executeUpdate();
+				}
+			} 
+			// 대댓글이면 실제 삭제
+			else {
+				try (PreparedStatement pst = con.prepareStatement(hardDeleteSql)) {
+					pst.setInt(1, seq);
+					return pst.executeUpdate();
+				}
+			}
 		}
 	}
+
 
 	// update
 	public int updateRepliesBySeq(String contents, int seq) throws Exception{
@@ -187,44 +212,73 @@ public class ReplyDAO {
 			return pst.executeUpdate();
 		}
 	}
-	
+
 	// 댓글 부모 작성자 구하기 ( 어느 댓글의 댓글인지 @작성자 해주기 위한 메서드 )
 	public String getParentWriterByPath(String path) throws Exception {
-	    String[] parts = path.split("/");
-	    if (parts.length < 2) return ""; // 부모 없음
+		String[] parts = path.split("/");
+		if (parts.length < 2) return ""; // 부모 없음
 
-	    int parentSeq = Integer.parseInt(parts[parts.length - 2]); // index 여서 -1, 부모니까 -1
+		int parentSeq = Integer.parseInt(parts[parts.length - 2]); // index 여서 -1, 부모니까 -1
 
-	    String sql = "select writer from replies where seq = ?";
-	    try (Connection con = this.getConnection();
-	         PreparedStatement pst = con.prepareStatement(sql)) {
-	        pst.setInt(1, parentSeq);
-	        try (ResultSet rs = pst.executeQuery()) {
-	            if (rs.next()) {
-	                return rs.getString("writer");
-	            }
-	        }
-	    }
-	    return "";
+		String sql = "select writer from replies where seq = ?";
+		try (Connection con = this.getConnection();
+				PreparedStatement pst = con.prepareStatement(sql)) {
+			pst.setInt(1, parentSeq);
+			try (ResultSet rs = pst.executeQuery()) {
+				if (rs.next()) {
+					return rs.getString("writer");
+				}
+			}
+		}
+		return "";
 	}
-	
+
 	// replySeq로 board_seq 얻는 함수
 	public int getBoardSeqByReplySeq(int replySeq) throws Exception {
-	    String sql = "select board_seq from replies where seq = ?";
-	    
-	    try (Connection con = this.getConnection();
-	         PreparedStatement ps = con.prepareStatement(sql)) {
-	        
-	        ps.setInt(1, replySeq);
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
-	                return rs.getInt("board_seq");
-	            }
-	        }
-	    }
-	    // 못 찾았을 경우
-	    return -1;
-	}
+		String sql = "select board_seq from replies where seq = ?";
 
+		try (Connection con = this.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, replySeq);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("board_seq");
+				}
+			}
+		}
+		// 못 찾았을 경우
+		return -1;
+	}
+	
+	// select * from replies where seq = ?
+	public ReplyDTO selectRepliesBySeq(int replySeq) throws Exception {
+		String sql = "select * from replies where seq = ?";
+
+		try (Connection con = this.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, replySeq);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int seq = rs.getInt("seq");
+					String writer = rs.getString("writer");
+					String contents = rs.getString("contents");
+					int likeCount = rs.getInt("likeCount");
+					int board_seq = rs.getInt("board_seq");
+					int parent_seq = rs.getInt("parent_seq");
+					String path = rs.getString("path");
+					String visibility = rs.getString("visibility");
+					Timestamp created_at = rs.getTimestamp("created_at");
+					
+					ReplyDTO dto = new ReplyDTO(seq, writer, contents, likeCount, board_seq, parent_seq, path, visibility, created_at);
+					return dto;
+				}
+			}
+			return null;
+		}
+	}
+	
 }

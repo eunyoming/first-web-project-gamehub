@@ -303,11 +303,10 @@
             type: "POST",
             data: { userId: userId, userPassword: userPassword },
             success: function (res) {
-                if (res.success === true || res.success === "true") {
-                    // 로그인 성공 시 메인 페이지 이동
+                if (res.success) {
                     window.location.href = "/";
                 } else {
-                    alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+                    alert(res.message || "아이디 또는 비밀번호가 올바르지 않습니다.");
                 }
             },
             error: function () {

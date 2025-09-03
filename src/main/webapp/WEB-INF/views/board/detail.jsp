@@ -5,9 +5,6 @@
             <!-- JSTL Functions 라이브러리 -->
             <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!-- header -->
-<%
-request.setAttribute("pageTitle", "게시글 상세보기");
-%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -30,7 +27,6 @@ request.setAttribute("pageTitle", "게시글 상세보기");
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js"
     integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
     crossorigin="anonymous"></script>
-    
 <!-- kakao key -->
 <script>
     Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력
@@ -128,7 +124,7 @@ request.setAttribute("pageTitle", "게시글 상세보기");
 </div>
 <!-- container -->
 
-<!-- board Modal -->
+<!-- 신고 Modal -->
 <div class="modal fade" id="boardModal" tabindex="-1" aria-labelledby="boardModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
@@ -939,13 +935,50 @@ request.setAttribute("pageTitle", "게시글 상세보기");
             // 여기에 신고 처리 로직 추가
         });
     });
-    // 신고하기 - 기타 선택 시 입력창
+    
+    // 신고하기 - 기타 선택 시 입력창 띄우기
     $(document).on("change", 'input[name="reportReason"]', function () {
         if ($(this).attr('id') === 'reasonEtc') {
             $('#etcDetailBox').show();
         } else {
             $('#etcDetailBox').hide();
         }
+    });
+	
+ 	// 신고 버튼 클릭시
+    $(document).on('click', '#modal-report_btn', function () {
+        const reason = $('input[name="reportReason"]:checked').val();
+        const etcDetail = $('#etcDetail').val();
+        const board_seq = $('#board_seq').val();
+        const writer = $('#writer').val();
+        const reply_seq = $('#reply_seq').val();
+
+        if (!reason) {
+            alert("신고 사유를 선택해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: '/report.board',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                board_seq: board_seq,
+                reply_seq: reply_seq,
+                writer: writer,
+                reason: reason,
+                etcDetail: etcDetail
+            }
+        }).done(function (resp) {
+            if (resp.result != 0) {
+                alert("신고가 접수되었습니다.");
+                $('#boardModal').modal('hide');
+            } else {
+                alert("신고 처리에 실패했습니다.");
+            }
+        }).fail(function () {
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        });
     });
 
 

@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
 import com.google.gson.Gson;
 
 import commons.Config;
@@ -27,13 +30,13 @@ import dto.member.SimpleUserProfileDTO;
 public class BoardController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		response.setCharacterEncoding("UTF-8");
-		
+
 		String cmd = request.getRequestURI();
 		BoardDAO board_dao = BoardDAO.getInstance();
 		ReplyDAO reply_dao = ReplyDAO.getInstance();
-
+		System.out.println(cmd);
 
 		try {
 			if(cmd.equals("/list.board")) {
@@ -65,11 +68,21 @@ public class BoardController extends HttpServlet {
 				request.getRequestDispatcher("/WEB-INF/views/board/list.jsp").forward(request, response);
 
 			}else if(cmd.equals("/detailPage.board")) {
-				
+
 				int seq = Integer.parseInt(request.getParameter("seq"));
+
+				// 조회수 1 증가
+				board_dao.updateBoardsViewCount(seq);
+
+				// 글 정보 불러오기
+				BoardDTO dto = board_dao.selectBoardsBySeq(seq);
+
+				// request에 담기
+				request.setAttribute("dto", dto);
+
 				request.setAttribute("seq", seq);
 				request.getRequestDispatcher("/WEB-INF/views/board/detail.jsp").forward(request, response);
-			
+
 			}else if(cmd.equals("/detail.board")) {
 				// 인코딩
 				response.setContentType("application/json; charset=UTF-8");
@@ -89,6 +102,9 @@ public class BoardController extends HttpServlet {
 					reply.setParentWriter(parentWriter); // DTO에 저장
 				}
 
+				// 댓글 개수
+				int replyCount = repliesList.size();
+
 				//작성자 프로필 용 dto 
 				SimpleUserProfileDTO simpleUserProfileDTO = MemberDAO.getInstance().getSimpleUserProfile(boardDto.getWriter());
 
@@ -100,6 +116,7 @@ public class BoardController extends HttpServlet {
 					result.put("boardDto", boardDto);
 					result.put("writerProfile", simpleUserProfileDTO);
 					result.put("repliesList", repliesList);
+					result.put("replyCount", replyCount);
 
 					String json = new Gson().toJson(result);
 					pw.print(json);
@@ -108,56 +125,99 @@ public class BoardController extends HttpServlet {
 			}else if(cmd.equals("/write.board")) {
 				// 로그인 정보 가져오기
 				String loginId = (String)request.getSession().getAttribute("loginId");
-				
+
 				request.setAttribute("loginId", loginId);
 				request.getRequestDispatcher("/WEB-INF/views/board/write.jsp").forward(request, response);
-			
+
 			}else if(cmd.equals("/insert.board")) {
-				// 로그인 정보 가져오기
+				response.setContentType("application/json; charset=UTF-8");
+
 				String loginId = (String)request.getSession().getAttribute("loginId");
-				
-				// 글 내용 가져오기
 				String title = request.getParameter("title");
 				String category = request.getParameter("category");
 				String refgame = request.getParameter("refgame");
 				String contents = request.getParameter("contents");
 				
-				BoardDTO dto = new BoardDTO(0, loginId, title, contents, category, refgame, 0, 0, null, null);
+				// 상대경로 허용
+				Safelist safelist = Safelist.basicWithImages()
+				        .addAttributes("img", "src", "style", "class")
+				        .removeProtocols("img", "src", "http", "https", "data");
+
+
+				String cleanContents = Jsoup.clean(contents, safelist);
+			    
+				BoardDTO dto = new BoardDTO(0, loginId, title, cleanContents, category, refgame, 0, 0, null, null);
 				int seq = board_dao.insertBoards(dto);
-				
-				if(seq != 0) {
-					response.sendRedirect("/detailPage.board?seq=" + seq);
-				}else {
-					response.sendRedirect("/error.jsp");
+
+				Map<String, Object> result = new HashMap<>();
+				result.put("seq", seq);
+				result.put("success", seq != 0);
+
+				try(PrintWriter pw = response.getWriter()){
+					pw.print(new Gson().toJson(result));
 				}
 
 			}else if(cmd.equals("/update.board")) {
+			    // 글 seq 가져오기
+			    int board_seq = Integer.parseInt(request.getParameter("board_seq"));
 
-				// 글 seq 가져오기
-				int board_seq = Integer.parseInt(request.getParameter("board_seq"));
+			    // 수정 내용 받아오기
+			    String title = request.getParameter("title");
+			    String contents = request.getParameter("contents");
+			    String category = request.getParameter("category");
+			    String refgame = request.getParameter("refgame");
+			    
+			    // 상대경로 허용 (insert와 동일한 safelist)
+			    Safelist safelist = Safelist.basicWithImages()
+			        .addAttributes("img", "src", "style", "class")
+			        .removeProtocols("img", "src", "http", "https", "data");
 
-				// 수정 내용 받아오기
-				String title = request.getParameter("title");
-				String contents = request.getParameter("contents");
-				String category = request.getParameter("category");
-				String refgame = request.getParameter("refgame");
+			    String cleanContents = Jsoup.clean(contents, safelist);
 
-				// 수정 하기
-				int result = board_dao.updateBoardsBySeq(board_seq, title, contents, category, refgame);
+			    // 수정 하기
+			    int result = board_dao.updateBoardsBySeq(board_seq, title, cleanContents, category, refgame);
 
-				if(result != 0) {
-					response.sendRedirect("/detail.board?seq=" + board_seq);
-				}else {
-					response.sendRedirect("/error.jsp");
-				}
+			    if(result != 0) {
+			        // 수정된 최신 데이터 다시 조회
+			        BoardDTO boardDto = board_dao.selectBoardsBySeq(board_seq);
+			  
+			        // 보내줄 내용 묶기
+			        Map<String, Object> responseMap = new HashMap<>();
+			        responseMap.put("result", result);
+			        responseMap.put("boardDto", boardDto);
+
+			        // 직렬화 준비 
+			        response.setContentType("application/json; charset=UTF-8");
+			        try(PrintWriter pw = response.getWriter()) {
+			            pw.print(new Gson().toJson(responseMap));
+			        }
+
+			    } else {
+			        response.sendRedirect("/error.jsp");
+			    }
 
 			}else if(cmd.equals("/delete.board")) {
 
 				// 글 seq 가져오기
-				int seq = Integer.parseInt(request.getParameter("seq"));
+				int seq = Integer.parseInt(request.getParameter("board_seq"));
 
+				int result = board_dao.deleteBoardsBySeq(seq);
+				
+				if(result != 0) {
+					
+					// 보내줄 내용 묶기
+			        Map<String, Object> responseMap = new HashMap<>();
+			        responseMap.put("result", result);
 
+			        // 직렬화 준비 
+			        response.setContentType("application/json; charset=UTF-8");
+			        try(PrintWriter pw = response.getWriter()) {
+			            pw.print(new Gson().toJson(responseMap));
+			        }
 
+			    } else {
+			        response.sendRedirect("/error.jsp");
+			    }
 			}
 
 		}catch(Exception e) {

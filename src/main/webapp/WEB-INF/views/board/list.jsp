@@ -72,7 +72,7 @@
 						<div class="col-3">
 							<a href="/detailPage.board?seq=${dto.seq}"
 								style="text-decoration: none; color: inherit;">
-								${dto.title}[댓글수]</a>
+								${dto.title} [ ${dto.replyCount} ]</a>
 						</div>
 						<div class="col-1">${dto.writer}</div>
 						<div class="col-2">
@@ -107,7 +107,7 @@
 			</c:if>
 		</div>
 		<div class="board-footer-btn col-2">
-			<c:if test="${loginId}">
+			<c:if test="${loginId != null}">
 				<a href="/write.board">
 					<button class="btn btn-dark" id="write_btn">글 작성하기</button>
 				</a>

@@ -41,7 +41,7 @@ public class AuthFilter implements Filter {
 					uri.endsWith("/update.board") || uri.endsWith("/delete.board") ||
 					uri.endsWith("/insert.reply") || uri.endsWith("/update.reply") ||
 					uri.endsWith("/delete.reply")) {
-				res.sendRedirect(req.getContextPath() + "/login.jsp");
+				res.sendRedirect("/");
 				return;
 			}
 		}

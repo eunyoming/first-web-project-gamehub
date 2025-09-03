@@ -14,9 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import dao.NotificationDAO;
 import dao.PointDAO;
 import dao.StoreDAO;
+import dto.notification.NotificationDTO;
 import dto.pointStore.PointStoreDTO;
+import websocket.NotificationServer;
 
 @WebServlet("/api/store/*")
 public class StoreController extends HttpServlet {
@@ -92,8 +95,26 @@ public class StoreController extends HttpServlet {
 					storeDAO.buyItem(loginId,points,description,typeCode,storeSeq);
 					
 					request.getSession().setAttribute("currentPoint", pointDao.getCurrentPoints(loginId));
+				
+				
+					
+					//============알림 테스트용============
+					
+					String message = "notification"; 
+					//메세지는 무조건 notification으로 해야 jsp에서 받아서 알림을 확인합니다.
+					
+					NotificationDAO.getInstance().insertNotifications(new NotificationDTO(0,loginId,"store",itemName+ ": 구매 완료","n",null,null,null));
+					//db에 알림 추가하는 NotificationDAO insertNotifications() 메서드
+					
+					NotificationServer.sendToUser(loginId,message);
+					//클라이언트에게 전달.
+					
+			        //============여기까지 알림 테스트 용============
 				}
 				
+				
+				
+
 				response.setContentType("application/json; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
 				pw.append(gson.toJson(Map.of("result", "success")));

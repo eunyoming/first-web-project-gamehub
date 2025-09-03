@@ -15,7 +15,7 @@
 }
 
 .sellingCard {
-    cursor: pointer; /* 손 모양 커서 */
+	cursor: pointer; /* 손 모양 커서 */
 }
 </style>
 
@@ -25,7 +25,7 @@
 	<h3 class="mb-4">구매 가능한 아이템</h3>
 	<div class="row g-4" id="selling-list-div">
 
-		<div class="col-md-3 col-sm-6">
+		<!-- <div class="col-md-3 col-sm-6">
 			<div class="card h-100 shadow-sm">
 				<img src="assets/champion1.jpg" class="card-img-top" alt="유나라">
 				<div class="card-body">
@@ -36,69 +36,17 @@
 					</p>
 				</div>
 			</div>
-		</div>
-
-		<div class="col-md-3 col-sm-6">
-			<div class="card h-100 shadow-sm">
-				<img src="assets/champion2.jpg" class="card-img-top" alt="멜">
-				<div class="card-body">
-					<h5 class="card-title">멜</h5>
-					<p class="card-text">
-						<span class="text-warning fw-bold">975 RP</span> <br> <span
-							class="text-info fw-bold">3150 BE</span>
-					</p>
-				</div>
-			</div>
-		</div>
+		</div> -->
 
 
-		<div class="col-md-3 col-sm-6">
-			<div class="card h-100 shadow-sm">
-				<img src="assets/champion3.jpg" class="card-img-top" alt="엠베사">
-				<div class="card-body">
-					<h5 class="card-title">엠베사</h5>
-					<p class="card-text">
-						<span class="text-warning fw-bold">975 RP</span> <br> <span
-							class="text-info fw-bold">3150 BE</span>
-					</p>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="col-md-3 col-sm-6">
-			<div class="card h-100 shadow-sm">
-				<img src="assets/champion3.jpg" class="card-img-top" alt="엠베사">
-				<div class="card-body">
-					<h5 class="card-title">엠베사</h5>
-					<p class="card-text">
-						<span class="text-warning fw-bold">975 RP</span> <br> <span
-							class="text-info fw-bold">3150 BE</span>
-					</p>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="col-md-3 col-sm-6">
-			<div class="card h-100 shadow-sm">
-				<img src="assets/champion3.jpg" class="card-img-top" alt="엠베사">
-				<div class="card-body">
-					<h5 class="card-title">엠베사</h5>
-					<p class="card-text">
-						<span class="text-warning fw-bold">975 RP</span> <br> <span
-							class="text-info fw-bold">3150 BE</span>
-					</p>
-				</div>
-			</div>
-		</div>
 	</div>
-	
-	 <hr style="margin-top:30px;margin-bottom:80px;">
-	<h3 class="mb-4" style="display:none" id=purchased-list-text>구매한 아이템</h3>
-	<div class="row g-4" id="purchased-list-div">
-	</div>
-	
+
+
+	<hr style="margin-top: 30px; margin-bottom: 80px;">
+	<h3 class="mb-4" style="display: none" id=purchased-list-text>구매한
+		아이템</h3>
+	<div class="row g-4" id="purchased-list-div"></div>
+
 </div>
 
 <script>
@@ -168,5 +116,6 @@
 			
 		});
 	}); 
+	
 </script>
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

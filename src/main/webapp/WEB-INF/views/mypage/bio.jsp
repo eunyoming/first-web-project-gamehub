@@ -193,48 +193,63 @@ button {
   <!-- 왼쪽 사이드 메뉴 -->
   <aside class="sidebar">
     <h2><a href="">Collection</a></h2>
-    <h2><a href="bio.html">Bio</a></h2>
     <ul>
-      <li><a href="mypage.html">내 정보</a></li>
-      <li><a href="withdraw.html">회원 탈퇴</a></li>
+      <li><a href="">최근 플레이 게임</a></li>
+      <li><a href="">내 업적</a></li>
+    </ul>
+    <h2><a href="/api/member/mypage?section=bio&userId=${paramUserId}">Bio</a></h2>
+    <ul>
+      <li><a href="/api/member/mypage?section=bio&userId=${paramUserId}">내 정보</a></li>
+      <li><a href="/api/member/mypage?section=secession&userId=${paramUserId}">회원 탈퇴</a></li>
     </ul>
     <h2><a href="">Bookmark</a></h2>
+    <ul>
+      <li><a href="">내 게시글</a></li>
+      <li><a href="">내 댓글</a></li>
+    </ul>
     <h2><a href="">Friend</a></h2>
+    <ul>
+      <li><a href="">친구 요청</a></li>
+      <li><a href="">친구 신청</a></li>
+      <li><a href="">친구 목록</a></li>
+    </ul>
   </aside>
   
-  <script>
+ <script>
   $(function(){
-	  // h2 클릭 시 ul 토글
-	  $(".sidebar h2").on("click", function(e){
-	    e.preventDefault();
-	    let $ul = $(this).next("ul");
+    // h2 클릭 시 ul 토글 + 세션스토리지 저장
+    $(".sidebar h2").on("click", function(e){
+      e.preventDefault();
+      let $ul = $(this).next("ul");
 
-	    // 이미 열려 있으면 닫고 클래스 제거
-	    if($ul.hasClass("open")){
-	      $ul.removeClass("open").slideUp(200);
-	    } else {
-	      // 다른 ul은 닫기
-	      $(".sidebar ul.open").removeClass("open").slideUp(200);
-	      // 현재 것만 열기
-	      $ul.addClass("open").slideDown(200);
-	    }
-	  });
+      if($ul.hasClass("open")){
+        $ul.removeClass("open").slideUp(200);
+        sessionStorage.removeItem("openMenu"); // 닫으면 기록 삭제
+      } else {
+        $(".sidebar ul.open").removeClass("open").slideUp(200);
+        $ul.addClass("open").slideDown(200);
+        sessionStorage.setItem("openMenu", $(".sidebar h2").index(this)); // 몇 번째 h2인지 저장
+      }
+    });
 
-	  // li 클릭 시 ul 고정 유지
-	  $(".sidebar ul li a").on("click", function(){
-	    let $parentUl = $(this).closest("ul");
-	    $(".sidebar ul").not($parentUl).removeClass("open").slideUp(200); // 다른건 닫기
-	    $parentUl.addClass("open").show(); // 클릭한 ul은 고정
-	  });
+    // li 클릭 시 ul 고정 유지 (열려있던 메뉴 기록도 갱신)
+    $(".sidebar ul li a").on("click", function(){
+      let $parentUl = $(this).closest("ul");
+      $(".sidebar ul").not($parentUl).removeClass("open").slideUp(200);
+      $parentUl.addClass("open").show();
 
-	  // 바깥 영역 클릭 시 닫기
-	  $(document).on("click", function(e){
-	    if(!$(e.target).closest(".sidebar").length){
-	      $(".sidebar ul").removeClass("open").slideUp(200);
-	    }
-	  });
-	});
-  </script>
+      let parentIndex = $(".sidebar h2").index($parentUl.prev("h2"));
+      sessionStorage.setItem("openMenu", parentIndex);
+    });
+
+    // 페이지 로드 시 마지막에 열어둔 메뉴 복원
+    let openMenuIndex = sessionStorage.getItem("openMenu");
+    if(openMenuIndex !== null){
+      let $targetUl = $(".sidebar h2").eq(openMenuIndex).next("ul");
+      $targetUl.addClass("open").show();
+    }
+  });
+</script>
 
 <div class="container">
 	<main>
@@ -303,7 +318,7 @@ button {
 
   <div class="button-group">
     <button type="button" id="updateBtn">회원정보 수정</button>
-    <button type="button" id="secessionBtn">회원 탈퇴</button>
+    <a href="/"><button type="button" id="backBtn" style="display: inline-block;">뒤로가기</button></a>
     <button type="button" id="sucessBtn" style="display: none;">수정 완료</button>
     <button type="button" id="cancleBtn" style="display: none;">수정 취소</button>
   </div>
@@ -331,6 +346,7 @@ $(function() {
 
  // 수정 버튼 클릭
     $("#updateBtn").on("click", function(){
+     	$("#updateBtn, #secessionBtn, #backBtn").hide();
         $("#updateBtn, #secessionBtn").hide();
         $("#sucessBtn, #cancleBtn, #zipcodeBtn, #emailCheckBtn").show();
         $("#name, #phone, #email, #zipcode, #address, #addressDetail").prop("readonly", false);
@@ -473,19 +489,6 @@ $(function() {
             alert("회원정보 수정에 실패했습니다.");
         });
     });
-
- 	// 회원 탈퇴 버튼 클릭
-    $("#secessionBtn").on("click", function(){
-        if(confirm("정말 탈퇴하시겠습니까?")){
-            $.post("/api/member/userSecession", function(){
-                alert("회원탈퇴가 완료되었습니다.");
-                location.href = "/"; // 메인 페이지로 이동
-            }).fail(function(){
-                alert("회원탈퇴 처리 중 오류가 발생했습니다.");
-            });
-        }
-    });
-
 });
 </script>
 <%@ include file="/WEB-INF/views/common/footer.jsp" %>

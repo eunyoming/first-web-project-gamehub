@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,12 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import commons.SessionManager;
 import dao.MemberDAO;
 import dao.PointDAO;
 import dao.ReportDAO;
 import dto.member.MemberDTO;
+import dto.member.MemberProfileDTO;
 import dto.member.SimpleUserProfileDTO;
 
 
@@ -185,7 +188,9 @@ public class MemberController extends HttpServlet {
 				String result = g.toJson(dto);
 				pw.append(result);
 
+				
 			}
+				
 			// 마이페이지 회원정보 수정
 			else if (path.equals("/userInpoUpdate")) {
 
@@ -259,7 +264,76 @@ public class MemberController extends HttpServlet {
 					response.sendRedirect("/error/noneIdRequest");
 				}
 
-			}
+			}else if(path.equals("/getProfile")) {
+				String userId = (String) request.getSession().getAttribute("loginId");
+			    
+			    MemberProfileDTO profile = dao.getProfileByUserId(userId);
+
+			    if (profile == null) {
+			        profile = new MemberProfileDTO();
+			        profile.setUserID(userId);
+			        profile.setProfileImage("/images/default-profile.png");
+			        profile.setBio("자기소개를 입력해주세요.");
+			        profile.setStatusMessage("상태메시지를 설정해주세요.");
+			        profile.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+			        dao.insertDefaultProfile(profile);
+			      }
+
+			      response.setContentType("application/json");
+			      response.setCharacterEncoding("UTF-8");
+			      response.getWriter().write(new Gson().toJson(profile));
+			      
+			      
+			    }else if(path.equals("/getProfileOthers")) {
+					String userId = request.getParameter("userId");
+					
+					System.out.println("친구페이지:"+userId);
+				    
+				    MemberProfileDTO profile = dao.getProfileByUserId(userId);
+
+				    if (profile == null) {
+				        profile = new MemberProfileDTO();
+				        profile.setUserID(userId);
+				        profile.setProfileImage("/asset/img/default-profile.png");
+				        profile.setBio("자기소개를 입력해주세요.");
+				        profile.setStatusMessage("상태메시지를 설정해주세요.");
+				        profile.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+				        dao.insertDefaultProfile(profile);
+				      }
+
+				      response.setContentType("application/json");
+				      response.setCharacterEncoding("UTF-8");
+				      response.getWriter().write(new Gson().toJson(profile));
+				      
+				      
+				    }else if(path.equals("/updateProfileText")) {
+			    	
+			    	   request.setCharacterEncoding("UTF-8");
+			           response.setContentType("application/json");
+			           response.setCharacterEncoding("UTF-8");
+
+			           // JSON 요청 파싱
+			           Gson gson = new Gson();
+			           JsonObject json = gson.fromJson(request.getReader(), JsonObject.class);
+
+			           String bio = json.get("bio").getAsString();
+			           String statusMessage = json.get("statusMessage").getAsString();
+
+			           String userId = (String) request.getSession().getAttribute("loginId");
+			           
+			           boolean updated = dao.updateProfileText(userId, bio, statusMessage);
+
+			           // 응답 JSON 생성
+			           JsonObject result = new JsonObject();
+			           result.addProperty("result", updated ? "success" : "fail");
+
+			           response.getWriter().write(gson.toJson(result));
+
+			    }
+			 
+	
+				
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("/error");

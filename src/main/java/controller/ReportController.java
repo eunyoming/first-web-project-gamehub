@@ -106,8 +106,8 @@ public class ReportController extends HttpServlet {
 							//해당 댓글의 writer 아이디를 검색 후 저장.
 							//아직 미구현
 							
-							//String targetUserId =ReplyDAO.getInstance().selectRepliesBySeq(Integer.parseInt(report.getTargetSeq())).getWriter();
-							//targetUserList.add(MemberDAO.getInstance().getSimpleUserProfile(targetUserId));
+							String targetUserId =ReplyDAO.getInstance().selectRepliesBySeq(Integer.parseInt(report.getTargetSeq())).getWriter();
+							targetUserList.add(MemberDAO.getInstance().getSimpleUserProfile(targetUserId));
 						}
 
 						
@@ -137,7 +137,7 @@ public class ReportController extends HttpServlet {
 				String targetUserID = null;
 				if(targetType.equals("board")) {
 					target_seq = request.getParameter("board_seq");
-				targetUserID = request.getParameter("writer");
+					targetUserID = request.getParameter("writer");
 
 				}else if(targetType.equals("reply")) {
 					target_seq = request.getParameter("reply_seq");

@@ -50,8 +50,6 @@
 
 					<c:if test="${loginId != null }">
 
-
-
 						<div class="header-bell"
 							style="padding: 10px; padding-right: 20px;">
 							<div class="dropdown">

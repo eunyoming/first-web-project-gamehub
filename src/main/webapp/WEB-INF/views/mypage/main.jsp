@@ -37,6 +37,37 @@ request.setAttribute("pageTitle", "마이페이지");
     <c:otherwise>
         <div class="container">
             <p>${paramUserId}의 페이지</p>
+            <div class="card p-4" >
+  <div class="row">
+    <!-- 왼쪽: 프로필 이미지 + 사용자 정보 -->
+    <div class="col-md-4 text-center">
+      <img id="profileImage" src="/images/default-profile.png"
+           alt="프로필 이미지"
+           class="rounded-circle mb-3"
+           width="180" height="180"
+           >
+
+      <div class="fw-bold fs-5 text-purple" id="loginId">사용자아이디</div>
+      <div class="text-muted" id="equipedAchiev">장착 업적</div>
+    </div>
+
+    <!-- 오른쪽: BIO + 상태메시지 -->
+    <div class="col-md-8">
+      <div class="mb-3">
+        <label for="bioInput" class="form-label">자기소개</label>
+        <div id="bioInput" class="form-control" rows="4"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="statusInput" class="form-label">상태메시지</label>
+        <div id="statusInput" ></div>
+      </div>
+
+     
+    </div>
+  </div>
+</div>
+            
             <form action="/api/friends/request" method="post">
                 <input type="hidden" name="toUser" value="${paramUserId}">
                 <input type="hidden" name="fromUser" value="${loginId}">
@@ -44,14 +75,7 @@ request.setAttribute("pageTitle", "마이페이지");
       
             </form>
         </div>
-    </c:otherwise>
-</c:choose>
-
-  
-  
-<jsp:include page="/WEB-INF/views/common/footer.jsp" />
-
-<script>
+        <script>
 function showSection(id) {
     const sections = ['collection', 'bio', 'bookmark', 'friend'];
     sections.forEach(s => {
@@ -63,6 +87,33 @@ $(document).ready(function() {
     var targetId = '${paramUserId}'; // 확인할 상대 ID
     var currentUserId = '${loginId}'; // 로그인 사용자 ID, 서버에서 가져올 수도 있음
 
+    
+    $.ajax({
+	    url: "/api/member/getProfileOthers?userId="+targetId ,
+	    method: "GET",
+	    dataType: "json",
+	    success: function(data) {
+	    	console.log(data);
+	      $("#profileImage").attr("src", data.profileImage);
+	      $("#loginId").text(data.userID);
+	      $("#bioInput").text(data.bio);
+	      $("#statusInput").text(data.statusMessage);
+	    }
+	  });
+    
+    $.ajax({
+    	  url: "/api/achievement/findEquipAchiev?userId=" + targetId,
+    	  method: "GET",
+    	  dataType: "json",
+    	  success: function(response) {
+    	    console.log(response);
+    	    $("#equipedAchiev").text(response.data); // 업적 텍스트 삽입
+    	  },
+    	  error: function(xhr, status, error) {
+    	    console.error("업적 불러오기 실패:", error);
+    	    $("#equipedAchiev").text("업적 정보를 불러올 수 없습니다.");
+    	  }
+    	});
     
     console.log(targetId +":"+ currentUserId);
     
@@ -161,3 +212,9 @@ $(document).ready(function() {
     updateFriendButton();
 });
 </script>
+    </c:otherwise>
+</c:choose>
+
+  
+  
+<jsp:include page="/WEB-INF/views/common/footer.jsp" />

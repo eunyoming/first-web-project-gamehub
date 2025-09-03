@@ -197,6 +197,9 @@
     padding: 8px;
 }
 
+.mention {
+  margin-right: 4px; /* 원하는 간격(px, em 등) */
+}
 
 
 /* icon 색상 변경 */

@@ -16,25 +16,22 @@ request.setAttribute("pageTitle", "게시판 리스트");
 
 <div class="container g-0">
 	<div class="row g-3 align-items-end mt-2">
+		<!-- 카테고리 -->
 		<div class="col-12 col-md-2">
 			<label for="category" class="form-label">카테고리</label> <select
 				id="category" class="form-select">
 				<option value="">전체</option>
-				<option>자유</option>
-				<option>공략</option>
-				<option>기타</option>
-				<option>Q&amp;A</option>
+				<option value="자유" ${categoryParam == '자유' ? 'selected' : ''}>자유</option>
+				<option value="공략" ${categoryParam == '공략' ? 'selected' : ''}>공략</option>
+				<option value="기타" ${categoryParam == '기타' ? 'selected' : ''}>기타</option>
+				<option value="Q&A" ${categoryParam == 'Q&A' ? 'selected' : ''}>Q&amp;A</option>
 			</select>
 		</div>
+		<!-- 관련 게임 -->
 		<div class="col-12 col-md-2">
 			<label for="relatedGame" class="form-label">관련 게임</label> <select
 				id="relatedGame" class="form-select">
 				<option value="">전체</option>
-				<option>Game A</option>
-				<option>Game B</option>
-				<option>Game C</option>
-				<option>Game D</option>
-				<option>Game E</option>
 			</select>
 		</div>
 		<div class="col-2 col-md-none"></div>
@@ -42,8 +39,8 @@ request.setAttribute("pageTitle", "게시판 리스트");
 			<label for="searchInput" class="form-label">게시물 검색 내용</label>
 			<div class="input-group">
 				<input id="searchInput" type="text" class="form-control"
-					placeholder="검색어를 입력하세요.">
-				<button class="btn btn-blue-purple" type="button"
+					placeholder="검색어를 입력하세요." value="${param.search}">
+				<button class="btn btn-blue-purple" type="button" id="searchBtn"
 					style="color: white">검색</button>
 			</div>
 
@@ -70,11 +67,14 @@ request.setAttribute("pageTitle", "게시판 리스트");
 					<div class="row board-item g-0">
 						<div class="col-1">${dto.seq}</div>
 						<div class="col-1">[ ${dto.category} ]</div>
-						<div class="col-2">[ ${dto.refgame} ]</div>
+						<div class="col-2">
+							<span class="badge btn-gradient btn-red-peach">${dto.refgame}</span>
+						</div>
 						<div class="col-3">
-							<a href="/detailPage.board?seq=${dto.seq}"
-								style="text-decoration: none; color: inherit;">
-								${dto.title} [ ${dto.replyCount} ]</a>
+							<a href="/detailPage.board?seq=${dto.seq}" class="title-ellipsis"
+								style="text-decoration: none; color: inherit;"> ${dto.title}</a>
+							<!-- 댓글수 -->
+							<span class="ms-1">[${dto.replyCount}]</span>
 						</div>
 						<div class="col-1">${dto.writer}</div>
 						<div class="col-2">
@@ -120,6 +120,66 @@ request.setAttribute("pageTitle", "게시판 리스트");
 
 <script>
 	
+	$(document).ready(function() {
+		// 관련 게임 채워넣기
+		$.ajax({
+		    url: "/api/game/gameList",
+		    type: "GET",
+		    dataType: "json",
+		    success: function(data) {
+		        let $select = $("#relatedGame");
+		        $select.empty();
+		        $select.append('<option value="">전체</option>');
+
+		        data.forEach(function(game) {
+		            let selected = "";
+		            if ("${refgameParam}" === game.title) {
+		                selected = "selected";
+		            }
+		            $select.append(
+		                '<option value="' + game.title + '" data-seq="' + game.seq + '" ' + selected + '>' 
+		                + game.title + 
+		                '</option>'
+		            );
+		        });
+		    },
+		    error: function(xhr, status, error) {
+		        console.error("게임 목록 불러오기 실패:", error);
+		    }
+		});
+
+	    	// ------------ 필터링
+	        // 카테고리 변경
+	        $("#category").on("change", doSearch);
+
+	        // 관련 게임 변경
+	        $("#relatedGame").on("change", doSearch);
+
+	        // 검색 버튼 클릭
+	        $("#searchBtn").on("click", doSearch);
+
+	        // 검색창 엔터 입력
+	        $("#searchInput").on("keypress", function (e) {
+	            if (e.which === 13) { // 엔터키
+	                doSearch();
+	            }
+	        });
+
+	        // 공통 함수
+	        function doSearch() {
+	            let category = $("#category").val();
+	            let game = $("#relatedGame").val();
+	            let search = $("#searchInput").val().trim();
+
+	            let url = "/list.board?cpage=1";
+	            if (category) url += "&category=" + encodeURIComponent(category);
+	            if (game) url += "&refgame=" + encodeURIComponent(game);
+	            if (search) url += "&search=" + encodeURIComponent(search);
+
+	            location.href = url;
+	        }
+	    }); // function(){}
+
 </script>
 
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

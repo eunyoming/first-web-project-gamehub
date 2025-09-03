@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.naming.Context;
@@ -46,17 +47,17 @@ public class BoardDAO {
 
 	// insert
 	public int insertBoards(BoardDTO dto) throws Exception {
-		
+
 		// 카테고리 선택 안 했을 시 - 기본 : 자유
 		if(dto.getCategory() == null || dto.getCategory().trim().equals("")) {
-	        dto.setCategory("자유"); // 기본값
-	    }
-		
-		// 게임 선택 안 했을 시 - 필수로 선택하게 하기.
-	    if(dto.getRefgame() == null || dto.getRefgame().trim().equals("")) {
-	        throw new Exception("게임은 필수 선택입니다.");
-	    }
-		
+			dto.setCategory("자유"); // 기본값
+		}
+
+		// 게임 선택 안 했을 시 - 전체로 넣기
+		if(dto.getRefgame() == null || dto.getRefgame().trim().equals("")) {
+			dto.setRefgame("전체"); 
+		}
+
 		String sql = "insert into boards values (boards_seq.nextval, ?, ?, ?, ?, ?, 0, 0, 'public', sysdate)";
 
 		try (Connection con = getConnection();
@@ -94,6 +95,7 @@ public class BoardDAO {
 		}
 	}
 
+	// 게시글 본문 수정
 	// update by seq set title, contents, category, refgame
 	public int updateBoardsBySeq(int seq, String title, String contents, String category, String refgame) throws Exception{
 		String sql = "update boards set title = ?, contents = ?, category = ?, refgame = ? where seq = ?";
@@ -105,6 +107,17 @@ public class BoardDAO {
 			pst.setString(4, refgame);
 			pst.setInt(5, seq);
 
+			return pst.executeUpdate();
+		}
+	}
+
+	// 추천수 수정
+	public int updateBoardsLikeCount(int board_seq, int likeCount) throws Exception {
+		String sql = "UPDATE boards SET likeCount = ? WHERE seq = ?";
+		try (Connection conn = getConnection();
+				PreparedStatement pst = conn.prepareStatement(sql)) {
+			pst.setInt(1, likeCount);
+			pst.setInt(2, board_seq);
 			return pst.executeUpdate();
 		}
 	}
@@ -138,41 +151,80 @@ public class BoardDAO {
 	}
 
 	// selectFromToBoards / 원하는 게시물 수 만큼 가져오기.
-	public List<BoardDTO> selectFromToBoards(int start, int end) throws Exception {
-	    String sql = "SELECT * FROM (" +
-	                 "  SELECT rownum rnum, a.* FROM (" +
-	                 "    SELECT b.seq, b.writer, b.title, b.category, b.refgame, " +
-	                 "           b.viewCount, b.likeCount, b.created_at, " +
-	                 "           (SELECT COUNT(*) FROM replies r WHERE r.board_seq = b.seq) AS replyCount " +
-	                 "    FROM boards b " +
-	                 "    ORDER BY b.created_at DESC" +
-	                 "  ) a" +
-	                 ") WHERE rnum BETWEEN ? AND ?";
+	// 검색 필터 추가 ( 제목, 작성자, 본문 - 대소문자 구분 x )
+	// 카테고리, 관련 게임 필터링도 추가
+	public List<BoardDTO> selectFromToBoards(int start, int end, String category, String refgame, String search) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT * FROM ( ");
+		sql.append("  SELECT rownum rnum, a.* FROM ( ");
+		sql.append("    SELECT b.seq, b.writer, b.title, b.category, b.refgame, ");
+		sql.append("           b.viewCount, b.likeCount, b.created_at, ");
+		sql.append("           (SELECT COUNT(*) FROM replies r WHERE r.board_seq = b.seq) AS replyCount ");
+		sql.append("    FROM boards b ");
+		sql.append("    WHERE b.visibility = 'public' ");
 
-	    try (Connection con = getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
-	        pstmt.setInt(1, start);
-	        pstmt.setInt(2, end);
+		// ✅ 동적 조건 추가
+		if (category != null && !category.isEmpty()) {
+			sql.append("AND b.category = ? ");
+		}
+		if (refgame != null && !refgame.isEmpty()) {
+			sql.append("AND b.refgame = ? ");
+		}
+		if (search != null && !search.isEmpty()) {
+			sql.append("AND (LOWER(b.title) LIKE ? OR LOWER(b.writer) LIKE ? OR LOWER(b.contents) LIKE ?) ");
+		}
 
-	        try (ResultSet rs = pstmt.executeQuery()) {
-	            List<BoardDTO> list = new ArrayList<>();
-	            while (rs.next()) {
-	                BoardDTO dto = new BoardDTO();
-	                dto.setSeq(rs.getInt("seq"));
-	                dto.setWriter(rs.getString("writer"));
-	                dto.setTitle(rs.getString("title"));
-	                dto.setCategory(rs.getString("category"));
-	                dto.setRefgame(rs.getString("refgame"));
-	                dto.setViewCount(rs.getInt("viewCount"));
-	                dto.setLikeCount(rs.getInt("likeCount"));
-	                dto.setCreated_at(rs.getTimestamp("created_at"));
-	                dto.setReplyCount(rs.getInt("replyCount")); // 댓글 수
-	                list.add(dto);
-	            }
-	            return list;
-	        }
-	    }
+		sql.append("    ORDER BY b.created_at DESC ");
+		sql.append("  ) a ");
+		sql.append(") WHERE rnum BETWEEN ? AND ?");
+
+		try (Connection con = getConnection();
+				PreparedStatement pst = con.prepareStatement(sql.toString())) {
+
+			int idx = 1;
+
+			// 조건 파라미터 세팅
+			if (category != null && !category.isEmpty()) {
+				pst.setString(idx++, category);
+			}
+			if (refgame != null && !refgame.isEmpty()) {
+				pst.setString(idx++, refgame);
+			}
+			if (search != null && !search.isEmpty()) {
+				String likeSearch = "%" + search.toLowerCase() + "%"; // 🔽 소문자로 변환
+				pst.setString(idx++, likeSearch); // title
+				pst.setString(idx++, likeSearch); // writer
+				pst.setString(idx++, likeSearch); // contents
+			}
+
+			// 페이징
+			pst.setInt(idx++, start);
+			pst.setInt(idx, end);
+
+			try (ResultSet rs = pst.executeQuery()) {
+				List<BoardDTO> list = new ArrayList<>();
+				while (rs.next()) {
+					BoardDTO dto = new BoardDTO();
+					dto.setSeq(rs.getInt("seq"));
+					dto.setWriter(rs.getString("writer"));
+					dto.setTitle(rs.getString("title"));
+					dto.setCategory(rs.getString("category"));
+					dto.setRefgame(rs.getString("refgame"));
+					dto.setViewCount(rs.getInt("viewCount"));
+					dto.setLikeCount(rs.getInt("likeCount"));
+					dto.setCreated_at(rs.getTimestamp("created_at"));
+					dto.setReplyCount(rs.getInt("replyCount"));
+					list.add(dto);
+				}
+				return list;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
 	}
+
+
 
 
 	// select * from boards where seq = ?
@@ -215,20 +267,61 @@ public class BoardDAO {
 			return rs.getInt("count(*)");
 		}
 	}
-	
-	// 총 공개글 개수 : getRecordTotalCount()
-		public int getPublicRecordTotalCount() throws Exception{
-			String sql = "select count(*) from boards where visibility = 'public'";
-			try (Connection con = this.getConnection();
-					PreparedStatement pstat = con.prepareStatement(sql);
-					ResultSet rs = pstat.executeQuery();) {
 
-				rs.next();
-				return rs.getInt("count(*)");
-			}
+	// getRecordTotalCount() 오버로딩
+	// 조건에 맞는 총 글 개수
+	public int getRecordTotalCount(String category, String refgame, String search) throws Exception {
+		StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM boards b WHERE b.visibility = 'public' ");
+
+		if (category != null && !category.isEmpty()) {
+			sql.append("AND b.category = ? ");
+		}
+		if (refgame != null && !refgame.isEmpty()) {
+			sql.append("AND b.refgame = ? ");
+		}
+		if (search != null && !search.isEmpty()) {
+			sql.append("AND (LOWER(b.title) LIKE ? OR LOWER(b.writer) LIKE ? OR LOWER(b.contents) LIKE ?) ");
 		}
 
-	// page Navi
+		try (Connection con = getConnection();
+				PreparedStatement pst = con.prepareStatement(sql.toString())) {
+
+			int idx = 1;
+			if (category != null && !category.isEmpty()) {
+				pst.setString(idx++, category);
+			}
+			if (refgame != null && !refgame.isEmpty()) {
+				pst.setString(idx++, refgame);
+			}
+			if (search != null && !search.isEmpty()) {
+				String likeSearch = "%" + search.toLowerCase() + "%";
+				pst.setString(idx++, likeSearch);
+				pst.setString(idx++, likeSearch);
+				pst.setString(idx++, likeSearch);
+			}
+
+			try (ResultSet rs = pst.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+		}
+		return 0;
+	}
+
+	// 총 공개글 개수 : getRecordTotalCount()
+	public int getPublicRecordTotalCount() throws Exception{
+		String sql = "select count(*) from boards where visibility = 'public'";
+		try (Connection con = this.getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql);
+				ResultSet rs = pstat.executeQuery();) {
+
+			rs.next();
+			return rs.getInt("count(*)");
+		}
+	}
+
+	// PageNavi
 	public PageNaviDTO getPageNavi(int currentPage) throws Exception{
 		// 1. 전체 공개 레코드가 몇 개인지?
 		int recordTotalCount = this.getPublicRecordTotalCount();
@@ -293,30 +386,131 @@ public class BoardDAO {
 		// 계산만 수행하고 결과 객체로 반환
 		return dto;
 	}
-	
+
+	// PageNavi 오버로딩
+	public PageNaviDTO getPageNavi(int currentPage, int recordTotalCount) throws Exception {
+		int recordCountPerPage = Config.RECORD_COUNT_PER_PAGE;
+		int naviCountPerPage = Config.NAVI_COUNT_PER_PAGE;
+
+		int pageTotalCount = (recordTotalCount + recordCountPerPage - 1) / recordCountPerPage;
+
+		if (currentPage < 1) currentPage = 1;
+		else if (currentPage > pageTotalCount) currentPage = pageTotalCount;
+
+		int startNavi = (currentPage - 1) / naviCountPerPage * naviCountPerPage + 1;
+		int endNavi = startNavi + (naviCountPerPage - 1);
+
+		if (endNavi > pageTotalCount) endNavi = pageTotalCount;
+
+		boolean jumpPrev = startNavi > 1;
+		boolean needPrev = startNavi > 1;
+		boolean jumpNext = endNavi < pageTotalCount;
+		boolean needNext = currentPage < pageTotalCount;
+
+		return new PageNaviDTO(startNavi, endNavi, jumpPrev, needPrev, jumpNext, needNext, currentPage, pageTotalCount);
+	}
+
 	// 조회수 증가
 	public int updateBoardsViewCount(int seq) throws Exception {
-	    String sql = "UPDATE boards SET viewCount = viewCount + 1 WHERE seq = ?";
-	    try (Connection con = getConnection();
-	         PreparedStatement pstat = con.prepareStatement(sql)) {
-	        pstat.setInt(1, seq);
-	        return pstat.executeUpdate();
-	    }
+		String sql = "UPDATE boards SET viewCount = viewCount + 1 WHERE seq = ?";
+		try (Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql)) {
+			pstat.setInt(1, seq);
+			return pstat.executeUpdate();
+		}
 	}
-	
+
 	// 댓글수 가져오기
 	public int selectRepliesReplyCount(int board_seq) throws Exception {
-	    String sql = "SELECT COUNT(*) FROM replies WHERE board_seq = ? and visibility = 'public'";
+		String sql = "SELECT COUNT(*) FROM replies WHERE board_seq = ? and visibility = 'public'";
+		try (Connection con = getConnection();
+				PreparedStatement pst = con.prepareStatement(sql)) {
+			pst.setInt(1, board_seq);
+			try (ResultSet rs = pst.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			}
+		}
+		return 0;
+	}
+
+	// ------------ Q&A 전용 --------- 
+	// Q&A 목록 가져오기
+	public List<BoardDTO> selectQnaList(String loginId, String userCategory, int start, int end) throws Exception {
+	    String sql;
+	    if ("manager".equalsIgnoreCase(userCategory)) { // 관리자 → 전체 조회
+	        sql = "SELECT * FROM boards " +
+	              "WHERE category = 'Q&A' " +
+	              "ORDER BY seq DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+	    } else { // 일반 유저 → 자기 글만 조회
+	        sql = "SELECT * FROM boards " +
+	              "WHERE category = 'Q&A' AND writer = ? " +
+	              "ORDER BY seq DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+	    }
+
 	    try (Connection con = getConnection();
-	         PreparedStatement pstmt = con.prepareStatement(sql)) {
-	        pstmt.setInt(1, board_seq);
-	        try (ResultSet rs = pstmt.executeQuery()) {
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	    	if ("manager".equalsIgnoreCase(userCategory)) {
+	            ps.setInt(1, start);
+	            ps.setInt(2, Config.RECORD_COUNT_PER_PAGE);
+	        } else {
+	            ps.setString(1, loginId);
+	            ps.setInt(2, start);
+	            ps.setInt(3, Config.RECORD_COUNT_PER_PAGE);
+	        }
+
+	        try (ResultSet rs = ps.executeQuery()) {
+	            List<BoardDTO> list = new ArrayList<>();
+	            while (rs.next()) {
+	                BoardDTO dto = new BoardDTO();
+	                dto.setSeq(rs.getInt("seq"));
+	                dto.setWriter(rs.getString("writer"));
+	                dto.setTitle(rs.getString("title"));
+	                dto.setContents(rs.getString("contents"));
+	                dto.setCategory(rs.getString("category"));
+	                dto.setRefgame(rs.getString("refgame"));
+	                dto.setViewCount(rs.getInt("viewCount"));
+	                dto.setLikeCount(rs.getInt("likeCount"));
+	                dto.setVisibility(rs.getString("visibility"));
+	                dto.setCreated_at(rs.getTimestamp("created_at"));
+	                list.add(dto);
+	            }
+	            return list;
+	        }
+	    }
+	}
+
+	// Q&A 전체 글 개수
+	public int getQnaRecordTotalCount(String loginId, String userCategory) throws Exception {
+	    String sql;
+	    if ("manager".equalsIgnoreCase(userCategory)) {
+	        sql = "SELECT COUNT(*) FROM boards WHERE category = 'Q&A'";
+	    } else {
+	        sql = "SELECT COUNT(*) FROM boards WHERE category = 'Q&A' AND writer = ?";
+	    }
+
+	    try (Connection con = getConnection();
+	         PreparedStatement ps = con.prepareStatement(sql)) {
+
+	        if (!"manager".equalsIgnoreCase(userCategory)) {
+	            ps.setString(1, loginId);
+	        }
+
+	        try (ResultSet rs = ps.executeQuery()) {
 	            if (rs.next()) {
 	                return rs.getInt(1);
 	            }
 	        }
 	    }
 	    return 0;
+	}
+
+	// Q&A 네비게이션
+	public PageNaviDTO getQnaPageNavi(int currentPage, String loginId, String userCategory) throws Exception {
+	    int recordTotalCount = this.getQnaRecordTotalCount(loginId, userCategory);
+	    return getPageNavi(currentPage, recordTotalCount);
 	}
 
 }

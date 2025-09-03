@@ -212,6 +212,17 @@ public class ReplyDAO {
 			return pst.executeUpdate();
 		}
 	}
+	
+	public int updateRepliesLikeCount(int reply_seq, int likeCount) throws Exception {
+	    String sql = "UPDATE replies SET likeCount = ? WHERE seq = ?";
+	    try (Connection con = this.getConnection(); 
+	         PreparedStatement pstmt = con.prepareStatement(sql)) {
+	        pstmt.setInt(1, likeCount);
+	        pstmt.setInt(2, reply_seq);
+	        return pstmt.executeUpdate();
+	    }
+	}
+
 
 	// 댓글 부모 작성자 구하기 ( 어느 댓글의 댓글인지 @작성자 해주기 위한 메서드 )
 	public String getParentWriterByPath(String path) throws Exception {

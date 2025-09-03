@@ -21,7 +21,8 @@
 	<header class="fixed-top">
 		<nav class="navbar navbar-expand-lg shadow-sm blur-bg">
 			<div class="container-fluid">
-				<a class="navbar-brand" href="/"><img src="/asset/img/Logo.png" style="height:30px"></a>
+				<a class="navbar-brand" href="/"><img src="/asset/img/Logo.png"
+					style="height: 30px"></a>
 				<button class="navbar-toggler" type="button"
 					data-bs-toggle="collapse" data-bs-target="#navbarNav"
 					aria-controls="navbarNav" aria-expanded="false"
@@ -35,12 +36,138 @@
 						<li class="nav-item"><a class="nav-link"
 							href="/api/game/main?game_seq=1">Game</a></li>
 						<li class="nav-item"><a class="nav-link" href="/list.board">Community</a></li>
-						<li class="nav-item"><a class="nav-link" href="/api/point/pointPage">Store</a></li>
-						<c:if test="${not empty simpleProfile and  simpleProfile.category eq 'Manager'}">
-							<li class="nav-item"><a class="nav-link" href="/api/manage/main">Manager</a></li>
+						<li class="nav-item"><a class="nav-link"
+							href="/api/point/pointPage">Store</a></li>
+						<c:if
+							test="${not empty simpleProfile and  simpleProfile.category eq 'Manager'}">
+							<li class="nav-item"><a class="nav-link"
+								href="/api/manage/main">Manager</a></li>
 						</c:if>
-					
+
+
+
 					</ul>
+
+					<c:if test="${loginId != null }">
+
+
+
+						<div class="header-bell"
+							style="padding: 10px; padding-right: 20px;">
+							<div class="dropdown">
+								<a href="#"
+									class="position-relative text-decoration-none"
+									id="notificationDropdown" data-bs-toggle="dropdown"
+									aria-expanded="false"> 
+									🔔 
+									<span
+									class="position-absolute top-0 start-100 translate-middle p-1 
+                         bg-danger border border-light rounded-circle headerJspBellRed"
+									style="display: none;"></span>
+								</a>
+								<ul class="dropdown-menu dropdown-menu-end"
+									aria-labelledby="notificationDropdown"
+									id="notification-dropdown-list">
+									<li><span class="dropdown-item-text"">새 알림이 없습니다.</span></li>
+									<!-- 실제 알림이 있으면 여기 li 추가 -->
+									
+						            						            
+								</ul>
+							</div>
+						</div>
+
+						<script>
+						$(function() {
+						    console.log("header DOM 준비 완료");
+
+						    // 알림 배지 업데이트 함수
+						    function updateNotificationBadge() {
+						        $.ajax({
+						            url: "/Notification/checkNotification",
+						            type: "post"
+						        }).done(function(resp) {
+						            if (resp == "true") {
+						                $(".headerJspBellRed").show();
+						            } else {
+						                $(".headerJspBellRed").hide();
+						            }
+						        }).fail(function(err) {
+						            console.error("배지 업데이트 실패:", err);
+						        });
+						    }
+
+						    // 페이지 로드 시 한 번 실행
+						    updateNotificationBadge();
+
+						    // WebSocket 연결
+						    let socket;
+						    const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+						    const wsUrl = protocol + "://" + window.location.host + "/NotificationServer";
+						    console.log(wsUrl);
+
+						    socket = new WebSocket(wsUrl);
+
+						    socket.onopen = function() {
+						        console.log("서버 연결됨");
+						        socket.send("REGISTER:" + "${loginId}");
+						    };
+
+						    socket.onmessage = function(event) {
+						        // 서버에서 알림이 올 때 배지 갱신
+						        
+						        console.log("이벤트는"+event);
+						        console.log(event);
+						        if (event.data == "notification") {
+						            updateNotificationBadge();
+						        }
+						    };
+
+						    socket.onclose = function() {
+						        console.log("연결 종료");
+						    };
+						});
+						
+						$("#notificationDropdown").on("click",function(){
+							$.ajax({
+					            url: "/Notification/viewNotification",
+					            type: "post",
+					            dataType:"json"
+					        }).done(function(resp) {
+					        	console.log("notificationResp:"+resp);
+					        	console.log(resp);
+					        	console.log(resp.length);
+					        	if(resp.length > 0)
+					        	{
+						        	$("#notification-dropdown-list").html("");
+						        	$(".headerJspBellRed").hide();
+						        	 resp.forEach(function(item){
+							            	let dropli = $("<li>");
+							            	
+							            	let dropa = $("<a>");
+							            	dropa.attr({"class":"dropdown-item","href":"#"})
+							            	dropa.text(item.message);
+							            	 
+							            	dropli.append(dropa);
+							            	
+							            	$("#notification-dropdown-list").append(dropli);
+							            });
+						        }
+					        	else
+					        	{
+					        		$("#notification-dropdown-list").html(`<li><span class="dropdown-item-text">새 알림이 없습니다.</span></li>`);
+					        		
+					        	}
+					        	
+					        	
+					           
+					        }).fail(function(err) {
+					            console.error("배지 업데이트 실패:", err);
+					        });
+							
+						});
+						
+						</script>
+					</c:if>
 					<c:choose>
 						<c:when test="${loginId == null }">
 
@@ -64,7 +191,8 @@
 								</a>
 								<ul class="dropdown-menu dropdown-menu-end"
 									aria-labelledby="profileDropdown">
-									<li><a class="dropdown-item" href="/api/member/mypage?section=collection&userId=${loginId}">마이
+									<li><a class="dropdown-item"
+										href="/api/member/mypage?section=collection&userId=${loginId}">마이
 											페이지</a></li>
 									<li><a class="dropdown-item" href="#">보유 포인트:
 											${currentPoint}</a></li>

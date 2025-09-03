@@ -271,15 +271,16 @@ h2 {
 			<div class="strip__inner-text">
 				<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임1</h2>
-						<p>게임 설명</p>
+						<h2 class="display-5 fw-bold">게임1</h2>
+						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
 						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
-							<a href="/api/game/main?game_seq=1" class="btn btn-navy-main strip__game">게임하러 가기</a>
+							<a href="/api/game/main?game_seq=1" > <button
+									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
 
-							<button class="btn btn-navy-main strip__close">close</button>
+							<button class="btn gameSelectBtn strip__close">close</button>
 						</div>
 					</div>
 				</div>
@@ -292,15 +293,15 @@ h2 {
 			<div class="strip__inner-text">
 				<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임2</h2>
-						<p>게임 설명</p>
+						<h2 class="display-5 fw-bold">게임2</h2>
+						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
 						<video src="/games/game2/thumbnails/gamevideo.mp4" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=2"><button
-									class="btn btn-navy-main strip__game">게임하러 가기</button></a>
-							<button class="btn btn-navy-main strip__close btn">close</button>
+									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
+							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>
 					</div>
 				</div>
@@ -313,15 +314,15 @@ h2 {
 			<div class="strip__inner-text">
 			<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임3</h2>
-						<p>게임 설명</p>
+						<h2 class="display-5 fw-bold">게임3</h2>
+						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
 						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=5"><button
-									class="btn btn-navy-main strip__game">게임하러 가기</button></a>
-							<button class="btn btn-navy-main strip__close btn">close</button>
+									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
+							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>
 					</div>
 				</div>
@@ -334,15 +335,15 @@ h2 {
 			<div class="strip__inner-text">
 			<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임4</h2>
-						<p>게임 설명</p>
+					<h2 class="display-5 fw-bold">게임4</h2>
+						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
 						<video src="/games/game4/thumbnails/tetrisGame.mp4" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=4"><button
-									class="btn btn-navy-main strip__game">게임하러 가기</button></a>
-							<button class="btn btn-navy-main strip__close btn">close</button>
+									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
+							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>
 					</div>
 				</div>
@@ -355,15 +356,15 @@ h2 {
 			<div class="strip__inner-text">
 			<div class="row align-items-center">
 					<div class="col-md-6 text-center text-md-start">
-						<h2>게임5</h2>
-						<p>게임 설명</p>
+						<h2 class="display-5 fw-bold">게임5</h2>
+						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
 						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=1"><button
-									class="btn btn-navy-main strip__game">게임하러 가기</button></a>
-							<button class="btn btn-navy-main strip__close btn">close</button>
+									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
+							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>
 					</div>
 				</div>

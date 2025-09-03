@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import commons.SessionManager;
 import dao.MemberDAO;
 import dao.PointDAO;
+import dao.ReportDAO;
 import dto.member.MemberDTO;
 import dto.member.SimpleUserProfileDTO;
 
@@ -30,7 +31,7 @@ public class MemberController extends HttpServlet {
 		String path = request.getPathInfo(); 
 		MemberDAO dao = MemberDAO.getInstance();
 		Gson g = new Gson ();
-		
+
 		try {
 			if(path.equals("/loginPage")) {
 				request.getRequestDispatcher("/WEB-INF/views/member/login.jsp").forward(request, response);
@@ -44,30 +45,29 @@ public class MemberController extends HttpServlet {
 				System.out.println(userId + ":" + userPassword);
 
 				SimpleUserProfileDTO loginDto = dao.login(userId, userPassword);
-
+				
+				System.out.println(loginDto != null);
 				// 로그인 성공시
-				if(loginDto != null) {
+				if (loginDto != null) {
 					// Session 에 userId 저장
-					if ("Banned".equalsIgnoreCase(loginDto.getCategory())) {
-						// 로그인 자체 차단
-						response.sendRedirect("/banned.jsp");
-						return;
-					}
+					
 					request.getSession().setAttribute("loginId", userId);
-
 					request.getSession().setAttribute("simpleProfile", loginDto);
-					request.getSession().setAttribute("loginId", userId);
 					request.getSession().setAttribute("currentPoint", PointDAO.getInstance().getCurrentPoints(userId));
 
-					//세션 메니저에 세션 등록
-					SessionManager.getInstance().addSession(userId, request.getSession());	
+					// 세션 메니저에 세션 등록
+					SessionManager.getInstance().addSession(userId, request.getSession());
 
-					// index.jsp 로 다시 보내기
-					response.sendRedirect("/");
+					// Ajax 응답 (JSON)
+					response.setContentType("application/json;charset=UTF-8");
+					response.getWriter().write("{\"success\": true}");
 
-				}else { // 실패시
-					System.out.println("로그인 실패");
-					response.sendRedirect("/api/member/loginPage");
+				}else {
+					
+
+					// Ajax 응답 (JSON) - 실패 처리
+					response.setContentType("application/json;charset=UTF-8");
+					response.getWriter().write("{\"success\": false, \"message\": \"아이디 또는 비밀번호가 올바르지 않습니다.\"}");
 				}
 			}
 			// 아이디 찾기
@@ -141,13 +141,13 @@ public class MemberController extends HttpServlet {
 			}
 			// 이메일 중복 체크
 			else if (path.equals("/emailCheck")) {
-			    String email = request.getParameter("email");
-			    String userId = (String) request.getSession().getAttribute("loginId"); // 세션에서 현재 로그인 아이디 가져옴
+				String email = request.getParameter("email");
+				String userId = (String) request.getSession().getAttribute("loginId"); // 세션에서 현재 로그인 아이디 가져옴
 
-			    boolean result = dao.isEmailExist(email, userId);
+				boolean result = dao.isEmailExist(email, userId);
 
-			    PrintWriter pw = response.getWriter();
-			    pw.write("{\"result\": " + result + "}");
+				PrintWriter pw = response.getWriter();
+				pw.write("{\"result\": " + result + "}");
 			}
 			// 회원가입
 			else if(path.equals("/insert")) {
@@ -173,63 +173,63 @@ public class MemberController extends HttpServlet {
 			}
 			// 마이페이지 회원정보
 			else if (path.equals("/userInpo")) {
-					
+
 				String loginId =(String)request.getSession().getAttribute("loginId");
 				System.out.println(loginId);
-				
+
 				MemberDTO dto = dao.selectAllMemberId(loginId);
-				
+
 				response.setContentType("application/json; charset=UTF-8");
 				PrintWriter pw = response.getWriter();
-				
+
 				String result = g.toJson(dto);
 				pw.append(result);
-				
+
 			}
 			// 마이페이지 회원정보 수정
 			else if (path.equals("/userInpoUpdate")) {
-			    
-			    String loginId = (String) request.getSession().getAttribute("loginId");
-			    
-			    String name = request.getParameter("name");
-			    String phone = request.getParameter("phone");
-			    String email = request.getParameter("email");
-			    String zipcode = request.getParameter("zipcode");
-			    String address = request.getParameter("address");
-			    String addressDetail = request.getParameter("addressDetail");
-			    
-			    // 로그인 아이디 포함해서 DTO 생성
-			    MemberDTO dto = new MemberDTO(loginId, name, phone, email, zipcode, address, addressDetail);
-			    
-			    dao.updateMemberById(dto);
-			    
-			    // 업데이트 후 다시 DB 조회해서 최신 데이터 가져오기
-			    MemberDTO updatedDto = dao.selectAllMemberId(loginId);
-			    
-			    // JSON 응답
-			    response.setContentType("application/json; charset=UTF-8");
-			    PrintWriter pw = response.getWriter();
-			    String result = g.toJson(updatedDto); 
-			    pw.append(result);
+
+				String loginId = (String) request.getSession().getAttribute("loginId");
+
+				String name = request.getParameter("name");
+				String phone = request.getParameter("phone");
+				String email = request.getParameter("email");
+				String zipcode = request.getParameter("zipcode");
+				String address = request.getParameter("address");
+				String addressDetail = request.getParameter("addressDetail");
+
+				// 로그인 아이디 포함해서 DTO 생성
+				MemberDTO dto = new MemberDTO(loginId, name, phone, email, zipcode, address, addressDetail);
+
+				dao.updateMemberById(dto);
+
+				// 업데이트 후 다시 DB 조회해서 최신 데이터 가져오기
+				MemberDTO updatedDto = dao.selectAllMemberId(loginId);
+
+				// JSON 응답
+				response.setContentType("application/json; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+				String result = g.toJson(updatedDto); 
+				pw.append(result);
 			}
 			// 회원탈퇴
 			else if (path.equals("/userSecession")) {
-				
-				 String loginId = (String) request.getSession().getAttribute("loginId");
 
-		            if (loginId == null) {
-		                response.sendRedirect("/login.jsp"); // 로그인 안 된 경우
-		                return;
-		            }
+				String loginId = (String) request.getSession().getAttribute("loginId");
 
-		            // 회원 탈퇴 처리
-		            dao.withdrawMember(loginId);
+				if (loginId == null) {
+					response.sendRedirect("/login.jsp"); // 로그인 안 된 경우
+					return;
+				}
 
-		            // 세션 만료 (로그아웃 처리)
-		            request.getSession().invalidate();
+				// 회원 탈퇴 처리
+				dao.withdrawMember(loginId);
 
-		            // 탈퇴 완료 페이지 or 메인으로 이동
-		            response.sendRedirect("/");
+				// 세션 만료 (로그아웃 처리)
+				request.getSession().invalidate();
+
+				// 탈퇴 완료 페이지 or 메인으로 이동
+				response.sendRedirect("/");
 			}
 			// 로그아웃
 			else if(path.equals("/logout")) {

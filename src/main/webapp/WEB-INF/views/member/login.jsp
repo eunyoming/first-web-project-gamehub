@@ -285,8 +285,36 @@
 		});
 		
 		let userId = null;
+ $("#login_form").on("submit", function (e) {
+        e.preventDefault(); // 기본 submit 막기
 
-		$(document).ready(function () {
+        let userId = $("#idInput").val();
+        let userPassword = $("#pwInput").val();
+
+        // ID 저장 여부 체크
+        if ($("#idCheckBox").is(":checked")) {
+            localStorage.setItem("savedUserId", userId);
+        } else {
+            localStorage.removeItem("savedUserId");
+        }
+
+        $.ajax({
+            url: "/api/member/login",
+            type: "POST",
+            data: { userId: userId, userPassword: userPassword },
+            success: function (res) {
+                if (res.success) {
+                    window.location.href = "/";
+                } else {
+                    alert(res.message || "아이디 또는 비밀번호가 올바르지 않습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+ $(document).ready(function () {
 			
 			let regex = {
 				pw: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{7,15}$/ // 영문+숫자+특수문자 7~15자

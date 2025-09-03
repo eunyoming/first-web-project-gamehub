@@ -40,6 +40,17 @@ public class GameInfoDAO {
 //		}
 //	}
 	
+	public boolean updateGameComment(int seq, String comment) throws Exception {
+		String sql = "update gameInfo set CREATORCOMMENT = ? where seq = ?";
+		try (Connection con = this.getConnection(); 
+				PreparedStatement pstat = con.prepareStatement(sql)) {
+			pstat.setString(1, comment);
+			pstat.setInt(2, seq);
+			
+			return pstat.executeUpdate() >0;
+		}
+	}
+	
 	
 	public boolean updateGuide(int seq, String guide) throws Exception  {
 		String sql = "update gameInfo set guide = ? where seq = ?";
@@ -48,7 +59,7 @@ public class GameInfoDAO {
 			pstat.setString(1, guide);
 			pstat.setInt(2, seq);
 			
-			return pstat.executeUpdate() >1;
+			return pstat.executeUpdate() >0;
 		}
 	}
 

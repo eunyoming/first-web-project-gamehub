@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+* {
+  box-sizing: border-box;
+  &::before, &::after {
+    box-sizing: border-box;
+  }
+}
+
 :root {
 	background-color:white;
   --main-color: #B4E4FF;   
@@ -380,3 +387,70 @@ body{
     font-size: 12px;
 }
 
+
+.btn.gameSelectBtn {
+  font-family:'Danjo', sans-serif;
+  background: black;
+  border: 1px solid black;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  
+}
+
+
+
+/* 테두리 애니메이션 */
+.btn.gameSelectBtn::before,
+.btn.gameSelectBtn::after {
+  position: absolute;
+  content: "";
+  height: 0%;
+  width: 1px;
+  box-shadow:
+   -1px -1px 20px rgba(255,255,255,1),
+   -4px -4px 5px rgba(255,255,255,1),
+   7px 7px 20px rgba(0,0,0,.4),
+   4px 4px 5px rgba(0,0,0,.3);
+  transition: all 500ms ease;
+}
+
+.btn.gameSelectBtn::before {
+  right: 0;
+  top: 0;
+}
+.btn.gameSelectBtn::after {
+  left: 0;
+  bottom: 0;
+}
+
+.btn.gameSelectBtn:hover::before,
+.btn.gameSelectBtn:hover::after {
+  height: 100%;
+}
+
+
+
+/* 무지개 애니메이션 정의 */
+@keyframes pastelRainbow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Hover 시 파스텔 무지개 효과 */
+.btn.gameSelectBtn:hover {
+  color: #333;
+  background: linear-gradient(270deg,
+    var(--red-color),
+    var(--yellow-color),
+    var(--green-color),
+    var(--navy-color),
+    var(--main-color),
+    var(--accent-color),
+    var(--red-color));
+  background-size: 400% 400%;
+  animation: pastelRainbow 6s ease infinite;
+  box-shadow: 0 0 20px rgba(180, 228, 255, 0.6);
+}

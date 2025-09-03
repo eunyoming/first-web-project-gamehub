@@ -39,11 +39,11 @@ request.setAttribute("pageTitle", "관리자 통계 페이지");
         </div>
         <div class="card-body">
         <div>
-  <button class="btn btn-red-main" onclick="loadTopGameChart(1)">StarCraft</button>
-  <button  class="btn btn-yellow-main"  onclick="loadTopGameChart(2)">Space Battle</button>
-  <button class="btn btn-green-main" onclick="loadTopGameChart(3)">Minecraft</button>
-   <button class="btn btn-blue-main" onclick="loadTopGameChart(4)">League of Legends</button>
-    <button class="btn btn-purple-main-black" onclick="loadTopGameChart(5)">Minecraft</button>
+  <button class="btn btn-red-main" data-seq="1" onclick="loadTopGameChart(1)">StarCraft</button>
+  <button  class="btn btn-yellow-main"  data-seq="2"  onclick="loadTopGameChart(2)">Space Battle</button>
+  <button class="btn btn-green-main"   data-seq="3" onclick="loadTopGameChart(3)">Minecraft</button>
+   <button class="btn btn-blue-main"  data-seq="4" onclick="loadTopGameChart(4)">League of Legends</button>
+    <button class="btn btn-purple-main-black" data-seq="5" onclick="loadTopGameChart(5)">Minecraft</button>
 </div>
 
 <canvas id="topGameChart" width="600" height="400"></canvas>
@@ -290,7 +290,19 @@ request.setAttribute("pageTitle", "관리자 통계 페이지");
       }
     });
   }
+   $.ajax({
+       url: "/api/game/gameList",
+       type: "GET",
+       dataType: "json",
+       success: function(data){
+           data.forEach(game => {
+               // 해당 seq를 가진 article 찾기
+               let bTn = $('button[data-seq="' + game.seq + '"]');
 
+              bTn.text(game.title);
+           });
+       }
+   });
 
 // 초기 로딩
    loadSignupChart('daily');

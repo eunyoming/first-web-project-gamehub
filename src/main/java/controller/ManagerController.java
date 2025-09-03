@@ -31,8 +31,10 @@ import dao.GameDAO;
 import dao.GameInfoDAO;
 import dao.ManagerDAO;
 import dao.MemberDAO;
+import dao.ReportDAO;
 import dao.RoleDAO;
 import dto.game.GameDTO;
+import dto.member.BannedUserDTO;
 import dto.member.ManagerMemberDTO;
 import dto.member.RoleDTO;
 import dto.member.SimpleUserProfileDTO;
@@ -213,19 +215,24 @@ public class ManagerController extends HttpServlet {
 			}else if(path.equals("/bannedUserList")) {
 				
 				response.setContentType("application/json;charset=UTF-8");
-			    response.setCharacterEncoding("UTF-8");
-				
-				List<RoleDTO> bannedUserList = RoleDAO.getInstance().selectBannedUser();
-				List<SimpleUserProfileDTO> bannedUserListResult = new ArrayList<SimpleUserProfileDTO>();
-				for(RoleDTO bannedUser: bannedUserList) {
-					SimpleUserProfileDTO userDto= MemberDAO.getInstance().getSimpleUserProfile(bannedUser.getId());
-					bannedUserListResult.add(userDto);
+				response.setCharacterEncoding("UTF-8");
+
+				List<BannedUserDTO> bannedUserList = ReportDAO.getInstance().selectBannedUser();
+				List<SimpleUserProfileDTO> bannedUserListResult = new ArrayList<>();
+
+				for (BannedUserDTO bannedUser : bannedUserList) {
+				    SimpleUserProfileDTO userDto = MemberDAO.getInstance().getSimpleUserProfile(bannedUser.getId());
+				    bannedUserListResult.add(userDto);
 				}
+
+				// 두 리스트를 하나의 맵에 담음
+				Map<String, Object> result = new HashMap<>();
+				result.put("banInfo", bannedUserList);          // 차단 정보
+				result.put("profiles", bannedUserListResult);   // 프로필 정보
+
+				String json = gson.toJson(result);
 				
-				
-				
-				String json = gson.toJson(bannedUserListResult);
-				System.out.println(json);
+
 				response.getWriter().write(json);
 				response.getWriter().flush();
 				
@@ -302,6 +309,24 @@ public class ManagerController extends HttpServlet {
 
 				response.getWriter().write("{\"count\":" + BoardDAO.getInstance().getRecordTotalCount() + "}");
 				
+			}else if(path.equals("/updateGameComment")) {
+				
+				request.setCharacterEncoding("UTF-8");
+		        String seqStr = request.getParameter("seq");
+		        String comment = request.getParameter("comment");
+
+		        int seq = Integer.parseInt(seqStr);
+		        boolean success = false;
+		        
+		        success = GameInfoDAO.getInstance().updateGameComment(seq, comment);
+		        
+		        response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				
+			
+				response.getWriter().write("{\"success\":" + success + "}");
+					
+			
 			}
 				
 			

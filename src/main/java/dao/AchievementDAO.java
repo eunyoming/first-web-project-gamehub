@@ -5,12 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.game.AchievementDTO;
+import dto.game.GameRecordDTO;
 import dto.game.UserAchievementDTO;
 
 public class AchievementDAO {
@@ -110,9 +115,10 @@ public class AchievementDAO {
 				if (rs.next()) {
 					return rs.getInt("totalAch");
 				}
-				
+
 			}
-		}return 0;
+		}
+		return 0;
 	}
 
 	public int CountAchievementByGame_SeqAndLoginId(String loginId, int game_seq) throws Exception {
@@ -126,11 +132,41 @@ public class AchievementDAO {
 				if (rs.next()) {
 					return rs.getInt("currentAch");
 				}
-				
+
 			}
 		}
 		return 0;
 
+	}
+	public List<Map<String, Object>> selectUserAchievements(String userId) throws Exception {
+	    String sql = 
+	        "SELECT a.game_seq, g.title AS game_title, " +
+	        "       a.title AS achievement_title, a.description, a.icon_url, ua.unlocked_at " +
+	        "FROM achievement a " +
+	        "JOIN games g ON a.game_seq = g.seq " +
+	        "LEFT JOIN userAchievement ua " +
+	        "       ON a.seq = ua.achiev_seq AND ua.userId = ? " +
+	        "ORDER BY a.game_seq, ua.unlocked_at DESC NULLS LAST";
+
+	    try (Connection con = this.getConnection();
+	         PreparedStatement pstat = con.prepareStatement(sql)) {
+	        
+	        pstat.setString(1, userId);
+	        try (ResultSet rs = pstat.executeQuery()) {
+	            List<Map<String, Object>> list = new ArrayList<>();
+	            while (rs.next()) {
+	                Map<String, Object> row = new HashMap<>();
+	                row.put("gameSeq", rs.getInt("game_seq"));
+	                row.put("gameTitle", rs.getString("game_title"));
+	                row.put("achievementTitle", rs.getString("achievement_title"));
+	                row.put("description", rs.getString("description"));
+	                row.put("iconUrl", rs.getString("icon_url"));
+	                row.put("unlockedAt", rs.getTimestamp("unlocked_at"));
+	                list.add(row);
+	            }
+	            return list;
+	        }
+	    }
 	}
 
 }

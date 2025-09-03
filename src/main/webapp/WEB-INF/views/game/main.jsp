@@ -7,13 +7,22 @@ request.setAttribute("pageTitle", "게임페이지");
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
 <div
-	class="container game_container d-flex justify-content-center align-items-center">
+	class="container game_container d-flex justify-content-center align-items-center  flex-column">
 
 	<!--  여기에 우리가 만들 게임이 include 됩니다. -->
 
+		<div class="gameNavBar d-flex flex-wrap justify-content-center gap-3 w-100">
+			<a href="/api/game/main?game_seq=1"><button class="btn gameSelectBtn" data-seq="1">게임1</button></a>
+			<a href="/api/game/main?game_seq=2"><button class="btn gameSelectBtn" data-seq="2">게임2</button></a>
+			<a href="/api/game/main?game_seq=3"><button class="btn gameSelectBtn" data-seq="3">게임3</button></a>
+			<a href="/api/game/main?game_seq=4"><button class="btn gameSelectBtn" data-seq="4">게임4</button></a>
+			<a href="/api/game/main?game_seq=5"><button class="btn gameSelectBtn" data-seq="5">게임5</button></a>
+		
+		</div>
+	
 
 
-	<div id="gamebox"></div>
+	<div class=" w-100 flex-fill d-flex justify-content-center align-items-center" id="gamebox"></div>
 
 	<c:choose>
 		<c:when test="${param.game_seq == '1'}">
@@ -155,6 +164,21 @@ request.setAttribute("pageTitle", "게임페이지");
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 <script>
+
+$.ajax({
+    url: "/api/game/gameList",
+    type: "GET",
+    dataType: "json",
+    success: function(data){
+        data.forEach(game => {
+            // 해당 seq를 가진 article 찾기
+            let bTn = $('button[data-seq="' + game.seq + '"]');
+
+           bTn.text(game.title);
+        });
+    }
+});
+
 function showSection(id) {
     const sections = ['guide', 'info', 'review', 'ranking'];
     sections.forEach(s => {

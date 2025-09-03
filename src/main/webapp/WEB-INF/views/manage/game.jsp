@@ -23,7 +23,7 @@ request.setAttribute("pageTitle", "관리자 게임 관리 페이지");
 
 	<div id="guideEditorModal" style="display:none;">
 	  <textarea id="guideEditor"></textarea>
-	  <button onclick="saveGuide()" class="btn btn-success">저장</button>
+	  <button onclick="saveGuide()" class="btn btn-navy-main">저장</button>
 	</div>
 </div>
 
@@ -54,11 +54,14 @@ function loadGameInfo(seq){
         success: function(info){
         	let html = 
         	    '<h5>' + info.creator + ' 님의 코멘트</h5>' +
-        	    '<p>' + (info.creatorComment || '없음') + '</p>' +
+        	    '<p id="creatorComment">' + (info.creatorComment || '없음') + '</p>' +
+        	    '<button onclick="editComment(' + seq + ')" class="btn btn-blue-main mt-2 me-2">코멘트 수정</button>' +
         	    '<h5>가이드</h5>' +
-        	    '<div>' + (info.guide || '작성된 가이드 없음') + '</div>' +
-        	    '<button onclick="editGuide(' + seq + ')" class="btn btn-primary mt-2">가이드 수정</button>';
-            $("#gameDetail").html(html);
+        	    '<div id="guideContent">' + (info.guide || '작성된 가이드 없음') + '</div>' +
+        	    '<button onclick="editGuide(' + seq + ')" class="btn btn-green-main mt-2">가이드 수정</button>';
+
+        	$("#gameDetail").html(html);
+
             
             
             $('#guideEditor').summernote({
@@ -130,6 +133,32 @@ function uploadImage(file) {
         }
     });
 }
+
+function editComment(seq) {
+    let currentComment = $("#creatorComment").text();
+    $("#creatorComment").html(
+        '<textarea id="commentEdit" class="form-control mb-2">' + currentComment + '</textarea>' +
+        '<button id="saveCommentBtn" onclick="saveComment(' + seq + ')" class="btn btn-green-main btn-sm">저장</button>'
+        
+    );
+}
+function saveComment(seq) {
+	console.log("버튼 클릭")
+    let newComment = $("#commentEdit").val();
+    $.post('/api/manage/updateGameComment', { 
+        seq: seq, 
+        comment: newComment, 
+  
+    }, function(res){
+        if(res.success) {
+            $("#commentEdit").next("#saveCommentBtn").remove(); // 저장 버튼 제거
+            $("#commentEdit").replaceWith('<p id="creatorComment">' + newComment + '</p>');
+        } else {
+            alert('저장 실패');
+        }
+    });
+}
+
 </script>
 
  

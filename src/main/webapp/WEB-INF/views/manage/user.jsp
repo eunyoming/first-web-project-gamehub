@@ -29,6 +29,7 @@ request.setAttribute("pageTitle", "관리자 유저 관리 페이지");
 						<!-- 고정된 조작 영역 -->
 						<div class="mt-3">
 							<label for="banned-date">차단 기간</label> <select id="banned-date"
+							name="bannedDays"
 								class="form-select form-select-sm mb-3"
 								aria-label="banned-aria-date">
 								<option selected value="7">7일</option>
@@ -189,51 +190,60 @@ function loadReportData() {
     });
 }
 
-function loadBannedData(){
-	 $.ajax({
-	        url: '/api/manage/bannedUserList',
-	        type: 'GET',
-	        dataType: 'json'
-	    }).done(function(result) {
-	    	
-	    	const list = $("#bannedList");
-	    	 list.empty();
-	    	 
-	    	 if (!result) {
-	             list.append(`<li class="list-group-item text-muted">현재 밴된 유저가 존재하지 않습니다.</li>`);
-	             return;
-	         }
-	    	
+function loadBannedData() {
+    $.ajax({
+        url: '/api/manage/bannedUserList',
+        type: 'GET',
+        dataType: 'json'
+    }).done(function(result) {
+        const list = $("#bannedList");
+        list.empty();
 
-	    	 result.forEach((targetUser) => {
-	    		 
-	    		 const profileBlock =
-	    			  '<div class="profile d-flex align-items-center justify-content-between">' +
-	    			    '<div class="d-flex align-items-center">' +
-	    			      '<a href="/api/member/mypage?section=collection&userId=' + targetUser.userId + '">' +
-	    			        '<img src="' + targetUser.profileImage + '" alt="프로필" class="rounded-circle me-2" width="40" height="40">' +
-	    			      '</a>' +
-	    			      '<div class="d-none d-md-block">' +
-	    			        '<a href="/api/member/mypage?section=collection&userId=' + targetUser.userId + '" class="text-decoration-none">' +
-	    			          '<div class="fw-bold text-purple">' + targetUser.userId + '</div>' +
-	    			        '</a>' +
-	    			        '<div class="text-muted">' + targetUser.equipedAchiev + '</div>' +
-	    			      '</div>' +
-	    			    '</div>' +
-	    			    '<div class="text-end">' +
-	    			      '<button type="button" class="btn btn-navy-main unbanBtn" data-user-id="' + targetUser.userId + '">차단 해제</button>' +
-	    			    '</div>' +
-	    			  '</div>';
-	      		    
-	 	    	 const item = '<li class="list-group-item">' +profileBlock+ '</li>'
-	 	    	 list.append(item);
-	    		 
-	    	 })
+        if (!result || !result.profiles || result.profiles.length === 0) {
+            list.append(`<li class="list-group-item text-muted">현재 밴된 유저가 존재하지 않습니다.</li>`);
+            return;
+        }
 
-	    	
-	    });
-	
+        const profiles = result.profiles;
+        const banInfo = result.banInfo;
+	console.log(profiles);
+	console.log(banInfo);
+        profiles.forEach(profile => {
+            // userId 기준으로 banInfo 찾기
+            const ban = banInfo.find(b => b.id === profile.userId);
+            console.log(ban)
+
+            const profileBlock =
+                '<div class="profile d-flex align-items-center justify-content-between">' +
+                    '<div class="d-flex align-items-center">' +
+                        '<a href="/api/member/mypage?section=collection&userId=' + profile.userId + '">' +
+                            '<img src="' + profile.profileImage + '" alt="프로필" class="rounded-circle me-2" width="40" height="40">' +
+                        '</a>' +
+                        '<div class="d-none d-md-block">' +
+                            '<a href="/api/member/mypage?section=collection&userId=' + profile.userId + '" class="text-decoration-none">' +
+                                '<div class="fw-bold text-purple">' + profile.userId + '</div>' +
+                            '</a>' +
+                            '<div class="text-muted">' + profile.equipedAchiev + '</div>' +
+                            '<div class="text-muted small">차단 사유: ' + ban.bannedReason + '</div>' +
+                            '<div class="text-muted small">차단 만료: <span id="banned-time-' + profile.userId + '">' + formatRemainingTime(ban.bannedUntil) + '</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="text-end">' +
+                        '<button type="button" class="btn btn-navy-main unbanBtn" data-user-id="' + profile.userId + '">차단 해제</button>' +
+                    '</div>' +
+                '</div>';
+
+            const item = '<li class="list-group-item">' + profileBlock + '</li>';
+            list.append(item);
+            
+            setInterval(function() {
+                var span = document.getElementById('banned-time-' + profile.userId);
+                if (span) span.textContent = formatRemainingTime(ban.bannedUntil);
+            }, 1000);
+        });
+    });
 }
+
 
 $(document).ready(function() {
     loadReportData();
@@ -303,7 +313,7 @@ function loadMembers(page) {
     			    '</div>' +
     			    '<div>' +
     			      '<button class="btn btn-sm btn-blue-main me-2" onclick="openMypage(\'' + m.id + '\')">마이페이지</button>' +
-    			      '<button class="btn btn-sm btn-red-main" onclick="banUser(\'' + m.id + '\')">BAN</button>' +
+    			     
     			    '</div>' +
     			  '</li>'
     			);
@@ -394,6 +404,36 @@ function updateRole() {
 		    }
 		  });
 	}
+
+function formatRemainingTime(bannedUntil) {
+    if (!bannedUntil) return "차단 기간 없음";
+
+    var endDate = new Date(bannedUntil);
+    var now = new Date();
+
+    var diff = endDate - now;
+
+    if (diff <= 0) return "차단 만료";
+
+    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    diff -= days * (1000 * 60 * 60 * 24);
+
+    var hours = Math.floor(diff / (1000 * 60 * 60));
+    diff -= hours * (1000 * 60 * 60);
+
+    var minutes = Math.floor(diff / (1000 * 60));
+    diff -= minutes * (1000 * 60);
+
+    var seconds = Math.floor(diff / 1000);
+
+    var result = "";
+    if (days > 0) result += days + "일 ";
+    if (hours > 0) result += hours + "시간 ";
+    if (minutes > 0) result += minutes + "분 ";
+    result += seconds + "초 남음";
+
+    return result;
+}
 
 
 // 최초 로딩

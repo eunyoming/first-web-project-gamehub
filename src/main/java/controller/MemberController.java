@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import commons.SessionManager;
 import dao.MemberDAO;
 import dao.PointDAO;
+import dao.ReportDAO;
 import dto.member.MemberDTO;
 import dto.member.SimpleUserProfileDTO;
 
@@ -44,15 +45,12 @@ public class MemberController extends HttpServlet {
 				System.out.println(userId + ":" + userPassword);
 
 				SimpleUserProfileDTO loginDto = dao.login(userId, userPassword);
-
+				
+				System.out.println(loginDto != null);
 				// 로그인 성공시
 				if (loginDto != null) {
 					// Session 에 userId 저장
-					if ("Banned".equalsIgnoreCase(loginDto.getCategory())) {
-						// 로그인 자체 차단
-						response.sendRedirect("/banned.jsp");
-						return;
-					}
+					
 					request.getSession().setAttribute("loginId", userId);
 					request.getSession().setAttribute("simpleProfile", loginDto);
 					request.getSession().setAttribute("currentPoint", PointDAO.getInstance().getCurrentPoints(userId));
@@ -64,8 +62,8 @@ public class MemberController extends HttpServlet {
 					response.setContentType("application/json;charset=UTF-8");
 					response.getWriter().write("{\"success\": true}");
 
-				} else {
-					System.out.println("로그인 실패");
+				}else {
+					
 
 					// Ajax 응답 (JSON) - 실패 처리
 					response.setContentType("application/json;charset=UTF-8");

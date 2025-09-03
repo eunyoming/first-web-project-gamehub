@@ -1,5 +1,6 @@
 package dto.report;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class ReportDTO {
@@ -13,6 +14,7 @@ public class ReportDTO {
 	    private String status; // 'pending', 'reviewed', 'rejected'
 	    private Timestamp createdAt;
 	    private Timestamp processedAt;
+	    private Date proceed_banned_until;
 	    private String processedBy; // 신고 처리한 관리자 ID (nullable)
 		public int getSeq() {
 			return seq;
@@ -82,6 +84,14 @@ public class ReportDTO {
 		}
 		public void setProceedReason(String proceedReason) {
 			this.proceedReason = proceedReason;
+		}
+		
+	
+		public Date getProceed_banned_until() {
+			return proceed_banned_until;
+		}
+		public void setProceed_banned_until(Date proceed_banned_until) {
+			this.proceed_banned_until = proceed_banned_until;
 		}
 		public ReportDTO(int seq, String reporterId, String targetType, String targetSeq, String reason, String status,
 				Timestamp createdAt, Timestamp processedAt, String processedBy) {

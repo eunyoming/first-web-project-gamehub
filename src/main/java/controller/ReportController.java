@@ -25,6 +25,7 @@ import com.google.gson.JsonPrimitive;
 import commons.SessionManager;
 import dao.BoardDAO;
 import dao.MemberDAO;
+import dao.ReplyDAO;
 import dao.ReportDAO;
 import dto.member.SimpleUserProfileDTO;
 import dto.report.ReportDTO;
@@ -104,12 +105,13 @@ public class ReportController extends HttpServlet {
 							
 							//해당 댓글의 writer 아이디를 검색 후 저장.
 							//아직 미구현
+							
+							//String targetUserId =ReplyDAO.getInstance().selectRepliesBySeq(Integer.parseInt(report.getTargetSeq())).getWriter();
+							//targetUserList.add(MemberDAO.getInstance().getSimpleUserProfile(targetUserId));
 						}
-						
-						
+
 						
 					};
-					
 					
 
 					Map<String, Object> responseMap = new HashMap<>();
@@ -117,16 +119,43 @@ public class ReportController extends HttpServlet {
 					responseMap.put("users", targetUserList);
 
 					String json = gson.toJson(responseMap);
-					response.getWriter().write(json);
-
-				  
-					
+					response.getWriter().write(json);	
 				    
 				}
 				
 				
 			     //리포트 전송
-			}else if(path.equals("/submit")) {
+			}else if(path.startsWith("/submit/")) {
+				
+				System.out.println("신고접수");
+				
+				String reporterId = (String) request.getSession().getAttribute("loginId");
+				
+				
+				String targetType = path.substring("/submit/".length()); 
+				String target_seq = null;
+				String targetUserID = null;
+				if(targetType.equals("board")) {
+					target_seq = request.getParameter("board_seq");
+				targetUserID = request.getParameter("writer");
+
+				}else if(targetType.equals("reply")) {
+					target_seq = request.getParameter("reply_seq");
+					 targetUserID = request.getParameter("writer");
+				}else if(targetType.equals("user")) {
+					target_seq= request.getParameter("userID");
+				 targetUserID =target_seq;
+				}
+				
+				String reason = request.getParameter("reason");
+				
+				
+
+				boolean success = ReportDAO.getInstance().insertReports(reporterId ,targetUserID, targetType, target_seq, reason);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write("{\"success\":" + success + "}");
+
 				
 				//리포트 처리
 			}else if(path.equals("/proceed")) {
@@ -134,12 +163,13 @@ public class ReportController extends HttpServlet {
 				String adminId = (String) request.getSession().getAttribute("loginId");
 				
 				String[] report_seq = request.getParameterValues("report_seq");
+				
+				
 				String proceedReason = request.getParameter("proceedReason");
+				int bannedDays = Integer.parseInt(request.getParameter("bannedDays"));
 
 				System.out.println("밴 사유"+proceedReason);
-				
-				
-				
+
 					for (int i = 0; i < report_seq.length; i++) {
 						 String seq = report_seq[i];
 
@@ -169,7 +199,7 @@ public class ReportController extends HttpServlet {
 			            ReportDAO.getInstance().hideContent(report.getTargetType(), report.getTargetSeq());
 
 			            // 5. REPORT 상태 갱신
-			            ReportDAO.getInstance().updateReportStatus(Integer.parseInt(seq), adminId, proceedReason );
+			            ReportDAO.getInstance().updateReportStatus(Integer.parseInt(seq), adminId, proceedReason, bannedDays );
 						
 						
 					

@@ -66,6 +66,34 @@ public class BookmarkController extends HttpServlet {
 				int result = bookmarkDAO.deleteBookmarkByBoard_seqAndUserId(board_seq,loginId);
 				
 				
+			}else if(path.equals("/api/bookmark/toggle")) {
+				int board_seq = Integer.parseInt(request.getParameter("board_seq"));
+
+		        response.setContentType("application/json; charset=UTF-8");
+		        Map<String, Object> result = new HashMap<>();
+
+		        try {
+		            boolean isBookmarked = bookmarkDAO.isBookmarked(loginId, board_seq);
+
+		            if (isBookmarked) {
+		                int deleted = bookmarkDAO.deleteBookmark(loginId, board_seq);
+		                result.put("success", deleted > 0);
+		                result.put("action", "delete");
+		            } else {
+		                int inserted = bookmarkDAO.insertBookmark(new BookmarkDTO(0, loginId, board_seq));
+		                result.put("success", inserted > 0);
+		                result.put("action", "insert");
+		            }
+
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		            result.put("success", false);
+		            result.put("error", e.getMessage());
+		        }
+
+		        response.getWriter().write(new Gson().toJson(result));
+				
+				
 			}
 
 

@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.board.BoardDTO;
+import dto.board.BookmarkDTO;
 import dto.board.ReplyDTO;
 
 public class BookmarkDAO {
@@ -149,6 +151,47 @@ public class BookmarkDAO {
 		
 	}
 	
-	
+	// insert
+	public int insertBookmark(BookmarkDTO dto) throws Exception{
+		String sql = "insert into bookmark values(bookmark_seq.nextval,?,?)";
+		
+		try (Connection con = getConnection();
+				PreparedStatement ps = con.prepareStatement(sql);) {
+			
+			ps.setString(1, dto.getUserId());
+			ps.setInt(2, dto.getBoard_seq());
 
+			return ps.executeUpdate();
+		} catch (SQLIntegrityConstraintViolationException e) {
+            // UNIQUE 제약조건 위반 → 이미 북마크된 상태
+            return 0; 
+        }		
+	}
+	
+	// 북마크 삭제
+    public int deleteBookmark(String userId, int boardSeq) throws Exception {
+        String sql = "delete from bookmark where userId = ? and board_seq = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setInt(2, boardSeq);
+            return ps.executeUpdate();
+        }
+    }
+
+    // 북마크 여부 확인
+    public boolean isBookmarked(String userId, int boardSeq) throws Exception {
+        String sql = "select count(*) from bookmark where userId = ? and board_seq = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setInt(2, boardSeq);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+                return false;
+            }
+        }
+    }
 }

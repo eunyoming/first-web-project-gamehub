@@ -277,13 +277,24 @@
             method: "GET",
             dataType: "json"
         }).done(function (resp) { // board detail 값 채워주는 function
-            loginId = resp.loginId;
+            
+        	loginId = resp.loginId;
+        
             // 게시글 정보
             $("#board_category_refgame").text("[ " + resp.boardDto.category + " ] | [ " + resp.boardDto.refgame + " ]");
             $("#board_title").text(resp.boardDto.title);
             $("#board_content").html(resp.boardDto.contents);
             $("#board_viewCount").text(resp.boardDto.viewCount);
 			
+         	// 북마크 버튼 상태 반영
+            if (resp.bookmarked) {
+                $("#bookmark_btn").data("bookmarked", true);
+                $("#bookmark_btn").html('<i class="bi bi-bookmark-fill" style="color:#e74c3c"></i> 북마크');
+            } else {
+                $("#bookmark_btn").data("bookmarked", false);
+                $("#bookmark_btn").html('<i class="bi bi-bookmark"></i> 북마크');
+            }
+         
             // 카테고리, 관련 게임 세팅
             currentCategory = resp.boardDto.category;
             currentRefgame = resp.boardDto.refgame;
@@ -318,7 +329,8 @@
                 } else {
                     buttons += '<button class="btn btn-outline-red-main me-2 board_like_btn" data-board-id="' + board_seq + '">';
                     buttons += '<i class="bi bi-heart"></i> 추천수</button>';
-                    buttons += '<button class="btn btn-outline-red-main" id="bookmark_btn">';
+                 	// data-bookmarked = true/false
+                    buttons += '<button class="btn btn-outline-red-main" id="bookmark_btn" data-board-id="' + board_seq + '" data-bookmarked="false">';
                     buttons += '<i class="bi bi-bookmark"></i> 북마크</button>';
                 }
 
@@ -742,7 +754,7 @@
             const icon = $(this).find("i");
 
             icon.toggleClass("bi-heart bi-heart-fill");
-            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c !important" : "");
+            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c" : "");
 
             // 서버에 추천 요청 보내기
             $.ajax({
@@ -850,7 +862,7 @@
             // 아이콘 색 변경
             const icon = $(this).find("i");
             icon.toggleClass("bi-heart bi-heart-fill");
-            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c !important" : "");
+            icon.css("color", icon.hasClass("bi-heart-fill") ? "#e74c3c" : "");
 
             // 시퀀스 보내기
             const board_seq = $(this).data("board-id");
@@ -864,13 +876,39 @@
                 console.log("추천 완료:", resp);
             });
         });
+		
+     	// ----------------- 북마크 관련   
+     	// 북마크 버튼 클릭
+		$(document).on("click", "#bookmark_btn", function () {
+		    const btn = $(this);
+		    const icon = btn.find("i");
+		    
+		    const board_seq = btn.data("board-id");
+		
+		    $.ajax({
+		        url: "/api/bookmark/toggle",
+		        type: "POST",
+		        data: { board_seq: board_seq },
+		        dataType: "json"
+		    }).done(function (resp) {
+		        if (resp.success) {
+		            if (resp.action === "insert") {
+		                btn.addClass("active")
+		                   .data("bookmarked", true) // ✅ 상태 업데이트
+		                   .html('<i class="bi bi-bookmark-fill"></i> 북마크 해제');
+		            } else {
+		                btn.removeClass("active")
+		                   .data("bookmarked", false) // ✅ 상태 업데이트
+		                   .html('<i class="bi bi-bookmark"></i> 북마크');
+		            }
+		        } else {
+		            alert("북마크 처리 실패!");
+		        }
+		    }).fail(function () {
+		        alert("서버 오류 발생");
+		    });
+		});
 
-        // 북마크 버튼 클릭 시
-        $(document).on("click", "#bookmark_btn", function () {
-            const icon = $(this).find("i");
-            icon.toggleClass("bi-bookmark bi-bookmark-fill");
-            icon.css("color", icon.hasClass("bi-bookmark-fill") ? "#e74c3c !important" : "");
-        });
 
         // ----------------- 공유하기 관련
         // 공유하기 버튼 클릭시
@@ -931,57 +969,114 @@
         };
 
         // ----------------- 신고하기 관련
-        $(document).on("click", "#report_btn", function (e) {
-            // 여기에 신고 처리 로직 추가
-        });
-    });
-    
-    // 신고하기 - 기타 선택 시 입력창 띄우기
-    $(document).on("change", 'input[name="reportReason"]', function () {
-        if ($(this).attr('id') === 'reasonEtc') {
-            $('#etcDetailBox').show();
-        } else {
-            $('#etcDetailBox').hide();
-        }
-    });
+        // 게시글 신고 버튼 클릭 → 모달 hidden input 채우기
+	    $("#report_btn").on("click", function () {
+	        $("#writer").val($("#boardWriter").text().trim());
+	    });
+
+	    // 기타 선택 시 입력창 표시
+	    $(document).on("change", "input[name='reportReason']", function () {
+	        if ($(this).val() === "기타") {
+	            $("#boardEtcDetailBox").show();
+	        } else {
+	            $("#boardEtcDetailBox").hide();
+	        }
+	    });
 	
- 	// 신고 버튼 클릭시
-    $(document).on('click', '#modal-report_btn', function () {
-        const reason = $('input[name="reportReason"]:checked').val();
-        const etcDetail = $('#etcDetail').val();
-        const board_seq = $('#board_seq').val();
-        const writer = $('#writer').val();
-        const reply_seq = $('#reply_seq').val();
+	 	// 게시글 신고 제출 버튼 클릭 → Ajax
+	    $("#modal-boardReport_btn").on("click", function () {
+	        const reason = $("input[name='reportReason']:checked").val();
+	        const etcDetail = $("#boardEtcDetail").val();
+	        const writer = $("#writer").val(); // 작성자 가져오기
 
-        if (!reason) {
-            alert("신고 사유를 선택해주세요.");
-            return;
-        }
+	        if (!reason) {
+	            alert("신고 사유를 선택해주세요.");
+	            return;
+	        }
 
-        $.ajax({
-            url: '/report.board',
-            method: 'POST',
-            dataType: 'json',
-            data: {
-                board_seq: board_seq,
-                reply_seq: reply_seq,
-                writer: writer,
-                reason: reason,
-                etcDetail: etcDetail
-            }
-        }).done(function (resp) {
-            if (resp.result != 0) {
-                alert("신고가 접수되었습니다.");
-                $('#boardModal').modal('hide');
+	        $.ajax({
+	            url: "/report/submit/board",
+	            type: "POST",
+	            data: {
+	                board_seq: board_seq,
+	                writer: writer,
+	                reason: reason,
+	                etcDetail: etcDetail
+	            },
+	            dataType: "json"
+	        }).done(function (resp) {
+	            if (resp.result) {
+	                alert("게시글 신고가 접수되었습니다.");
+	                $("#boardReportModal").modal("hide");
+	            } else {
+	                alert("신고 처리 실패. 다시 시도해주세요.");
+	            }
+	        }).fail(function () {
+	            alert("서버와 통신 중 오류가 발생했습니다.");
+	        });
+	    });
+        
+     	// 댓글 신고
+        // 신고 버튼 눌렀을 때 → 모달에 reply_seq, writer, board_seq 채우기
+		$(document).on("click", ".reply-report_btn", function () {
+			const replyBox = $(this).closest(".reply-box");
+			 
+			const replySeq = $(this).data("reply-seq");
+		    const replyWriter = $(this).closest(".reply-box").find(".reply-writer").text().trim();
+		    
+		    $("#reply_seq").val(replySeq);
+		    $("#board_seq").val(board_seq);
+		    $("#writer").val(replyWriter);
+		    
+		    $("#board_seq").val(board_seq);
+		});
+
+		// 댓글 신고 제출 버튼 클릭 → Ajax 전송
+		$(document).on("click", "#modal-report_btn", function () {
+		    const reply_seq = $("#reply_seq").val();
+		    const replyWriter = $(this).closest(".reply-box").find(".reply-writer").text().trim();
+		    const writer = $("#writer").val();
+		    const reason = $("input[name='reportReason']:checked").val();
+		    const etcDetail = $("#etcDetail").val();
+		
+		    if (!reason) {
+		        alert("신고 사유를 선택해주세요.");
+		        return;
+		    }
+		
+		    $.ajax({
+		        url: "/report/submit/reply",
+		        type: "POST",
+		        data: {
+		            reply_seq: reply_seq,
+		            board_seq: board_seq,
+		            reason: reason,
+		            etcDetail: etcDetail
+		        },
+		        dataType: "json"
+		    }).done(function (resp) {
+		        if (resp.result) {
+		            alert("댓글 신고가 접수되었습니다.");
+		            $("#boardModal").modal("hide");
+		        } else {
+		            alert("신고 처리 실패. 다시 시도해주세요.");
+		        }
+		    }).fail(function () {
+		        alert("서버와 통신 중 오류가 발생했습니다.");
+		    });
+		});
+    
+        // 신고하기 - 기타 선택 시 입력창 띄우기
+        $(document).on("change", 'input[name="reportReason"]', function () {
+            if ($(this).attr('id') === 'reasonEtc') {
+                $('#etcDetailBox').show();
             } else {
-                alert("신고 처리에 실패했습니다.");
+                $('#etcDetailBox').hide();
             }
-        }).fail(function () {
-            alert("서버와 통신 중 오류가 발생했습니다.");
         });
-    });
-
-
+        
+    }); // $(function(){});
+    
     // ===== 댓글 전체 렌더링 =====
     function renderReplies(replies) {
         let replyListArea = $('#replyListArea');
@@ -1069,13 +1164,23 @@
         });
 
         let likeCount = isNaN(parseInt(reply.likeCount)) ? 0 : reply.likeCount;
-
+		
+        // 작성자 일 때 수정, 삭제 버튼
         let controlBtns = '';
         if (isWriter) {
             controlBtns += '<button class="btn btn-outline-red-main reply-update_btn" data-reply-seq="' + reply.seq + '">수정</button>';
             controlBtns += '<button class="btn btn-outline-red-main reply-delete_btn" data-reply-seq="' + reply.seq + '">삭제</button>';
         }
-
+		
+     	// 신고 버튼은 작성자가 아닐 때만 표시
+        let reportBtn = '';
+        if (!isWriter) {
+            reportBtn =
+                '<button class="btn btn-outline-red-main reply-report_btn" data-bs-toggle="modal" data-bs-target="#boardModal" data-reply-seq="' + reply.seq + '">' +
+                '<img src="/asset/img/siren.png" style="width:16px; height:16px;">' +
+                '</button>';
+        }
+        
         let inputBtn = '<button class="btn btn-outline-red-main subReply-input_btn" data-reply-seq="' + reply.seq + '" data-parent-seq="' + reply.seq + '" data-writer="' + reply.writer + '">답글</button>';
 
         let style = '';
@@ -1095,6 +1200,7 @@
             '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
             '<i class="bi bi-heart"></i> ' + likeCount +
             '</button>' +
+            reportBtn +
             controlBtns +
             '</div>' +
             '</div>' +

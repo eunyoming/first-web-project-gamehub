@@ -251,5 +251,34 @@ public class ReplyDAO {
 		// 못 찾았을 경우
 		return -1;
 	}
+	
+	// select * from replies where seq = ?
+	public ReplyDTO selectRepliesBySeq(int replySeq) throws Exception {
+		String sql = "select * from replies where seq = ?";
 
+		try (Connection con = this.getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)) {
+
+			ps.setInt(1, replySeq);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int seq = rs.getInt("seq");
+					String writer = rs.getString("writer");
+					String contents = rs.getString("contents");
+					int likeCount = rs.getInt("likeCount");
+					int board_seq = rs.getInt("board_seq");
+					int parent_seq = rs.getInt("parent_seq");
+					String path = rs.getString("path");
+					String visibility = rs.getString("visibility");
+					Timestamp created_at = rs.getTimestamp("created_at");
+					
+					ReplyDTO dto = new ReplyDTO(seq, writer, contents, likeCount, board_seq, parent_seq, path, visibility, created_at);
+					return dto;
+				}
+			}
+			return null;
+		}
+	}
+	
 }

@@ -113,7 +113,7 @@
                     btns.push(createBtn('수락', 'btn-green-main', () => handleAction('/api/friends/received-requests-accept?targetID='+friendId, refreshCallback, '수락 실패')));
                 } else if (url.includes('/list')) {
                     btns.push(createBtn('삭제', 'btn-red-main', () => handleAction('/api/friends/delete?targetID='+friendId, refreshCallback, '삭제 실패')));
-                    btns.push(createBtn('블락', 'btn-gray-main', () => handleAction('/api/friends/block?targetID='+friendId, refreshCallback, '블락 실패')));
+                    btns.push(createBtn('친구페이지', 'btn-gray-main', () => window.location.href = '/api/member/mypage?section=collection&userId='+friendId));
                     btns.push(createBtn('채팅', 'btn-navy-main', () => window.location.href = '/chat/open?friendId='+friendId));
                 }
 

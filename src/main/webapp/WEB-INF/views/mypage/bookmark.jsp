@@ -37,7 +37,7 @@
 <div class="container bookmark-container">
 	<!-- 북마크 섹션 -->
 	<div class="section bookmark-section" id="bookmark-bookmark-section">
-		<h5>북마크</h5>
+		<h5 style="padding-top:15px">북마크</h5>
 		<p class="text-muted">Subheading</p>
 		<!-- ajax요청 받은 후 생성하는 형태 확인용 -->
 		<!-- <div class="card bookmark-card">

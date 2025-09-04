@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.Map;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
+
+import dto.board.BoardDTO;
 
 public class ManagerDAO {
 	private static ManagerDAO instance;
@@ -287,6 +290,58 @@ public class ManagerDAO {
 
 
 	}
+	
+	
+	 public boolean updateStatusToProcessed(int boardSeq) throws Exception {
+	        String sql = "UPDATE qnaboard SET status = ?, processed_at = SYSDATE WHERE board_seq = ?";
+
+	        try (Connection conn =getConnection();
+	             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	            pstmt.setString(1, "processed");
+	            pstmt.setInt(2, boardSeq);
+
+	            int result = pstmt.executeUpdate();
+	            return result > 0;
+
+	        }
+	 }
+	
+	
+	 public List<BoardDTO> findQnAPosts() throws Exception {
+	        String sql = "SELECT b.*\r\n"
+	        		+ "FROM boards b\r\n"
+	        		+ "JOIN qnaboard q ON b.seq = q.board_seq\r\n"
+	        		+ "WHERE q.status = 'pending'\r\n"
+	        		+ "  AND b.category = 'Q&A'\r\n"
+	        		+ "ORDER BY b.created_at DESC";
+	        try(	Connection con = getConnection();
+					PreparedStatement pstat = con.prepareStatement(sql); 
+	        		ResultSet rs = pstat.executeQuery();){
+	        	
+	        	List<BoardDTO> list = new ArrayList<>();
+				while(rs.next()) {
+
+					int seq = rs.getInt("seq");
+					String writer = rs.getString("writer");
+					String title = rs.getString("title");
+					String contents = rs.getString("contents");
+					String category = rs.getString("category");
+					String refgame = rs.getString("refgame");
+					int viewCount = rs.getInt("viewCount");
+					int likeCount = rs.getInt("likeCount");
+					String visibility = rs.getString("visibility");
+					Timestamp created_at = rs.getTimestamp("created_at");
+
+					BoardDTO dto = new BoardDTO(seq, writer, title, contents, category, refgame, viewCount, likeCount, visibility, created_at);
+					list.add(dto);
+				}
+				return list;
+	        }
+	    }
+
+	
+
 
 
 	public List<Map<String,String>> selectTop_Players(int game_seq) throws Exception{

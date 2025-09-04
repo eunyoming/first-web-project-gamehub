@@ -78,7 +78,7 @@
 						    // 알림 배지 업데이트 함수
 						    function updateNotificationBadge() {
 						        $.ajax({
-						            url: "/Notification/checkNotification",
+						            url: "/notification/checkNotification",
 						            type: "post"
 						        }).done(function(resp) {
 						            if (resp == "true") {
@@ -124,7 +124,7 @@
 						
 						$("#notificationDropdown").on("click",function(){
 							$.ajax({
-					            url: "/Notification/viewNotification",
+					            url: "/notification/viewNotification",
 					            type: "post",
 					            dataType:"json"
 					        }).done(function(resp) {
@@ -135,7 +135,9 @@
 					        	{
 						        	$("#notification-dropdown-list").html("");
 						        	$(".headerJspBellRed").hide();
+						        	console.log("foreach문 도는중");
 						        	 resp.forEach(function(item){
+						        		 
 							            	let dropli = $("<li>");
 							            	
 							            	let dropa = $("<a>");
@@ -147,11 +149,11 @@
 							        		        break;
 							        		    case "friend":
 							        		        console.log('friend입니다.'); // a는 2입니다.
-							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?section=friend"})
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?userId=${loginId}&section=friend"})
 							        		        break;
 							        		    case "achievement":
 							        		        console.log('achievement입니다.'); // a는 2입니다.
-							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?section=collection"})
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?userId=${loginId}&section=collection"})
 							        		        break;
 							        		    case "point":
 							        		        console.log('point입니다.'); // a는 2입니다.
@@ -177,11 +179,31 @@
 							            	
 							            	$("#notification-dropdown-list").append(dropli);
 							            });
+						        	 
+						        	 let lastDropli = $("<li>");
+						            	
+						            	let lastDropa = $("<a>");
+						            	lastDropa.attr({"class":"dropdown-item","href":"/api/member/mypage?userId=${loginId}&section=notification"});
+						            	lastDropa.css({"font-size":"12px","color":"skyblue"});
+						            	lastDropa.text("알림 내역 페이지로 이동");
+						            	lastDropli.append(lastDropa);
+							            	
+							        $("#notification-dropdown-list").append(lastDropli);
 						        }
 					        	else
 					        	{
 					        		$("#notification-dropdown-list").html(`<li><span class="dropdown-item-text">새 알림이 없습니다.</span></li>`);
-					        		
+					        		$("#notification-dropdown-list").append(`<hr>`);
+					        	     		
+									let dropli = $("<li>");
+							            	
+						            	let dropa = $("<a>");
+				        		    	dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?userId=${loginId}&section=notification"});
+				        		    	dropa.css({"font-size":"12px","color":"skyblue"});
+						            	dropa.text("알림 내역 페이지로 이동");
+							        dropli.append(dropa);
+							            	
+							        $("#notification-dropdown-list").append(dropli);
 					        	}
 					        	
 					        	

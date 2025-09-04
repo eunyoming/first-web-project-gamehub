@@ -194,8 +194,8 @@ button {
   <aside class="sidebar">
     <h2><a href="">Collection</a></h2>
     <ul>
-      <li><a href="">최근 플레이 게임</a></li>
-      <li><a href="">내 업적</a></li>
+      <li><a href="/api/member/mypage?section=collection&userId=${paramUserId}">최근 플레이 게임</a></li>
+      <li><a href="/api/member/mypage?section=collection&userId=${paramUserId}">내 업적</a></li>
     </ul>
     <h2><a href="/api/member/mypage?section=bio&userId=${paramUserId}">Bio</a></h2>
     <ul>
@@ -204,14 +204,14 @@ button {
     </ul>
     <h2><a href="">Bookmark</a></h2>
     <ul>
-      <li><a href="">내 게시글</a></li>
-      <li><a href="">내 댓글</a></li>
+      <li><a href="/api/member/mypage?section=bookmark&userId=${paramUserId}">내 게시글</a></li>
+      <li><a href="/api/member/mypage?section=bookmark&userId=${paramUserId}">내 댓글</a></li>
     </ul>
     <h2><a href="">Friend</a></h2>
     <ul>
-      <li><a href="">친구 요청</a></li>
-      <li><a href="">친구 신청</a></li>
-      <li><a href="">친구 목록</a></li>
+      <li><a href="/api/member/mypage?section=friend&userId=${paramUserId}">친구 요청</a></li>
+      <li><a href="/api/member/mypage?section=friend&userId=${paramUserId}">친구 신청</a></li>
+      <li><a href="/api/member/mypage?section=friend&userId=${paramUserId}">친구 목록</a></li>
     </ul>
   </aside>
   

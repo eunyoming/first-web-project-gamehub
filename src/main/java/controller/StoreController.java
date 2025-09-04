@@ -146,6 +146,27 @@ public class StoreController extends HttpServlet {
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write("{\"success\":" + updated + "}");
 
+			}else if(path.equals("/insertNewItem")) {
+				
+				request.setCharacterEncoding("UTF-8");
+				
+				BufferedReader reader = request.getReader();
+				StringBuilder sb = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line);
+				}
+				String json = sb.toString();
+
+			
+				PointStoreDTO dto = gson.fromJson(json, PointStoreDTO.class);
+
+				boolean inserted = StoreDAO.getInstance().insertNewItem(dto);
+
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write("{\"success\":" + inserted + "}");
+
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

@@ -208,6 +208,23 @@ public class StoreDAO {
 			return result > 0;
 		}
 	}
+	
+	public boolean insertNewItem(PointStoreDTO dto) throws Exception {
+		String sql = "INSERT INTO PointStore (seq,itemname, price, url, contents, created_at) VALUES (pointstoreSeq.nextval , ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+
+		try (Connection con = getConnection();
+			 PreparedStatement pstat = con.prepareStatement(sql)) {
+
+			pstat.setString(1, dto.getItemName());
+			pstat.setInt(2, dto.getPrice());
+			pstat.setString(3, dto.getUrl());
+			pstat.setString(4, dto.getContents());
+
+			int result = pstat.executeUpdate();
+			return result > 0;
+		}
+	}
+
 
 	
 	

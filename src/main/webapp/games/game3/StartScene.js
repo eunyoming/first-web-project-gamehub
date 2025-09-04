@@ -65,11 +65,11 @@ class StartScene extends Phaser.Scene {
 
     // 6. 입력 이벤트
     this.input.keyboard.once("keydown-SPACE", () => {
-      this.scene.start("MainScene");
+    this.scene.start("MainScene", { loginId: loginId });
     });
 
     startText.on("pointerdown", () => {
-      this.scene.start("MainScene");
+    this.scene.start("MainScene", { loginId: loginId });
     });
   }
 }

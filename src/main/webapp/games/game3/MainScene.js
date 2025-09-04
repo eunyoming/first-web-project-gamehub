@@ -26,6 +26,9 @@ class MainScene extends Phaser.Scene {
 		this.score = 0;                 // 점수 리셋
 		this.isGameOver = false;        // 상태 리셋
 		this.elapsed = 0;
+
+		// data가 없으면 전역 loginId 사용
+		this.loginId = (data && data.loginId) ? data.loginId : (typeof loginId !== "undefined" ? loginId : "");
 	}
 
 	create() {
@@ -139,7 +142,7 @@ class MainScene extends Phaser.Scene {
 		this.movingTime = 0;
 		this.justDodgedClose = false;
 		this.patternsSeen = 0;
-		this.totalPatterns = 4;
+		this.totalPatterns = 7;
 		this.deathCount = 0;
 		this.restartCount = 0;
 		this.hitCount = 0;
@@ -215,7 +218,7 @@ class MainScene extends Phaser.Scene {
 				this.afkTime += delta;
 
 				// 👉 30초 이상 가만히 있으면 업적 달성
-				if (this.afkTime >= 30000) { // 10000ms = 30초
+				if (this.afkTime >= 30000) { // 30000ms = 30초
 					this.unlockAchievement("MEOW_AFK_30S");
 					this.afkTime = 0; // 중복 방지용 초기화
 				}

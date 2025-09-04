@@ -6,9 +6,54 @@ class GameOverScene extends Phaser.Scene {
 	init(data) {
 		this.finalScore = data?.score ?? 0;
 		this.finalTime = data?.time ?? 0;
+		this.ending = data.ending;
+		this.startTime = data.startTime;
+		this.endTime = data.endTime;
+		
+		// ✅ 점수 기반 포인트 계산 (500분의 1, 최소 1포인트 보장)
+		    this.finalPoint = Math.max(1, Math.floor(this.finalScore / 200));
 	}
 
 	create() {
+		const pointValue = this.finalPoint; // 안전하게 저장
+		
+		const payload = {
+			userId: loginId,
+			game_seq: parseInt(new URLSearchParams(window.location.search).get("game_seq")),
+			gameScore: this.finalScore,
+			gameStartTime: Number(this.startTime),
+			gameEndTime: Number(this.endTime)
+
+		};
+
+		console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
+
+		$.ajax({
+			url: "/api/game/recordInsert",
+			contentType: "application/json",
+			type: "post",
+			data: JSON.stringify(payload)
+
+		}).done(function(resp) {
+
+			console.log(resp);
+
+		});
+
+		$.ajax({
+			url: "/api/point/gameOver",
+			type: "POST",
+			data: {
+				seq: 6,               // POINT 테이블의 SEQ
+				pointValue: pointValue       // 클라이언트에서 계산된 포인트 값
+			},
+			success: function(response) {
+				console.log("포인트 지급 성공:", response);
+			},
+			error: function(xhr) {
+				console.error("에러 발생:", xhr.responseText);
+			}
+		});
 		// 1. 배경 꽉 채우기
 		this.add.image(400, 400, "background")
 			.setDisplaySize(800, 800)
@@ -116,7 +161,7 @@ class GameOverScene extends Phaser.Scene {
 		}
 
 		this.scene.stop("GameOverScene");
-		this.scene.start("MainScene");
+		this.scene.start("MainScene", { loginId: loginId }); // ✅ 여기서 같이 넘겨줌
 	}
 
 	formatTime(ms) {

@@ -27,6 +27,10 @@ request.setAttribute("pageTitle", "마이페이지");
                 <a href="/api/member/mypage?section=friend&userId=${paramUserId}" 
                    class="nav-link ${active=='friend' ? 'active' : ''}">Friend</a>
             </li>
+            <li class="nav-item">
+                <a href="/api/member/mypage?section=notification&userId=${paramUserId}" 
+                   class="nav-link ${active=='notification' ? 'active' : ''}">notification</a>
+            </li>
         </ul>
 
         <div class="mt-3">
@@ -77,7 +81,7 @@ request.setAttribute("pageTitle", "마이페이지");
         </div>
         <script>
 function showSection(id) {
-    const sections = ['collection', 'bio', 'bookmark', 'friend'];
+    const sections = ['collection', 'bio', 'bookmark', 'friend','notification'];
     sections.forEach(s => {
         document.getElementById(s).style.display = (s === id) ? 'block' : 'none';
     });

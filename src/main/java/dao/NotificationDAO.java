@@ -12,7 +12,6 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.board.BoardDTO;
-import dto.game.GameReviewDTO;
 import dto.notification.NotificationDTO;
 
 public class NotificationDAO {
@@ -31,7 +30,42 @@ public class NotificationDAO {
 		DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/oracle");
 		return ds.getConnection();
 	}
+	
+	public List<NotificationDTO> selectNotificationsByUserId(String userId)  throws Exception{
+		String sql = "select * from	(select * from notifications where userid = ? order by  created_at desc) where rownum < 51";
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			pstat.setString(1, userId);
+			try(
+					ResultSet result = pstat.executeQuery();)
+			{
+				List<NotificationDTO> list = new ArrayList<>();
 
+				while(result.next())
+				{
+					System.out.println("notification들어옴");
+					int seq = result.getInt("seq");
+					String type = result.getString("type");
+					String message = result.getString("message");
+					String isRead = result.getString("isRead");
+					Timestamp created_at = result.getTimestamp("created_at");
+					String related_userId = result.getString("related_userId");
+					String related_objectId = result.getString("related_objectId");
+
+					Timestamp timestamp =result.getTimestamp("created_at");
+					//visibility 삭제를 안하고 신고가 들어오면 숨김처리 해주는 숨김표시
+					NotificationDTO dto = new NotificationDTO(seq,userId,type,message,isRead,created_at,related_userId,related_objectId);
+
+					list.add(dto);
+				}
+				System.out.println("notification list");
+				return list;		
+			}
+
+		}
+	}
+	
 	public boolean isSelectNotificationsByUserIdAndIsRead(String userId) throws Exception {
 		String sql = "select * from notifications where userid = ? and isRead = 'N'";
 
@@ -48,7 +82,7 @@ public class NotificationDAO {
 	}
 
 	public List<NotificationDTO> selectNotificationsByUserIdAndIsRead(String userId) throws Exception {
-		String sql = "select * from notifications where userid = ? and isRead = 'N'";
+		String sql = "select * from notifications where userid = ? and isRead = 'N' order by created_at desc";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )
@@ -121,6 +155,39 @@ public class NotificationDAO {
 			System.out.println("알림 db저장까지 왔어요");
 			return result;
 		}
+	}
+	
+	public int deleteNotificationsBySeqAndUserId(int notification_seq, String userId) throws Exception{
+		String sql = "delete from notifications where seq = ? and userId = ?";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			
+			pstat.setInt(1, notification_seq);
+			pstat.setString(2, userId);
+			
+			int result = pstat.executeUpdate();
+			System.out.println("알림 제거까지 왔어요");
+			return result;
+		}
+		
+	}
+	
+	public int deleteAllNotifications(String userId) throws Exception{
+		String sql = "delete from notifications where userId = ?";
+
+		try(	Connection con = getConnection();
+				PreparedStatement pstat = con.prepareStatement(sql); )
+		{
+			
+			pstat.setString(1, userId);
+			
+			int result = pstat.executeUpdate();
+			System.out.println("알림 제거까지 왔어요");
+			return result;
+		}
+		
 	}
 }
 

@@ -47,7 +47,7 @@ request.setAttribute("pageTitle", "게시판 리스트");
 		</div>
 	</div>
 	<div class="contents mt-5">
-		<div class="row board-item board-header g-0">
+		<div class="row board-item board-header g-0 ">
 			<div class="col-1">번호</div>
 			<div class="col-1">[카테고리]</div>
 			<div class="col-2">[ 관련 게임 ]</div>
@@ -68,7 +68,26 @@ request.setAttribute("pageTitle", "게시판 리스트");
 						<div class="col-1">${dto.seq}</div>
 						<div class="col-1">[ ${dto.category} ]</div>
 						<div class="col-2">
-							<span class="badge btn-gradient btn-red-peach">${dto.refgame}</span>
+							<c:choose>
+							    <c:when test="${dto.refgame == '스페이스 배틀'}">
+							        <span class="badge btn-gradient btn-blue-purple text-dark">${dto.refgame}</span>
+							    </c:when>
+							    <c:when test="${dto.refgame == '테트리스'}">
+							        <span class="badge btn-gradient btn-red-blue text-dark">${dto.refgame}</span>
+							    </c:when>
+							    <c:when test="${dto.refgame == '망각의 숲'}">
+							        <span class="badge btn-gradient btn-navy-blue text-dark">${dto.refgame}</span>
+							    </c:when>
+							    <c:when test="${dto.refgame == '플래피 버드'}">
+							        <span class="badge btn-gradient btn-green-peach text-dark">${dto.refgame}</span>
+							    </c:when>
+							      <c:when test="${dto.refgame == '화살 피했냥'}">
+							        <span class="badge btn-gradient btn-red-peach text-dark">${dto.refgame}</span>
+							    </c:when>
+							    <c:otherwise>
+							        <span class="badge btn-gradient">${dto.refgame}</span>
+							    </c:otherwise>
+							</c:choose>
 						</div>
 						<div class="col-3">
 							<a href="/detailPage.board?seq=${dto.seq}" class="title-ellipsis"

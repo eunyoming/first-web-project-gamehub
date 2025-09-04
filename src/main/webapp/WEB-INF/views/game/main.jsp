@@ -11,21 +11,66 @@ request.setAttribute("pageTitle", "게임페이지");
 
 	<!--  여기에 우리가 만들 게임이 include 됩니다. -->
 
-		<div class="gameNavBar d-flex flex-wrap justify-content-center gap-3 w-100">
-			<a href="/api/game/main?game_seq=1"><button class="btn gameSelectBtn" data-seq="1">게임1</button></a>
-			<a href="/api/game/main?game_seq=2"><button class="btn gameSelectBtn" data-seq="2">게임2</button></a>
-			<a href="/api/game/main?game_seq=3"><button class="btn gameSelectBtn" data-seq="3">게임3</button></a>
-			<a href="/api/game/main?game_seq=4"><button class="btn gameSelectBtn" data-seq="4">게임4</button></a>
-			<a href="/api/game/main?game_seq=5"><button class="btn gameSelectBtn" data-seq="5">게임5</button></a>
-		
-		</div>
-	
+	<div
+		class="gameNavBar d-flex flex-wrap justify-content-center gap-3 w-100">
+		<a href="/api/game/main?game_seq=1"><button
+				class="btn gameSelectBtn" data-seq="1">게임1</button></a> <a
+			href="/api/game/main?game_seq=2"><button
+				class="btn gameSelectBtn" data-seq="2">게임2</button></a> <a
+			href="/api/game/main?game_seq=3"><button
+				class="btn gameSelectBtn" data-seq="3">게임3</button></a> <a
+			href="/api/game/main?game_seq=4"><button
+				class="btn gameSelectBtn" data-seq="4">게임4</button></a> <a
+			href="/api/game/main?game_seq=5"><button
+				class="btn gameSelectBtn" data-seq="5">게임5</button></a>
+
+	</div>
 
 
-	<div class=" w-100 flex-fill d-flex justify-content-center align-items-center" id="gamebox"></div>
+
+	<div
+		class=" w-100 flex-fill d-flex justify-content-center align-items-center"
+		id="gamebox"></div>
 
 	<c:choose>
 		<c:when test="${param.game_seq == '1'}">
+			<c:set var="imgPath" value="/games/game1/" />
+			<c:set var="loginId" value="${loginId}" />
+
+			<script>
+    const IMG_PATH = "${imgPath}";
+    const loginId = "${loginId}";
+</script>
+		
+    	<script src="/games/achievementPopup.js"></script>
+		<script src="/games/game1/GameTitle.js"></script>
+		<script src="/games/game1/MainScene.js"></script>
+		<script src="/games/game1/Gameover.js"></script>
+
+<script>
+
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 700;
+
+const config = {
+	    type: Phaser.AUTO, // WebGL 또는 Canvas 자동 선택
+	    parent : "gamebox",
+	    width:GAME_WIDTH,
+        height: GAME_HEIGHT,
+	    physics: {
+	        default: 'arcade',
+	        arcade: {
+	            gravity: { y: 600 }, // 중력 주기
+	            debug: false
+	        }
+	    },
+	    scene:  [GameTitle,MainScene,Gameover]
+	     
+	    
+	};
+const game = new Phaser.Game(config);
+</script>
+
 
 		</c:when>
 		<c:when test="${param.game_seq == '2'}">
@@ -76,7 +121,6 @@ request.setAttribute("pageTitle", "게임페이지");
 		<c:set var="imgPath" value="/games/game3/" />
 		<c:set var="loginId" value="${loginId}" />
 
-
 	<script>
     const IMG_PATH = "${imgPath}";
     const loginId = "${loginId}";
@@ -114,12 +158,12 @@ request.setAttribute("pageTitle", "게임페이지");
 		    </script>
 		  </body>
 		</c:when>
-	<c:when test="${param.game_seq == '4'}">
-		<c:set var="imgPath" value="/games/game4/" />
-		<c:set var="loginId" value="${loginId}" />
+		<c:when test="${param.game_seq == '4'}">
+			<c:set var="imgPath" value="/games/game4/" />
+			<c:set var="loginId" value="${loginId}" />
 
 
-	<script>
+			<script>
     const IMG_PATH = "${imgPath}";
     const loginId = "${loginId}";
 	</script>

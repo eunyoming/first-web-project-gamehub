@@ -71,7 +71,6 @@ const config = {
 const game = new Phaser.Game(config);
 </script>
 
-
 		</c:when>
 		<c:when test="${param.game_seq == '2'}">
 			<c:set var="imgPath" value="/games/game2/" />

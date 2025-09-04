@@ -136,25 +136,42 @@ public class ReportController extends HttpServlet {
 				String target_seq = null;
 				String targetUserID = null;
 				if(targetType.equals("board")) {
+					targetType = "Board";
 					target_seq = request.getParameter("board_seq");
 					targetUserID = request.getParameter("writer");
+					if(targetUserID == "") {
+						
+						targetUserID = BoardDAO.getInstance().selectBoardsBySeq(Integer.parseInt(target_seq)).getWriter();
+					}
 
 				}else if(targetType.equals("reply")) {
+					targetType = "Reply";
 					target_seq = request.getParameter("reply_seq");
 					 targetUserID = request.getParameter("writer");
+					 
+					 if(targetUserID == "") {
+							
+							targetUserID = ReplyDAO.getInstance().selectRepliesBySeq(Integer.parseInt(target_seq)).getWriter();
+						}
 				}else if(targetType.equals("user")) {
+					targetType = "User";
 					target_seq= request.getParameter("userID");
-				 targetUserID =target_seq;
+					targetUserID =target_seq;
 				}
 				
 				String reason = request.getParameter("reason");
+				if(reason.equals("기타")) {
+					
+					reason +="/"+request.getParameter("etcDetail");
+					
+				}
 				
-				
+				System.out.println("신고자:" + reporterId + "타겟유저아이디"+targetUserID+"타겟타입:"+targetType + "타겟seq"+target_seq+"이유"+reason);
 
 				boolean success = ReportDAO.getInstance().insertReports(reporterId ,targetUserID, targetType, target_seq, reason);
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
-				response.getWriter().write("{\"success\":" + success + "}");
+				response.getWriter().write("{\"result\":" + success + "}");
 
 				
 				//리포트 처리

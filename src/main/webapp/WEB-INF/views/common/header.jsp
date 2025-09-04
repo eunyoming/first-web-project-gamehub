@@ -53,12 +53,9 @@
 						<div class="header-bell"
 							style="padding: 10px; padding-right: 20px;">
 							<div class="dropdown">
-								<a href="#"
-									class="position-relative text-decoration-none"
+								<a href="#" class="position-relative text-decoration-none"
 									id="notificationDropdown" data-bs-toggle="dropdown"
-									aria-expanded="false"> 
-									🔔 
-									<span
+									aria-expanded="false"> 🔔 <span
 									class="position-absolute top-0 start-100 translate-middle p-1 
                          bg-danger border border-light rounded-circle headerJspBellRed"
 									style="display: none;"></span>
@@ -68,8 +65,8 @@
 									id="notification-dropdown-list">
 									<li><span class="dropdown-item-text"">새 알림이 없습니다.</span></li>
 									<!-- 실제 알림이 있으면 여기 li 추가 -->
-									
-						            						            
+
+
 								</ul>
 							</div>
 						</div>
@@ -142,7 +139,38 @@
 							            	let dropli = $("<li>");
 							            	
 							            	let dropa = $("<a>");
-							            	dropa.attr({"class":"dropdown-item","href":"#"})
+							            	
+							            	 switch(item.type) {
+							        		    case "store":
+							        		        console.log('store입니다.');
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/point/pointPage"})
+							        		        break;
+							        		    case "friend":
+							        		        console.log('friend입니다.'); // a는 2입니다.
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?section=friend"})
+							        		        break;
+							        		    case "achievement":
+							        		        console.log('achievement입니다.'); // a는 2입니다.
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?section=collection"})
+							        		        break;
+							        		    case "point":
+							        		        console.log('point입니다.'); // a는 2입니다.
+							        		        dropa.attr({"class":"dropdown-item","href":"#"})
+							        		        break;
+							        		    case "chat":
+								        		    console.log('chat입니다.'); // a는 2입니다.
+								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open"})
+								        		    break;
+							        		    case "reply":
+								        		    console.log('chat입니다.'); // a는 2입니다.
+								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open"})
+								        		    break;
+							        		    default:
+							        		    	dropa.attr({"class":"dropdown-item","href":"#"})
+							        		        console.log('잘못된 타입입니다.');
+							        		}
+							        		 
+							            	
 							            	dropa.text(item.message);
 							            	 
 							            	dropli.append(dropa);

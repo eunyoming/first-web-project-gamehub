@@ -463,7 +463,7 @@ class MainScene extends Phaser.Scene {
 			this.cursors.up.isDown ||
 			this.cursors.down.isDown ||
 			this.spaceKey.isDown;
-
+	
 		if (!inputActive) {
 			this.noInputTime += delta;  // 입력 없으면 시간 누적
 		} else {

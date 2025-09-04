@@ -438,9 +438,6 @@
                 '<label for="refgame" class="form-label">관련 게임</label>' +
                 '<select id="refgame" name="refgame" class="form-select">' +
                 '<option value="">선택</option>' +
-                '<option value="Game A">Game A</option>' +
-                '<option value="Game B">Game B</option>' +
-                '<option value="Game C">Game C</option>' +
                 '</select>' +
                 '</div>' +
                 '</div>'
@@ -449,7 +446,30 @@
             // select 기존 값 기본 세팅 (resp.boardDto 값 사용)
             $('#category').val(currentCategory);
             $('#refgame').val(currentRefgame);
+			
+         	// 관련 게임 채워넣기 (동적)
+            $.ajax({
+                url: "/api/game/gameList",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    let $select = $("#refgame");
+                    $select.empty();
+                    $select.append('<option value="">선택</option>'); // 기본값
 
+                    data.forEach(function(game) {
+                        let selected = (currentRefgame === game.title) ? "selected" : "";
+                        $select.append(
+                            '<option value="' + game.title + '" data-seq="' + game.seq + '" ' + selected + '>' 
+                            + game.title + 
+                            '</option>'
+                        );
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("게임 목록 불러오기 실패:", error);
+                }
+                
             // 높이 계산
             let contentsHeight = $('.contents').height();
 

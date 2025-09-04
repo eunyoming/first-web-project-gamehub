@@ -3,7 +3,9 @@ package controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,10 +17,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import dao.NotificationDAO;
+import dto.board.BoardDTO;
+import dto.board.ReplyDTO;
 import dto.chat.MessageDTO;
 import dto.notification.NotificationDTO;
 
-@WebServlet("/Notification/*")
+@WebServlet("/notification/*")
 public class NotificationController extends HttpServlet {
 
 
@@ -45,7 +49,29 @@ public class NotificationController extends HttpServlet {
 				PrintWriter pw = response.getWriter();
 				pw.append(gson.toJson(result));  // gson 사용
 			}
-
+			else if(path.equals("/view")) {
+				notificationDao.updateNotificationsByUserId(loginId);
+				
+				List<NotificationDTO> result = notificationDao.selectNotificationsByUserId(loginId);
+				
+				// JSON으로 변환
+				response.setContentType("application/json; charset=UTF-8");
+				
+				PrintWriter pw = response.getWriter();
+				pw.append(gson.toJson(result));  // gson 사용
+				
+				System.out.println(gson.toJson(result));
+				
+			}
+			else if(path.equals("/delete")) {
+				int seq = Integer.parseInt(request.getParameter("notification_seq"));
+				
+				int result = notificationDao.deleteNotificationsBySeqAndUserId(seq,loginId);	
+			}
+			
+			else if(path.equals("/deleteAll")) {
+				int result = notificationDao.deleteAllNotifications(loginId);	
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

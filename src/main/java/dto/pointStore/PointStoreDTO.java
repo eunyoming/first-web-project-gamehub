@@ -13,6 +13,8 @@ public class PointStoreDTO {
     private java.sql.Timestamp updated_At;
     // Getters and Setters
     
+    public PointStoreDTO() {}
+    
 	public PointStoreDTO(int seq, String itemName, int price, String url, String contents, int stock,
 			Timestamp created_At, Timestamp updated_At) {
 		super();

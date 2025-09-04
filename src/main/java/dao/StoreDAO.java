@@ -224,7 +224,40 @@ public class StoreDAO {
 			return result > 0;
 		}
 	}
+	
+	
+	//가장 많이 팔린 5개의 아이템을 추출하는 함수
+	public List<PointStoreDTO> getTop5PopularItems() {
+	    String sql = "SELECT ps.seq, ps.itemname, ps.price, ps.url, ps.contents, ps.created_at " +
+	                 "FROM pointStore ps " +
+	                 "JOIN (SELECT item_seq, COUNT(*) AS cnt FROM pointpurchase GROUP BY item_seq) pp " +
+	                 "ON ps.seq = pp.item_seq " +
+	                 "ORDER BY pp.cnt DESC, ps.created_at DESC " +
+	                 "FETCH FIRST 5 ROWS ONLY";
 
+	    List<PointStoreDTO> list = new ArrayList<>();
+
+	    try (Connection conn = getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);
+	         ResultSet rs = pstmt.executeQuery()) {
+
+	        while (rs.next()) {
+	            PointStoreDTO dto = new PointStoreDTO();
+	            dto.setSeq(rs.getInt("seq"));
+	            dto.setItemName(rs.getString("itemname"));
+	            dto.setPrice(rs.getInt("price"));
+	            dto.setUrl(rs.getString("url"));
+	            dto.setContents(rs.getString("contents"));
+	            dto.setCreated_At(rs.getTimestamp("created_at"));
+	            list.add(dto);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
 
 	
 	

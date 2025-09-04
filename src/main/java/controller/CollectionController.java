@@ -22,12 +22,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
 import dao.AchievementDAO;
-import dao.GameDAO;
 import dao.GameRecordDAO;
-import dto.game.AchievementDTO;
-import dto.game.GameDTO;
 import dto.game.GameRecentDTO;
-import dto.game.GameRecordDTO;
 
 @WebServlet("/api/collection/*")
 public class CollectionController extends HttpServlet {

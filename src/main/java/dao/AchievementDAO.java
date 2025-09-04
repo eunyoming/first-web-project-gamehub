@@ -3,7 +3,6 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +14,6 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.game.AchievementDTO;
-import dto.game.GameRecordDTO;
-import dto.game.UserAchievementDTO;
 
 public class AchievementDAO {
 

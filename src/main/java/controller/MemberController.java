@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 import commons.SessionManager;
 import dao.MemberDAO;
 import dao.PointDAO;
-import dao.ReportDAO;
 import dto.member.MemberDTO;
 import dto.member.MemberProfileDTO;
 import dto.member.SimpleUserProfileDTO;

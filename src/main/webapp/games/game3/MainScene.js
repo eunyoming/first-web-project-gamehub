@@ -15,33 +15,37 @@ class MainScene extends Phaser.Scene {
 		this.totalPatterns = 7; // single, circle, spiral, down, up, left, right
 	}
 
+	init(data) {
+		console.log("data:", data);
+		this.score = 0;                 // 점수 리셋
+		this.isGameOver = false;        // 상태 리셋
+		this.elapsed = 0;				// 경과시간 리셋
+		// 재시작 카운트 가져오기
+		this.restartCount = data.restartCount;
+
+		// data가 없으면 전역 loginId 사용
+		this.loginId = (data && data.loginId) ? data.loginId : (typeof loginId !== "undefined" ? loginId : "");
+	}
+
 	preload() {
 		this.load.image("background", IMG_PATH + "assets/background_body.png"); // 첫 번째 이미지
 		this.load.image("cat", IMG_PATH + "assets/player.png"); // 두 번째 이미지 (주인공 고양이)
 		this.load.image("arrow", IMG_PATH + "assets/arrow.png");
 	}
 
-	init() {
-		this.startTime = this.time.now; // 항상 새로 시작
-		this.score = 0;                 // 점수 리셋
-		this.isGameOver = false;        // 상태 리셋
-		this.elapsed = 0;
-
-		// data가 없으면 전역 loginId 사용
-		this.loginId = (data && data.loginId) ? data.loginId : (typeof loginId !== "undefined" ? loginId : "");
-	}
-
 	create() {
+		// 시작 타임 설정
+		this.startTime = null;
+
 		this.matter.world.resume(); // 다시 시작할 때 월드 재개
-		// 리트라이 횟수 기록
-		this.restartCount = (this.restartCount || 0) + 1;
 
 		// 기존 이벤트 리스너 제거 후 새로 등록
 		this.matter.world.off("collisionstart");
-		this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
-			if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-				this.gameOver();
-			}
+		this.hitDetected = false;
+		this.matter.world.on('collisionstart', (event, bodyA, bodyB) => {
+		    if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
+		        this.hitDetected = true;
+		    }
 		});
 
 		// 배경/텍스트
@@ -78,6 +82,11 @@ class MainScene extends Phaser.Scene {
 				this.player.y = Phaser.Math.Clamp(this.player.y, 100, 700);
 			}
 		});
+		
+		// --- 초기 이동 관련 변수 초기화 (중요) ---
+		this.player.totalMovedDist = 0;
+		this.player.prevX = this.player.x;
+		this.player.prevY = this.player.y;
 
 		// 점수 텍스트
 		this.scoreText = this.add.text(110, 110, "Score: 0", {
@@ -108,7 +117,6 @@ class MainScene extends Phaser.Scene {
 		// 충돌 이벤트 (플레이어 vs 화살)
 		this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {
 			if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-				this.gameOver();
 			}
 		});
 
@@ -140,58 +148,58 @@ class MainScene extends Phaser.Scene {
 		// 업적 체크용 상태 값들
 		this.afkTime = 0;
 		this.movingTime = 0;
-		this.justDodgedClose = false;
 		this.patternsSeen = 0;
 		this.totalPatterns = 7;
 		this.deathCount = 0;
-		this.restartCount = 0;
 		this.hitCount = 0;
 	}
 
 	update(time, delta) {
+		this.debugTimer = (this.debugTimer || 0) + delta;
+		if (this.debugTimer >= 1000) {
+			console.log('delta:', delta);
+			this.debugTimer = 0;
+		}
 		if (this.isGameOver) return;
 
+		// 최초 시작 시간 기록
+		if (this.startTime === null) {
+		    this.startTime = time;
+		}
+
 		// 이동
-		const speed = 3; // Matter.js는 픽셀/프레임 단위라 Arcade보다 값이 작아야 함
+		const speed = 3;
 		this.player.setVelocity(0, 0);
 		if (this.cursors.left.isDown) this.player.setVelocityX(-speed);
 		if (this.cursors.right.isDown) this.player.setVelocityX(speed);
 		if (this.cursors.up.isDown) this.player.setVelocityY(-speed);
 		if (this.cursors.down.isDown) this.player.setVelocityY(speed);
 
-		// --- 점수 (시간 기반) ---
 		// --- 경과 시간 ---
-		const elapsed = this.time.now - this.startTime;
+		const elapsed = time - this.startTime;
 		const minutes = Math.floor(elapsed / 60000);
 		const seconds = Math.floor((elapsed % 60000) / 1000);
-
-		// 시간 텍스트 (매 프레임 갱신)
-		const formatted = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-		this.timeText.setText("Time: " + formatted);
+		const formatted = minutes + ':' + seconds.toString().padStart(2, '0');
+		this.timeText.setText('Time: ' + formatted);
 
 		// --- 점수 ---
-		// 프레임마다 점수 증가
 		this.score += minutes + 1;
-		this.scoreText.setText("Score: " + this.score);
+		this.scoreText.setText('Score: ' + this.score);
 
 		// 난이도 점진 상승 (10초마다)
 		this.diffTimer += delta;
 		if (this.diffTimer >= 10000) {
-			// 10초
 			this.diffTimer = 0;
 
-			// 0 또는 1 랜덤 선택
 			if (Phaser.Math.Between(0, 1) === 0) {
-				// 속도 증가 (최대 300까지만)
 				if (this.arrowSpeed < 300) {
 					this.arrowSpeed += 20;
-					if (this.arrowSpeed > 300) this.arrowSpeed = 300; // 초과 방지
+					if (this.arrowSpeed > 300) this.arrowSpeed = 300;
 				}
 			} else {
-				// 생성 간격 감소 (최소 500까지만)
 				if (this.spawnDelay > 500) {
 					this.spawnDelay -= 150;
-					if (this.spawnDelay < 500) this.spawnDelay = 500; // 이하 방지
+					if (this.spawnDelay < 500) this.spawnDelay = 500;
 
 					this.spawnEvent.remove(false);
 					this.spawnEvent = this.time.addEvent({
@@ -202,43 +210,43 @@ class MainScene extends Phaser.Scene {
 				}
 			}
 
-			// 업적 달성
-			// --- 간발의 차 회피 체크 ---
-			for (const arrow of this.arrows) {
-				if (!arrow.active) continue;
-				const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, arrow.x, arrow.y);
-				if (dist <= 5) {
-					this.unlockAchievement("MEOW_CLOSE_DODGE");
-				}
-			}
+			// 이동 거리 계산
+			const dx = this.player.x - this.player.prevX;
+			const dy = this.player.y - this.player.prevY;
+			const dist = Math.sqrt(dx*dx + dy*dy);
+			this.player.totalMovedDist = (this.player.totalMovedDist || 0) + dist;
+			this.player.prevX = this.player.x;
+			this.player.prevY = this.player.y;
 
-			// --- AFK 체크 ---
+			// AFK 체크
 			if (!this.cursors.left.isDown && !this.cursors.right.isDown &&
 				!this.cursors.up.isDown && !this.cursors.down.isDown) {
 				this.afkTime += delta;
-
-				// 👉 30초 이상 가만히 있으면 업적 달성
-				if (this.afkTime >= 30000) { // 30000ms = 30초
-					this.unlockAchievement("MEOW_AFK_30S");
-					this.afkTime = 0; // 중복 방지용 초기화
+				if (this.afkTime >= 15000) {
+					this.unlockAchievement('MEOW_AFK_15S');
+					this.afkTime = 0;
 				}
 			} else {
 				this.afkTime = 0;
 			}
 
-			// --- 계속 움직이기 체크 ---
+			// 계속 움직이기 체크
 			if (this.cursors.left.isDown || this.cursors.right.isDown ||
 				this.cursors.up.isDown || this.cursors.down.isDown) {
 				this.movingTime += delta;
-
-				// 👉 30초 이상 계속 움직이면 업적 달성
-				if (this.movingTime >= 30000) { // 30000ms = 30초
-					this.unlockAchievement("MEOW_MOVE_30S");
-					this.movingTime = 0; // 중복 방지용 초기화
+				if (this.movingTime >= 15000) {
+					this.unlockAchievement('MEOW_MOVE_15S');
+					this.movingTime = 0;
 				}
 			} else {
 				this.movingTime = 0;
 			}
+		}
+		
+		// 충돌시 게임오버
+		if (this.hitDetected) {
+		    this.gameOver(elapsed); // ✅ time 넘기기
+		    this.hitDetected = false;
 		}
 	}
 
@@ -413,24 +421,25 @@ class MainScene extends Phaser.Scene {
 		}
 	}
 
-	gameOver() {
+	gameOver(elapsed) {
 		if (this.isGameOver) return;
 		this.isGameOver = true;
-
-		// ✅ 경과 시간 저장
-		this.elapsed = this.time.now - this.startTime;
-
-		// ✅ 최고 점수 갱신
+		
+		// 최고 점수 갱신
 		if (this.score > bestScore) {
 			bestScore = this.score;
 		}
 
-		// ✅ GameOverScene 으로 점수 + 시간 넘겨주기
-		this.scene.start("GameOverScene", {
-			score: this.score,
-			time: this.elapsed,
-		});
+		// GameOverScene 으로 점수 + 시간 넘기기
+		this.scene.start('GameOverScene', {
+		        score: this.score,
+		        elapsed: elapsed,   // ✅ 그대로 전달
+		        totalMovedDist: this.player.totalMovedDist,
+		        startTime: this.startTime,
+		        endTime: this.time.now, // 원한다면 종료 시각도 넘길 수 있음
+		    });
 	}
+
 
 	// --- 업적 달성 ---
 	unlockAchievement(achievementId) {
@@ -473,7 +482,7 @@ class MainScene extends Phaser.Scene {
 		const minutes = Math.floor(totalSeconds / 60);
 		const seconds = totalSeconds % 60;
 
-		return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+		return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 	}
 
 	spawnPattern() {
@@ -484,6 +493,11 @@ class MainScene extends Phaser.Scene {
 		if (!this.seenPatterns) this.seenPatterns = new Set();
 		this.seenPatterns.add(pick);
 		this.patternsSeen = this.seenPatterns.size;
+
+		// 👉 모든 패턴 경험 업적 체크
+		if (this.patternsSeen === this.totalPatterns) {
+			this.unlockAchievement("MEOW_SEE_ALL_PATTERNS");
+		}
 
 		// 기존 패턴 실행
 		switch (pick) {

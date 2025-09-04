@@ -23,14 +23,10 @@ import com.google.gson.JsonPrimitive;
 
 import dao.AchievementDAO;
 import dao.MemberDAO;
-import dao.NotificationDAO;
 import dao.PointDAO;
 import dto.game.AchievementDTO;
-import dto.game.UserAchievementDTO;
 import dto.member.SimpleUserProfileDTO;
-import dto.notification.NotificationDTO;
 import dto.point.PointDTO;
-import websocket.NotificationServer;
 
 
 @WebServlet("/api/achievement/*")

@@ -14,6 +14,7 @@ class StartScene extends Phaser.Scene {
 	}
 
   create() {
+	console.log("loginId:", loginId);
     // 1. 배경 꽉 채우기
     this.add.image(400, 400, "background")
       .setDisplaySize(800, 800)

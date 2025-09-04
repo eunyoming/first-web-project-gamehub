@@ -7,17 +7,17 @@ const achievements = {
         description: "1000점을 달성했다! 귀엽냥",
         condition: (scene) => scene.score >= 1000,
     },
-    MEOW_SCORE_5000: {
-        id: "MEOW_SCORE_5000",
-        title: "좀 치냥 ? 5000점 달성",
-        description: "5000점을 달성했다! 분발해냥",
-        condition: (scene) => scene.score >= 5000,
+    MEOW_SCORE_3000: {
+        id: "MEOW_SCORE_3000",
+        title: "좀 치냥 ? 3000점 달성",
+        description: "3000점을 달성했다! 분발해냥",
+        condition: (scene) => scene.score >= 3000,
     },
-    MEOW_SCORE_10000: {
-        id: "MEOW_SCORE_10000",
-        title: "핵 썼냥 ? 10000점 달성",
-        description: "10000점을 달성했다! 어떻게 했냥",
-        condition: (scene) => scene.score >= 10000,
+    MEOW_SCORE_7000: {
+        id: "MEOW_SCORE_7000",
+        title: "핵 썼냥 ? 7000점 달성",
+        description: "7000점을 달성했다! 어떻게 했냥",
+        condition: (scene) => scene.score >= 7000,
     },
 
     // 📌 특별 / 히든
@@ -67,23 +67,23 @@ const achievements = {
     },
 
     // 📌 플레이 스타일 / 행동
-    MEOW_CLOSE_DODGE: {
-        id: "MEOW_CLOSE_DODGE",
-        title: "닌자냥 ? 간발의 차 회피",
-        description: "화살과 5px 이내에서 회피! 닌자냥",
+    MEOW_WALKER: {
+        id: "MEOW_WALKER",
+        title: "산책냥이",
+        description: "총 1,000m 산책한 냥이",
         condition: (scene) => scene.justDodgedClose === true,
     },
-    MEOW_AFK_30S: {
-        id: "MEOW_AFK_30S",
+    MEOW_AFK_15S: {
+        id: "MEOW_AFK_15S",
         title: "잠수냥 ?",
-        description: "30초 동안 움직이지 않고 생존! 운 좋냥",
-        condition: (scene) => scene.afkTime >= 30_000,
+        description: "15초 동안 움직이지 않고 생존! 운 좋냥",
+        condition: (scene) => scene.afkTime >= 15_000,
     },
-    MEOW_KEEP_MOVING_30S: {
-        id: "MEOW_KEEP_MOVING_30S",
+    MEOW_KEEP_MOVING_15S: {
+        id: "MEOW_KEEP_MOVING_15S",
         title: "안 힘드냥 ? 끊임없는 움직임",
-        description: "30초 동안 계속 움직이기 손 안 아프냥?",
-        condition: (scene) => scene.movingTime >= 30_000,
+        description: "15초 동안 계속 움직이기 손 안 아프냥?",
+        condition: (scene) => scene.movingTime >= 15_000,
     },
     MEOW_SEE_ALL_PATTERNS: {
         id: "MEOW_SEE_ALL_PATTERNS",

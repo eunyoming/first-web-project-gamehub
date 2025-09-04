@@ -2,9 +2,9 @@ package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.List;
-import java.lang.reflect.Type;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,12 +23,11 @@ import com.google.gson.JsonPrimitive;
 import dao.GameDAO;
 import dao.GameInfoDAO;
 import dao.GameRecordDAO;
-
 import dao.GameReviewDAO;
 import dto.game.GameDTO;
+import dto.game.GameInfoDTO;
 import dto.game.GameRecordDTO;
 import dto.game.GameReviewDTO;
-import dto.game.GameInfoDTO;
 
 @WebServlet("/api/game/*")
 public class GameController extends HttpServlet {

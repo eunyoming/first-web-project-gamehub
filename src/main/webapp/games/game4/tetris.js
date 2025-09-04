@@ -222,7 +222,7 @@ class tetris extends Phaser.Scene {
         level = 1;
         lines = 0;
         rotationCount = 0;
-        tmpRandomIndex = 0;
+        tmpRandomIndex = null;
         sameBlockCount = 0;
 
         let backGround = this.add.image(
@@ -333,34 +333,37 @@ class tetris extends Phaser.Scene {
     }
     spawnTetrimino() {
         rotationCount = 0;
-        tmpRandomIndex = 0;
-        sameBlockCount = 0;
 
-
+        console.log("연속 블록 카운트 :" + sameBlockCount);
         const tetriminos = ["j", "i", "l", "z", "s", "t", "o"];
 
         if (!this.nextTetriminoType) {
             const randomIndex = Math.floor(Math.random() * tetriminos.length);
 
-            if (tmpRandomIndex != randomIndex) {
-                tmpRandomIndex = randomIndex;
-                sameBlockCount = 0;
-            }
-            else {
-                sameBlockCount++;
-            }
-
-            if (sameBlockCount == 3) {
-                this.unlockAchievement("TETRIS_LUCKY_BLOCK");
-            }
-            else if (sameBlockCount == 5) {
-                this.unlockAchievement("TETRIS_LUCKY_BLOCK_2");
-            }
+         
 
             this.nextTetriminoType = tetriminos[randomIndex];
         }
         this.currentTetriminoType = this.nextTetriminoType;
+
         const randomIndex = Math.floor(Math.random() * tetriminos.length);
+
+        if (tmpRandomIndex !=  this.currentTetriminoType) {
+            tmpRandomIndex =  this.currentTetriminoType;
+            sameBlockCount = 1;
+        }
+        else {
+            sameBlockCount++;
+        }
+
+        if (sameBlockCount === 3) {
+            this.unlockAchievement("TETRIS_LUCKY_BLOCK");
+        }
+        else if (sameBlockCount === 5) {
+            this.unlockAchievement("TETRIS_LUCKY_BLOCK_2");
+        }
+        console.log("연속 블록 카운트1 :" + sameBlockCount);
+
         this.nextTetriminoType = tetriminos[randomIndex];
 
         const uiX = 350; // 보드 오른쪽 시작 X
@@ -417,7 +420,7 @@ class tetris extends Phaser.Scene {
     }
     displayEndGameMessage() {
 
-        this.scene.start("Gameover", { score: score, level: level, lines: lines, startTime : this.startTimeStamp, endTime: Date.now() });
+        this.scene.start("Gameover", { score: score, level: level, lines: lines, startTime: this.startTimeStamp, endTime: Date.now() });
 
         // finalScore.innerText = score;
 
@@ -498,7 +501,7 @@ class tetris extends Phaser.Scene {
         return rotationValid;
     }
     update() {
-       
+
 
 
         if (gameOver) return;
@@ -661,6 +664,7 @@ class tetris extends Phaser.Scene {
     updateScoreAndLevel(linesToRemove) {
         let linesCleared = linesToRemove.length;
         console.log(linesCleared)
+        this.unlockAchievement("TETRIS_FIRST_LINE");
 
         if (linesCleared == 4) {
             this.unlockAchievement("TETRIS_FIRST_TETRIS");
@@ -727,5 +731,5 @@ class tetris extends Phaser.Scene {
 
     }
 
-    
+
 }

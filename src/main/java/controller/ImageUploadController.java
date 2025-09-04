@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import dao.MemberDAO;
+import dao.StoreDAO;
 import dto.member.SimpleUserProfileDTO;
 
 
@@ -82,7 +83,23 @@ public class ImageUploadController extends HttpServlet {
 				}
                
             }
+        }else if (uri.contains("/api/manage/storeUploadImage")) {
+        	
+
+        	// seq 파라미터 받아오기
+        	String seqParam = request.getParameter("seq");
+        	if (seqParam != null) {
+        		try {
+        			int seq = Integer.parseInt(seqParam);
+        			boolean updated = StoreDAO.getInstance().updateItemImage(seq, imageUrl);
+        			System.out.println("이미지 업데이트 결과: " + updated);
+        		} catch (Exception e) {
+        			e.printStackTrace();
+        		}
+        	}
+
         }
+
 
         
         response.setContentType("application/json");

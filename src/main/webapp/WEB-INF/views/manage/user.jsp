@@ -140,7 +140,7 @@ function loadReportData() {
         		}
 
         	 
-        	 //밴된 대상 유저 프로필 블록
+        	 
         	 const profileBlock =
         		    '<div class="profile d-flex align-items-center justify-content-between text-decoration-none">' +
         		        '<a href="/api/member/mypage?section=collection&userId=' + targetUser.userId + '">' +
@@ -158,7 +158,7 @@ function loadReportData() {
         	// 링크 포함 여부에 따라 targetInfo 구성
         	let targetInfo = '';
         	if (report.targetType === 'Board') {
-        	    targetInfo = '<a href="/detail.board?seq=' + report.targetSeq + '" class="text-decoration-none">' +
+        	    targetInfo = '<a href="/detailPage.board?seq=' + report.targetSeq + '" class="text-decoration-none">' +
         	                 report.targetSeq + '</a> <strong> [' + report.targetType + ']</strong>';
         	} else {
         	    targetInfo = report.targetSeq + ' <strong> [' + report.targetType + ']</strong>';
@@ -313,7 +313,7 @@ function loadMembers(page) {
     			    '</div>' +
     			    '<div>' +
     			      '<button class="btn btn-sm btn-blue-main me-2" onclick="openMypage(\'' + m.id + '\')">마이페이지</button>' +
-    			     
+    			      '<button class="btn btn-sm btn-red-main me-2" onclick="addReport(\'' + m.id + '\')">자체 신고</button>' +
     			    '</div>' +
     			  '</li>'
     			);
@@ -377,6 +377,7 @@ function addPoints() {
 function openMypage(id) {
 	  location.href = '/api/member/mypage?section=collection&userId=' + encodeURIComponent(id);
 	}
+	
 
 
 function updateRole() {
@@ -404,6 +405,23 @@ function updateRole() {
 		    }
 		  });
 	}
+	
+function addReport(id){
+	
+	$.ajax({
+		url: "/report/submit/user",
+		type: "POST",
+		data:{
+			userID: id,
+			reason : "관리자의 감시망 안에 들어옴"
+		},
+		traditional: true, 
+	    success: function(res) {
+	      alert("유저를 신고 리포트에 제출했습니다.");
+	    }
+	})
+	
+}
 
 function formatRemainingTime(bannedUntil) {
     if (!bannedUntil) return "차단 기간 없음";

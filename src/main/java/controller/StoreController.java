@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -52,7 +53,6 @@ public class StoreController extends HttpServlet {
 			}
 			else if(path.equals("/itemDetailView"))
 			{
-				System.out.println(":111");
 				int seq = Integer.parseInt(request.getParameter("seq"));
 				PointStoreDTO pointStoreDTO = storeDAO.selectPointStoreBySeq(seq);
 				boolean isPurchased = storeDAO.selectPointPurchaseBySeqAndUserId(seq,loginId);
@@ -119,8 +119,55 @@ public class StoreController extends HttpServlet {
 				PrintWriter pw = response.getWriter();
 				pw.append(gson.toJson(Map.of("result", "success")));
 				
-			}
+			}else if(path.equals("/itemAll")) {
+				
+				List<PointStoreDTO> list = storeDAO.selectAllPointStore();
+				response.setContentType("application/json; charset=UTF-8");
+				PrintWriter pw = response.getWriter();
+				pw.append(gson.toJson(list));
+				
+			}else if(path.equals("/updateItemInfo")) {
+				request.setCharacterEncoding("UTF-8");
+				
 			
+				BufferedReader reader = request.getReader();
+				StringBuilder sb = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line);
+				}
+				String json = sb.toString();
+
+				
+				PointStoreDTO dto = gson.fromJson(json, PointStoreDTO.class);
+
+				boolean updated = StoreDAO.getInstance().updateItemInfo(dto);
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write("{\"success\":" + updated + "}");
+
+			}else if(path.equals("/insertNewItem")) {
+				
+				request.setCharacterEncoding("UTF-8");
+				
+				BufferedReader reader = request.getReader();
+				StringBuilder sb = new StringBuilder();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line);
+				}
+				String json = sb.toString();
+
+			
+				PointStoreDTO dto = gson.fromJson(json, PointStoreDTO.class);
+
+				boolean inserted = StoreDAO.getInstance().insertNewItem(dto);
+
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write("{\"success\":" + inserted + "}");
+
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.sendRedirect("/error");

@@ -188,7 +188,7 @@
                     <div class="mb-3" id="etcDetailBox" style="display: none;">
                         <label for="etcDetail" class="form-label">세부 내용을 입력해주세요
                             (선택사항)</label>
-                        <textarea class="form-control" id="etcDetail" name="etcDetail" rows="3"
+                        <textarea class="form-control" id="etcBoardDetail" name="etcDetail" rows="3"
                             placeholder="세부정보 추가..."></textarea>
                         <small class="text-muted">개인 정보나 질문은 포함하지 마세요.</small>
                     </div>
@@ -200,7 +200,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-red-main" id="modal-report_btn">신고</button>
+                <button type="button" class="btn btn-red-main" id="modal-boardReport_btn">신고</button>
             </div>
         </div>
     </div>
@@ -1033,7 +1033,7 @@
 	 	// 게시글 신고 제출 버튼 클릭 → Ajax
 	    $("#modal-boardReport_btn").on("click", function () {
 	        const reason = $("input[name='reportReason']:checked").val();
-	        const etcDetail = $("#boardEtcDetail").val();
+	        const etcDetail = $("#etcBoardDetail").val();
 	        const writer = $("#writer").val(); // 작성자 가져오기
 
 	        if (!reason) {
@@ -1050,11 +1050,11 @@
 	                reason: reason,
 	                etcDetail: etcDetail
 	            },
-	            dataType: "json"
+	           
 	        }).done(function (resp) {
 	            if (resp.result) {
 	                alert("게시글 신고가 접수되었습니다.");
-	                $("#boardReportModal").modal("hide");
+	                $("#boardModal").modal("hide");
 	            } else {
 	                alert("신고 처리 실패. 다시 시도해주세요.");
 	            }
@@ -1075,7 +1075,7 @@
 		    $("#board_seq").val(board_seq);
 		    $("#writer").val(replyWriter);
 		    
-		    $("#board_seq").val(board_seq);
+		    
 		});
 
 		// 댓글 신고 제출 버튼 클릭 → Ajax 전송
@@ -1097,6 +1097,7 @@
 		        data: {
 		            reply_seq: reply_seq,
 		            board_seq: board_seq,
+		            writer:writer,
 		            reason: reason,
 		            etcDetail: etcDetail
 		        },

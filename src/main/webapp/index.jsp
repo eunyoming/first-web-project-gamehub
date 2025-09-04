@@ -402,11 +402,25 @@ h2 {
 
 
 </section>
-<section class="container-fluid p-5 main-section">
-	
-<p>섹션2</p>
+<section class="container-fluid p-5 main-section position-relative">
+  <div class="container d-flex flex-column align-items-center">
+    <img src="/asset/img/goodjob.png" class="image-box2 p-0" />
+    <div class="welcome-box2 text-center mb-5">
+      <h1 class="font_YeogiOttae">
+        <span class="line fw-bolder">달성한 업적들을</span>
+        <span class="line fw-bolder">장착해보세요</span>
+      </h1>
+      <h5 class="font_gowooDodum text-center">
+        <span class="line">우리 잘했조?</span>
+        <span class="line">자랑해보세요</span>
+      </h5>
+    </div>
+  </div>
 
+  <!-- 이미지 고정 위치 -->
+ <div class="image-grid" id="imageContainer"></div>
 </section>
+
 
 <section class="container-fluid p-5 main-section bg-main-stacked">
 <p>섹션3</p>
@@ -417,6 +431,7 @@ h2 {
 	src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+	
 <script>
 
 $(document).ready(function(){
@@ -443,6 +458,7 @@ $(document).ready(function(){
             });
         }
     });
+
 
 });
 
@@ -484,6 +500,16 @@ gsap.to(".image-box", {
     duration: 1
   });
   
+gsap.to(".image-box2", {
+    scrollTrigger: {
+      trigger: ".image-box2",
+      start: "top 80%", 
+      toggleActions: "play none none none", 
+    },
+    opacity: 1,
+    y: 0,
+    duration: 1
+  });  
 gsap.to(".image-box", { 
 	  rotation: 360,
 	  duration: 2,
@@ -507,7 +533,20 @@ gsap.utils.toArray(".welcome-box .line").forEach((el, i) => {
 	  });
 	});
 	
-
+gsap.utils.toArray(".welcome-box2 .line").forEach((el, i) => {
+	  gsap.to(el, {
+	    scrollTrigger: {
+	      trigger: ".welcome-box2",
+	      start: "top 70%",
+	      toggleActions: "play none none none"
+	    },
+	    opacity: 1,
+	    y: 0,
+	    duration: 0.8,
+	    delay: i * 0.5,
+	    ease: "power2.out"
+	  });
+	});
 function animatePostCount(targetCount) {
 	  const counter = { value: 0 };
 	  const $display = $('.post-count');
@@ -606,6 +645,54 @@ $.ajax({
 	    animatePostCount(data.count);
 	  }
 	});
+	
+	
+	//세번째 section 용
+	
+
+
+$.ajax({
+  url: "/randomImages",
+  type: "GET",
+  dataType: "json",
+  success: function(images) {
+    const container = $("#imageContainer");
+    container.empty();
+
+    images.forEach((src, index) => {
+    	  const wrapper = $('<div>', { class: 'image-wrapper' });
+    	  const img = $('<img>', {
+    	    src: src,
+    	    class: 'img-fluid gsap-img',
+    	    css: { opacity: 0, transform: 'translateY(50px)' }
+    	  });
+    	  wrapper.append(img);
+    	  container.append(wrapper);
+    	});
+
+    // GSAP ScrollTrigger 애니메이션
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray(".gsap-img").forEach((img, i) => {
+      gsap.to(img, {
+        opacity: 1,
+        y: 0,
+        duration: 2,
+        delay: i * 0.2, // 순차적으로 등장
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: img,
+          start: "top 90%", // 화면에 거의 들어올 때
+          toggleActions: "play none none none"
+        }
+      });
+    });
+  },
+  error: function() {
+    alert("이미지를 불러오는 데 실패했습니다.");
+  }
+});
+
         </script>
 <!-- </body></html> -->
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

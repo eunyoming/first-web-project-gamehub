@@ -13,12 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import dao.MemberDAO;
+import dto.member.SimpleUserProfileDTO;
+
 
 
 @WebServlet(urlPatterns = {
 	    "/api/board/UploadImage",
 	    "/api/manage/gameGuideUploadImage",
-	    "/api/manage/storeUploadImage"
+	    "/api/manage/storeUploadImage",
+	    "/api/member/profileUploadImage"
 	})
 
 @MultipartConfig(
@@ -41,6 +45,8 @@ public class ImageUploadController extends HttpServlet {
 		    subFolder = "guide";
 		} else if (uri.contains("store")) {
 		    subFolder = "store";
+		} else if(uri.contains("profile")) {
+			subFolder = "profile";
 		}
 
 		// 최종 저장 경로
@@ -60,7 +66,25 @@ public class ImageUploadController extends HttpServlet {
         // 이미지 URL 반환
         String imageUrl = "/uploads/" + subFolder + "/" + savedName;
         
-        System.out.println(imageUrl);
+        if (uri.contains("/api/member/profileUploadImage")) {
+            String userId = (String) request.getSession().getAttribute("loginId");
+            if (userId != null) {
+              
+                boolean updated=false;
+				try {
+					updated = MemberDAO.getInstance().updateProfileImage(userId, imageUrl);
+					  SimpleUserProfileDTO simpleProfile = (SimpleUserProfileDTO) request.getSession().getAttribute("simpleProfile");
+					  simpleProfile.setProfileImage(imageUrl);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					 System.out.println("DB 업데이트 실패");
+				}
+               
+            }
+        }
+
+        
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"url\":\"" + imageUrl + "\"}");

@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.sql.DataSource;
 
 import dto.member.ManagerMemberDTO;
 import dto.member.MemberDTO;
+import dto.member.MemberProfileDTO;
 import dto.member.SimpleUserProfileDTO;
 
 public class MemberDAO {
@@ -443,5 +445,84 @@ public class MemberDAO {
 
 		return result;
 	}
+	
+	public MemberProfileDTO getProfileByUserId(String userId) throws Exception {
+		MemberProfileDTO profile = null;
+        String sql = "SELECT USERID, PROFILEIMAGE, BIO, STATUSMESSAGE, UPDATED_AT FROM member_profiles WHERE USERID = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                profile = new MemberProfileDTO();
+                profile.setUserID(rs.getString("USERID"));
+                profile.setProfileImage(rs.getString("PROFILEIMAGE"));
+                profile.setBio(rs.getString("BIO"));
+                profile.setStatusMessage(rs.getString("STATUSMESSAGE"));
+                profile.setUpdatedAt(rs.getTimestamp("UPDATED_AT"));
+                
+                
+              
+            }
+        }
+		return profile;
+	}
+	
+	public boolean insertDefaultProfile(MemberProfileDTO profile) throws Exception{
+		String sql = "INSERT INTO member_profiles (USERID, PROFILEIMAGE, BIO, STATUSMESSAGE, UPDATED_AT) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, profile.getUserID());
+            pstmt.setString(2, profile.getProfileImage());
+            pstmt.setString(3, profile.getBio());
+            pstmt.setString(4, profile.getStatusMessage());
+            pstmt.setTimestamp(5, profile.getUpdatedAt());
+
+            int result = pstmt.executeUpdate();
+            return result > 0;
+
+        } 
+
+	}
+	
+	public boolean updateProfileImage(String userId, String imageUrl) throws Exception{
+        String sql = "UPDATE member_profiles SET PROFILEIMAGE = ?, UPDATED_AT = ? WHERE USERID = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, imageUrl);
+            pstmt.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            pstmt.setString(3, userId);
+
+            int result = pstmt.executeUpdate();
+            return result > 0;
+
+        }
+    }
+	
+	public boolean updateProfileText(String userId, String bio, String statusMessage) throws Exception {
+	    String sql = "UPDATE member_profiles SET BIO = ?, STATUSMESSAGE = ?, UPDATED_AT = ? WHERE USERID = ?";
+
+	    try (Connection conn = getConnection();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, bio);
+	        pstmt.setString(2, statusMessage);
+	        pstmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+	        pstmt.setString(4, userId);
+
+	        int result = pstmt.executeUpdate();
+	        return result > 0;
+
+	    } 
+	}
+
+
 
 }

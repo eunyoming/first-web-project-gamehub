@@ -95,19 +95,19 @@ request.setAttribute("pageTitle", "게임페이지");
 		        type: Phaser.AUTO,
 		        width: GAME_WIDTH,
 		        height: GAME_HEIGHT,
-		        parent: "game-container",
+		        parent: "gamebox",
 		        backgroundColor: "#ffffff",
 		        physics: {
 		          default: "matter",
 		          matter: {
-		            debug: true,
+		            debug: false,
 		            gravity: { y: 0 },
 		          },
 		        },
 		        scene: [StartScene, MainScene, GameOverScene],
 		        scale: {
-		          mode: Phaser.Scale.NONE, // 👈 크기 강제로 고정
-		          autoCenter: Phaser.Scale.CENTER_BOTH, // 👈 항상 가운데 정렬
+		          mode: Phaser.Scale.NONE, // 크기 강제로 고정
+		          autoCenter: Phaser.Scale.CENTER_BOTH, // 항상 가운데 정렬
 		        },
 		      };
 		      new Phaser.Game(config);
@@ -124,7 +124,8 @@ request.setAttribute("pageTitle", "게임페이지");
     const loginId = "${loginId}";
 	</script>
 			<script src="/games/achievementPopup.js"></script>
-
+	
+			
 			<script src="/games/game4/GameIntro.js"></script>
 			<script src="/games/game4/tetris.js"></script>
 			<script src="/games/game4/Gameover.js"></script>

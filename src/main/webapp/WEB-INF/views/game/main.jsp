@@ -72,8 +72,8 @@ request.setAttribute("pageTitle", "게임페이지");
     let game = new Phaser.Game(config);
     </script>
 		</c:when>
-		<c:when test="${param.game_seq == '4'}">
-		<c:set var="imgPath" value="/games/game4/" />
+		<c:when test="${param.game_seq == '3'}">
+		<c:set var="imgPath" value="/games/game3/" />
 		<c:set var="loginId" value="${loginId}" />
 
 
@@ -82,7 +82,8 @@ request.setAttribute("pageTitle", "게임페이지");
     const loginId = "${loginId}";
 	</script>
 			<script src="/games/achievementPopup.js"></script>
-
+			
+			<script src="/games/game3/achievements.js"></script>
 			<script src="/games/game3/StartScene.js"></script>
 			<script src="/games/game3/MainScene.js"></script>
 			<script src="/games/game3/GameOverScene.js"></script>

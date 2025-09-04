@@ -44,6 +44,23 @@ public class BoardDAO {
 
 		return ds.getConnection();
 	}
+	
+	public boolean qnaInsertBoards(int boardSeq) throws Exception {
+		
+		String sql = "INSERT INTO qnaboard (seq, board_seq, status, processed_at)\r\n"
+				+ "VALUES (qnaboard_seq.NEXTVAL, ?, 'pending', NULL)";
+		
+		try (Connection con = getConnection();
+				PreparedStatement ps = con.prepareStatement(sql)){
+			
+			ps.setInt(1, boardSeq);
+			
+			return ps.executeUpdate() > 0;
+			
+		}
+		
+	}
+	
 
 	// insert
 	public int insertBoards(BoardDTO dto) throws Exception {
@@ -110,6 +127,18 @@ public class BoardDAO {
 			return pst.executeUpdate();
 		}
 	}
+	
+	// 숨김처리 
+		public int updateBoardsVisibility(int board_seq,String visibility) throws Exception {
+			String sql = "UPDATE boards SET visibility = ? WHERE seq = ?";
+			try (Connection conn = getConnection();
+					PreparedStatement pst = conn.prepareStatement(sql)) {
+				pst.setString(1,visibility);
+				pst.setInt(2, board_seq);
+				
+				return pst.executeUpdate();
+			}
+		}
 
 	// 추천수 수정
 	public int updateBoardsLikeCount(int board_seq, int likeCount) throws Exception {
@@ -122,6 +151,35 @@ public class BoardDAO {
 		}
 	}
 
+	// select * from boards order by seq desc";
+		public List<BoardDTO> selectAllBoardsReal() throws Exception{
+			String sql = "select * from boards order by seq desc";
+			try(Connection con = this.getConnection();
+					PreparedStatement pst = con.prepareStatement(sql);
+					ResultSet rs = pst.executeQuery();){
+
+				List<BoardDTO> list = new ArrayList<>();
+				while(rs.next()) {
+
+					int seq = rs.getInt("seq");
+					String writer = rs.getString("writer");
+					String title = rs.getString("title");
+					String contents = rs.getString("contents");
+					String category = rs.getString("category");
+					String refgame = rs.getString("refgame");
+					int viewCount = rs.getInt("viewCount");
+					int likeCount = rs.getInt("likeCount");
+					String visibility = rs.getString("visibility");
+					Timestamp created_at = rs.getTimestamp("created_at");
+
+					BoardDTO dto = new BoardDTO(seq, writer, title, contents, category, refgame, viewCount, likeCount, visibility, created_at);
+					list.add(dto);
+				}
+				return list;
+			}
+		}
+	
+	
 	// select * from boards order by seq desc";
 	public List<BoardDTO> selectAllBoards() throws Exception{
 		String sql = "select * from boards where visibility = 'public' order by seq desc";
@@ -229,7 +287,7 @@ public class BoardDAO {
 
 	// select * from boards where seq = ?
 	public BoardDTO selectBoardsBySeq(int seq) throws Exception{
-		String sql = "select * from boards where seq = ? and visibility = 'public'";
+		String sql = "select * from boards where seq = ?";
 		try(Connection con = this.getConnection();
 				PreparedStatement pst = con.prepareStatement(sql);){
 

@@ -116,6 +116,8 @@ public class BoardController extends HttpServlet {
 				int board_seq = Integer.parseInt(request.getParameter("seq"));
 				BoardDTO boardDto = board_dao.selectBoardsBySeq(board_seq);
 				
+				System.out.println(board_seq);
+				
 				// 게시글 좋아요 상태 확인
 			    boolean isLiked = false;
 			    if(loginId != null) {
@@ -179,6 +181,12 @@ public class BoardController extends HttpServlet {
 			    
 				BoardDTO dto = new BoardDTO(0, loginId, title, cleanContents, category, refgame, 0, 0, null, null);
 				int seq = board_dao.insertBoards(dto);
+				
+				//카테고리가 Q&A라면
+				if(category.equals("Q&A")) {
+					
+					board_dao.qnaInsertBoards(seq);
+				}
 
 				Map<String, Object> result = new HashMap<>();
 				result.put("seq", seq);

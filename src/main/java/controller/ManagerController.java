@@ -27,22 +27,21 @@ import com.google.gson.JsonPrimitive;
 
 import commons.SessionManager;
 import dao.BoardDAO;
-import dao.GameDAO;
+
 import dao.GameInfoDAO;
 import dao.ManagerDAO;
 import dao.MemberDAO;
 import dao.ReportDAO;
 import dao.RoleDAO;
-import dto.game.GameDTO;
+import dto.board.BoardDTO;
 import dto.member.BannedUserDTO;
 import dto.member.ManagerMemberDTO;
-import dto.member.RoleDTO;
 import dto.member.SimpleUserProfileDTO;
 
 
 @WebServlet("/api/manage/*")
 public class ManagerController extends HttpServlet {
-
+	
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -327,6 +326,120 @@ public class ManagerController extends HttpServlet {
 				response.getWriter().write("{\"success\":" + success + "}");
 					
 			
+			}else if(path.equals("/boardAll")) {
+				
+				
+				  int page = Integer.parseInt(request.getParameter("page"));
+		            int size = Integer.parseInt(request.getParameter("size"));
+		            List<BoardDTO> allPosts = BoardDAO.getInstance().selectAllBoardsReal();
+	                int total = allPosts.size();
+	                int start = (page - 1) * size;
+	                int end = Math.min(start + size, total);
+	                
+	    
+	                
+	                List<BoardDTO> pagedPosts = allPosts.subList(start, end);
+
+	                Map<String, Object> result = new HashMap<>();
+	                result.put("posts", pagedPosts);
+	                result.put("total", total);
+	                result.put("page", page);
+	                result.put("size", size);
+
+	                response.setContentType("application/json; charset=UTF-8");
+	                PrintWriter out = response.getWriter();
+	                out.print(gson.toJson(result));
+	                out.flush();
+		
+			}else if(path.equals("/boardQnA")) {
+				
+				
+				  int page = Integer.parseInt(request.getParameter("page"));
+		            int size = Integer.parseInt(request.getParameter("size"));
+		            List<BoardDTO> allPosts = ManagerDAO.getInstance().findQnAPosts();
+	                int total = allPosts.size();
+	                int start = (page - 1) * size;
+	                int end = Math.min(start + size, total);
+	                
+	    
+	                
+	                List<BoardDTO> pagedPosts = allPosts.subList(start, end);
+
+	                Map<String, Object> result = new HashMap<>();
+	                result.put("posts", pagedPosts);
+	                result.put("total", total);
+	                result.put("page", page);
+	                result.put("size", size);
+
+	                response.setContentType("application/json; charset=UTF-8");
+	                PrintWriter out = response.getWriter();
+	                out.print(gson.toJson(result));
+	                out.flush();
+		
+			}else if(path.equals("/qnaprocess")) {
+				int boardSeq = Integer.parseInt(request.getParameter("boardSeq"));
+
+			     boolean success = ManagerDAO.getInstance().updateStatusToProcessed(boardSeq);
+
+			        response.setContentType("application/json");
+			        response.setCharacterEncoding("UTF-8");
+
+			        if (success) {
+			            response.setStatus(HttpServletResponse.SC_OK);
+			            gson.toJson(Map.of("message", "처리 완료"), response.getWriter());
+			        } else {
+			            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			            gson.toJson(Map.of("message", "처리 실패"), response.getWriter());
+			        }
+
+			}else if(path.equals("/hidePost")) {
+				int boardSeq = Integer.parseInt(request.getParameter("boardSeq"));
+
+			     boolean success = BoardDAO.getInstance().updateBoardsVisibility(boardSeq,"private") > 0;
+
+			        response.setContentType("application/json");
+			        response.setCharacterEncoding("UTF-8");
+
+			        if (success) {
+			            response.setStatus(HttpServletResponse.SC_OK);
+			            gson.toJson(Map.of("message", "처리 완료"), response.getWriter());
+			        } else {
+			            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			            gson.toJson(Map.of("message", "처리 실패"), response.getWriter());
+			        }
+
+			}else if(path.equals("/openPost")) {
+				int boardSeq = Integer.parseInt(request.getParameter("boardSeq"));
+
+			     boolean success = BoardDAO.getInstance().updateBoardsVisibility(boardSeq,"public") > 0;
+
+			        response.setContentType("application/json");
+			        response.setCharacterEncoding("UTF-8");
+
+			        if (success) {
+			            response.setStatus(HttpServletResponse.SC_OK);
+			            gson.toJson(Map.of("message", "처리 완료"), response.getWriter());
+			        } else {
+			            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			            gson.toJson(Map.of("message", "처리 실패"), response.getWriter());
+			        }
+
+			}else if(path.equals("/deletePost")) {
+				int boardSeq = Integer.parseInt(request.getParameter("boardSeq"));
+
+			     boolean success = BoardDAO.getInstance().deleteBoardsBySeq(boardSeq) > 0;
+
+			        response.setContentType("application/json");
+			        response.setCharacterEncoding("UTF-8");
+
+			        if (success) {
+			            response.setStatus(HttpServletResponse.SC_OK);
+			            gson.toJson(Map.of("message", "처리 완료"), response.getWriter());
+			        } else {
+			            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			            gson.toJson(Map.of("message", "처리 실패"), response.getWriter());
+			        }
+
 			}
 				
 			
@@ -343,5 +456,7 @@ public class ManagerController extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
+	
+	
 
 }

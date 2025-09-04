@@ -421,6 +421,10 @@
 
             // div 비우고 id 변경
             contentDiv.empty().attr('id', 'summernote');
+            
+            // 프로필, 버튼 col 수정
+            $('.writer').toggleClass('col-8 col-6');
+            $('.header-btns').toggleClass('col-4 col-6');
 
             // 상단 공유하기, 신고하기 버튼 교체 -> select로
             $('.header-btns').html(
@@ -438,9 +442,6 @@
                 '<label for="refgame" class="form-label">관련 게임</label>' +
                 '<select id="refgame" name="refgame" class="form-select">' +
                 '<option value="">선택</option>' +
-                '<option value="Game A">Game A</option>' +
-                '<option value="Game B">Game B</option>' +
-                '<option value="Game C">Game C</option>' +
                 '</select>' +
                 '</div>' +
                 '</div>'
@@ -449,7 +450,31 @@
             // select 기존 값 기본 세팅 (resp.boardDto 값 사용)
             $('#category').val(currentCategory);
             $('#refgame').val(currentRefgame);
+			
+         	// 관련 게임 채워넣기 (동적)
+            $.ajax({
+                url: "/api/game/gameList",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    let $select = $("#refgame");
+                    $select.empty();
+                    $select.append('<option value="">선택</option>'); // 기본값
 
+                    data.forEach(function(game) {
+                        let selected = (currentRefgame === game.title) ? "selected" : "";
+                        $select.append(
+                            '<option value="' + game.title + '" data-seq="' + game.seq + '" ' + selected + '>' 
+                            + game.title + 
+                            '</option>'
+                        );
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("게임 목록 불러오기 실패:", error);
+                }
+            });
+                
             // 높이 계산
             let contentsHeight = $('.contents').height();
 
@@ -509,7 +534,11 @@
                 // id 바꿔치기 + 썸머노트 종료
             	$('#summernote').summernote('destroy');
                 $('#summernote').attr('id', 'board_content').html(originalContent);
-				
+               
+             	// 프로필, 버튼 col 수정
+                $('.writer').toggleClass('col-8 col-6');
+                $('.header-btns').toggleClass('col-4 col-6');
+                
              	// 제목 원복 (중요!)
                 $('#board_title').text(originalTitle).attr('contenteditable', 'false');
 
@@ -1008,7 +1037,12 @@
      	// 공유 모달이 열릴 때 이벤트
         $('#shareModal').on('show.bs.modal', function () {
             // 현재 페이지 URL 가져오기
-            let currentUrl = window.location.href;
+            
+            var serverHost = window.location.hostname; // 예: "192.168.0.10" 또는 "example.com"
+			var serverPort = window.location.port;     // 예: "8080" (없으면 빈 문자열)
+			console.log(serverHost + " : " + serverPort);
+            let currentPath = window.location.pathname + window.location.search;
+			let currentUrl = 'http://' + serverHost + ':' + serverPort + currentPath;
 
             // input value에 넣기
             $('#shareLink').val(currentUrl);

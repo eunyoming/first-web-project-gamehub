@@ -25,13 +25,13 @@
 	width: 100%;
 }
 
-.card-text-time{
-	padding:3px;
-	font-size:12px;
+.card-text-time {
+	padding: 3px;
+	font-size: 12px;
 }
 
-.bookmark-card-body-cursor{
-	cursor:pointer;
+.bookmark-card-body-cursor {
+	cursor: pointer;
 }
 </style>
 <div class="container bookmark-container">
@@ -55,7 +55,7 @@
 				</div>
 			</div>
 		</div> -->
-	</div> 
+	</div>
 
 	<!-- 내가 작성한 게시글 섹션 -->
 	<div class="section bookmark-section" id="bookmark-board-section">
@@ -109,22 +109,47 @@
 				        bookmarkCol_11.attr({"class":"col-11 card-col-val bookmark-card-body-cursor"});
 				        
 					        let bookmarkTitle = $("<h6>");
-					        bookmarkTitle.html(item.title);
+					        
+					        if(item.visibility=="private")
+					        {
+						        bookmarkTitle.html("숨겨진 게시글입니다.");
+					        }
+					        else
+					        {
+						        bookmarkTitle.html(item.title);
+					        }
 					        bookmarkTitle.attr({"class":"card-title"});
 					        
 					        bookmarkCol_11.append(bookmarkTitle);
 					        
 					        let bookmarkContent = $("<p>");
-					        bookmarkContent.html(item.contents);
+					        
+					        if(item.visibility=="private")
+					        {
+					        	bookmarkContent.html("내용을 확인할 수 없습니다.");
+					        }
+					        else
+					        {
+					        	bookmarkContent.html(item.contents);
+					        }
 					        bookmarkContent.attr({"class":"card-text"});
 					        
 					        bookmarkCol_11.append(bookmarkContent);
 				        	
-					        bookmarkCol_11.on("click", function() {
-					            window.location.href = "#";
-					            console.log(item.seq + ":seq")
-					            
-					        });
+					        if(item.visibility=="private")
+					        {
+					        	bookmarkCol_11.on("click", function() {
+					        		alert("접근할 수 없습니다.");
+						            console.log(item.seq + ":seq");
+						        });
+					        }
+					        else
+					        {
+						        bookmarkCol_11.on("click", function() {
+						        	window.location.href = "/detailPage.board?seq=" + item.seq;
+						            console.log(item.seq + ":seq");
+						        });
+					        }
 					        
 					    bookmarkRow.append(bookmarkCol_11);    
 					    let bookmarkCol_1 = $("<div>");
@@ -132,7 +157,7 @@
 					    
 					    	let bookmarkBtn = $("<button>");
 					    	bookmarkBtn.html("제거");
-					    	bookmarkBtn.attr({"class":"btn btn-outline-red-main"});
+					    	bookmarkBtn.attr({"class":"btn btn-gradient btn-blue-purple"});
 					        bookmarkBtn.on("click",function(){
 					        	console.log(item.seq);
 
@@ -168,14 +193,14 @@
 				        let bookmarkBody = $("<div>");
 				        bookmarkBody.attr({"class":"card-body bookmark-card-body-cursor"});
 				        				        
-				        let bookmarkTitle = $("<h6>");
-				        bookmarkTitle.html(item.title);
+				        let bookmarkTitle = $("<h6>");				      
+					    bookmarkTitle.html(item.title);       				        
 				        bookmarkTitle.attr({"class":"card-title"});
 				        
 				        bookmarkBody.append(bookmarkTitle);
 				        
 				        let bookmarkContent = $("<div>");
-				        bookmarkTitle.html(item.contents);
+				        bookmarkContent.html(item.contents);
 				        bookmarkContent.attr({"class":"card-text"});
 				        
 				        bookmarkBody.append(bookmarkContent);
@@ -189,7 +214,7 @@
 				        bookmark.append(bookmarkBody);
 				        
 				        bookmark.on("click", function() {
-				            window.location.href = "#";
+				        	window.location.href = "/detailPage.board?seq=" + item.seq;
 				            console.log(item.seq + ":seq")
 				            
 				        });
@@ -228,7 +253,7 @@
 				        bookmark.append(bookmarkBody);
 				        
 				        bookmark.on("click", function() {
-				            window.location.href = "#";
+				        	window.location.href = "/detailPage.board?seq=" + item.board_seq;
 				            console.log(item.board_seq + ":board.seq")
 				        });
 				        

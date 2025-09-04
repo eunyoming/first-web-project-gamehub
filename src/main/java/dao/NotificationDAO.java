@@ -97,7 +97,7 @@ public class NotificationDAO {
 	
 	public int insertNotifications(NotificationDTO notificationDTO) throws Exception{
 
-		String sql = "insert into notifications values (NOTIFICATION_SEQ.nextval,?,?,?,'N',sysdate,null,null)";
+		String sql = "insert into notifications values (NOTIFICATION_SEQ.nextval,?,?,?,'N',sysdate,?,null)";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )
@@ -105,6 +105,17 @@ public class NotificationDAO {
 			pstat.setString(1, notificationDTO.getUserId());
 			pstat.setString(2, notificationDTO.getType());
 			pstat.setString(3, notificationDTO.getMessage());
+			
+			if(notificationDTO.getRelated_userId()!=null)
+			{
+				pstat.setString(4, notificationDTO.getRelated_userId());
+			}
+			else
+			{
+				pstat.setString(4, null);
+			}
+			
+			
 			int result = pstat.executeUpdate();
 			
 			System.out.println("알림 db저장까지 왔어요");

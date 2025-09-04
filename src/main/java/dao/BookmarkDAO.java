@@ -53,10 +53,10 @@ public class BookmarkDAO {
 					String writer = result.getString("writer");
 					String title = result.getString("title");
 					String contents = result.getString("contents");
-
+					String visibility = result.getString("visibility");
 					Timestamp timestamp =result.getTimestamp("created_at");
 					//visibility 삭제를 안하고 신고가 들어오면 숨김처리 해주는 숨김표시
-					BoardDTO dto = new BoardDTO(seq,writer,title,contents,"","",0,0,"",timestamp);
+					BoardDTO dto = new BoardDTO(seq,writer,title,contents,"","",0,0,visibility,timestamp);
 
 					list.add(dto);
 				}

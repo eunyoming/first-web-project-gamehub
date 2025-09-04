@@ -157,6 +157,22 @@ public class StoreDAO {
 
 	}
 	
+	public boolean updateItemInfo(PointStoreDTO dto) throws Exception {
+		String sql = "UPDATE PointStore SET itemname = ?, price = ?, contents = ? WHERE seq = ?";
+
+		try (Connection con = getConnection();
+			 PreparedStatement pstat = con.prepareStatement(sql)) {
+
+			pstat.setString(1, dto.getItemName());
+			pstat.setInt(2, dto.getPrice());
+			pstat.setString(3, dto.getContents());
+			pstat.setInt(4, dto.getSeq());
+
+			int result = pstat.executeUpdate();
+			return result > 0;
+		}
+	}
+	
 	public boolean selectPointPurchaseBySeqAndUserId(int itemSeq,String userId) throws Exception {
 		String sql = "select * from pointpurchase where item_seq = ? and userid = ?";
 
@@ -178,6 +194,21 @@ public class StoreDAO {
 		}
 
 	}
+	
+	public boolean updateItemImage(int seq, String imageUrl) throws Exception {
+		String sql = "UPDATE PointStore SET url = ? WHERE seq = ?";
+
+		try (Connection con = getConnection();
+			 PreparedStatement pstat = con.prepareStatement(sql)) {
+
+			pstat.setString(1, imageUrl);
+			pstat.setInt(2, seq);
+
+			int result = pstat.executeUpdate();
+			return result > 0;
+		}
+	}
+
 	
 	
 	//아이템 구매시 회원 포인트 감소. 순서대로 아이디, 포인트, 설명, 타입코드

@@ -130,7 +130,7 @@ public class NotificationDAO {
 	
 	public int insertNotifications(NotificationDTO notificationDTO) throws Exception{
 
-		String sql = "insert into notifications values (NOTIFICATION_SEQ.nextval,?,?,?,'N',sysdate,?,null)";
+		String sql = "insert into notifications values (NOTIFICATION_SEQ.nextval,?,?,?,'N',sysdate,?,?)";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )
@@ -147,7 +147,14 @@ public class NotificationDAO {
 			{
 				pstat.setString(4, null);
 			}
-			
+			if(notificationDTO.getRelated_objectId()!=null)
+			{
+				pstat.setString(5, notificationDTO.getRelated_objectId());
+			}
+			else
+			{
+				pstat.setString(5, null);
+			}
 			
 			int result = pstat.executeUpdate();
 			

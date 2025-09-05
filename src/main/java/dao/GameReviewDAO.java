@@ -39,7 +39,7 @@ public class GameReviewDAO {
 	}
 
 	public List<GameReviewDTO> selectGameReviewsByGame_seq(int game_seq) throws Exception {
-		String sql = "select * from gameReviews where game_seq = ? order by created_at asc";
+		String sql = "select * from gameReviews where game_seq = ? order by created_at desc";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )
@@ -72,7 +72,7 @@ public class GameReviewDAO {
 		}
 	}
 	public GameReviewDTO selectGameReviewsBygame_seqAndWriter(int game_seq, String writer) throws Exception {
-		String sql = "select * from gameReviews where game_seq = ? and writer = ?";
+		String sql = "select * from gameReviews where game_seq = ? and writer = ? order by created_at desc";
 
 		try(	Connection con = getConnection();
 				PreparedStatement pstat = con.prepareStatement(sql); )

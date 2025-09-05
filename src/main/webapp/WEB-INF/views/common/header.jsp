@@ -159,14 +159,14 @@
 							        		        break;
 							        		    case "point":
 							        		        console.log('point입니다.'); // a는 2입니다.
-							        		        dropa.attr({"class":"dropdown-item","href":"#"})
+							        		        dropa.attr({"class":"dropdown-item","href":"/api/member/mypage?userId=${loginId}&section=point"})
 							        		        break;
 							        		    case "chat":
 								        		    console.log('chat입니다.'); // a는 2입니다.
-								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open"})
+								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open?friendId="+item.related_userId})
 								        		    break;
 							        		    case "reply":
-								        		    console.log('chat입니다.'); // a는 2입니다.
+								        		    console.log('reply입니다.'); // a는 2입니다.
 								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open"})
 								        		    break;
 							        		    default:

@@ -81,6 +81,7 @@ button {
 	line-height: normal; /* 버튼 텍스트 세로 가운데 정렬 */
 }
 
+
 .input-button-wrap input[type="text"], .input-button-wrap input[type="email"]
 	{
 	height: 42px; /* input 높이 고정 */
@@ -142,6 +143,7 @@ button {
 	width: 60%;
 	color: gray;
 }
+
 </style>
 <body
 	style="background-image: url('https://picsum.photos/1920/1080'); background-size: cover; background-position: center;">
@@ -283,7 +285,7 @@ button {
 		        pw: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^\w\s])[^\s]{7,15}$/,
 		        name: /^[가-힣]{1,6}$/,
 		        phone: /^010-\d{4}-\d{4}$/,
-		        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		        email: /^[a-z0-9]+@[a-z0-9]+(?:\.com|\.co\.kr)$/
 		    };
 
 		    let regexMessage = {
@@ -292,7 +294,7 @@ button {
 		        pwCheck: "비밀번호를 다시 입력해주세요",
 		        name: "한글 1~6자 이하",
 		        phone: "예 : 010-0000-0000 숫자 형식으로 입력",
-		        email: "이메일 형식으로 입력해주세요 ",
+		        email: "예 : exam1@exam.com , exam1@exam.co.kr  ",
 		    };
 
 		    let fields = ["id", "pw", "pwCheck", "name", "phone", "email"];

@@ -202,9 +202,46 @@ const game = new Phaser.Game(config);
     let game = new Phaser.Game(config);
     </script>
 		</c:when>
-		<c:otherwise>
-			<img alt="임시게임화면" src="/asset/img/임시게임화면.png">
-		</c:otherwise>
+		<c:when test="${param.game_seq == '5'}">
+			<c:set var="imgPath" value="/games/game5/" />
+			<c:set var="loginId" value="${loginId}" />
+
+
+			<script>
+    const IMG_PATH = "${imgPath}";
+    const loginId = "${loginId}";
+</script>
+			<script src="/games/achievementPopup.js"></script>
+
+			<script src="/games/game5/Intro.js"></script>
+			<script src="/games/game5/MainGame.js"></script>
+			<script src="/games/game5/GameOver.js"></script>
+			<script>
+    
+    const GAME_WIDTH = 900;
+    const GAME_HEIGHT = 700;
+
+    let config = {
+            type: Phaser.AUTO,
+            parent:"gamebox" ,
+            width:GAME_WIDTH,
+            height: GAME_HEIGHT,
+           
+            physics: {
+                default: "arcade",
+              arcade:{
+            	  gravity: { y: 650 },
+                  debug: false
+              }
+
+            },
+            scene:[Intro,MainGame, GameOver]
+
+        };
+
+        let game = new Phaser.Game(config);
+    </script>
+		</c:when>
 	</c:choose>
 
 </div>

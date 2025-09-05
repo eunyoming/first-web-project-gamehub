@@ -175,13 +175,36 @@ public class BoardController extends HttpServlet {
 				String refgame = request.getParameter("refgame");
 				String contents = request.getParameter("contents");
 				
-				// 상대경로 허용
-				Safelist safelist = Safelist.basicWithImages()
-				        .addAttributes("img", "src", "style", "class")
-				        .removeProtocols("img", "src", "http", "https", "data");
+				// ✅ 썸머노트 전체 허용 Safelist
+				Safelist safelist = Safelist.relaxed()
+				    // 모든 태그에 공통적으로 style/class 허용
+				    .addAttributes(":all", "style", "class", "id")
 
+				    // 이미지 관련 (썸머노트에서 기본적으로 씀)
+				    .addAttributes("img", "src", "alt", "width", "height", "data-filename")
+
+				    // iframe (유튜브, 비메오, 지도 등 삽입 가능)
+				    .addTags("iframe")
+				    .addAttributes("iframe", "src", "width", "height", "frameborder", "allow", "allowfullscreen")
+
+				    // 표 관련 (table, thead, tbody, tr, th, td)
+				    .addTags("table", "thead", "tbody", "tr", "th", "td")
+				    .addAttributes("table", "border", "cellspacing", "cellpadding", "width", "height", "style", "class")
+				    .addAttributes("td", "colspan", "rowspan", "style", "class")
+				    .addAttributes("th", "colspan", "rowspan", "style", "class")
+
+				    // 코드 블록
+				    .addTags("pre", "code")
+
+				    // 인용구
+				    .addTags("blockquote")
+
+				    // 추가로 썸머노트에서 쓰는 div/p/span 보강
+				    .addTags("div", "span", "section", "article");
+				    
 
 				String cleanContents = Jsoup.clean(contents, safelist);
+
 			    
 				BoardDTO dto = new BoardDTO(0, loginId, title, cleanContents, category, refgame, 0, 0, null, null);
 				int seq = board_dao.insertBoards(dto);

@@ -60,7 +60,7 @@ const config = {
 	    physics: {
 	        default: 'arcade',
 	        arcade: {
-	            gravity: { y: 600 }, // 중력 주기
+	            gravity: { y: 900 }, // 중력 주기
 	            debug: false
 	        }
 	    },

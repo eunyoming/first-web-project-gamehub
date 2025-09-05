@@ -21,6 +21,7 @@ class MainScene extends Phaser.Scene {
 		// 속도 관련 변수
 		this.scrollSpeed = 3 * this.difficultyLevel;
 		this.speed = 200 * this.difficultyLevel;
+		this.platformSpawnDelay = 2000; // 2초
 		this.PlatformCount = 0;
 		this.normalPlatformCount = 0;
 		this.trapPlatformCount = 0;
@@ -28,6 +29,7 @@ class MainScene extends Phaser.Scene {
 		this.lastHeart = false;
 		this.noInputTime = 0;     // 입력 안 한 시간 (ms)
 		this.noInputAchieved = false; // 업적 달성 여부
+
 
 	}
 
@@ -41,7 +43,7 @@ class MainScene extends Phaser.Scene {
 		this.load.image('diamond', IMG_PATH + 'assets/image/diamond.png');
 		this.load.image('emerald', IMG_PATH + 'assets/image/emerald.png');
 		this.load.image('potion', IMG_PATH + 'assets/image/potion.png');
-		this.load.image('letter,',IMG_PATH + 'assets/image/letter.png');
+		this.load.image('letter,', IMG_PATH + 'assets/image/letter.png');
 		this.load.spritesheet("runSheet", IMG_PATH + "assets/image/Run.png", { frameWidth: 128, frameHeight: 128 });
 		this.load.spritesheet("jumpSheet", IMG_PATH + "assets/image/Jump.png", { frameWidth: 128, frameHeight: 128 });
 		this.load.spritesheet("hurtSheet", IMG_PATH + "assets/image/Hurt.png", { frameWidth: 128, frameHeight: 128 });
@@ -119,11 +121,11 @@ class MainScene extends Phaser.Scene {
 
 
 		// 초기 무지 발판 생성 FIXED 
-		let platform = this.physics.add.sprite(100, 600, "platform");
+		let platform = this.physics.add.sprite(100, 500, "platform");
 		platform.setScale(0.6, 0.3);
 		platform.setImmovable(true);
 		platform.setOrigin(0.1, 0.5);
-		platform.setSize(800, 300);
+		platform.setSize(600, 200);
 		platform.body.allowGravity = false;
 
 		//초기발판 삭제하기
@@ -133,14 +135,16 @@ class MainScene extends Phaser.Scene {
 		//발판 그룹 만들기
 		this.platforms = this.physics.add.group();
 		//발판 주기적 생성 타이머
-		this.time.addEvent({
-			delay: 2000, // 2초마다 생성
+		// 발판 주기적 생성 타이머
+		this.platformTimer = this.time.addEvent({
+			delay: this.platformSpawnDelay,
 			callback: this.createPlatform,
 			callbackScope: this,
 			loop: true
 		});
-		this.minDelay = 1000; // 최소 1초
-		this.delayDecrease = 100; // 프레임마다 줄어드는 딜레이
+
+
+
 		this.time.addEvent({
 			delay: 10000, // 10초마다
 			callback: () => {
@@ -149,6 +153,33 @@ class MainScene extends Phaser.Scene {
 			},
 			loop: true
 		});
+
+		// 난이도 증가 및 생성 간격 조절
+		this.time.addEvent({
+			delay: 5000, // 5초마다
+			callback: () => {
+				// 난이도 증가
+				this.difficultyLevel += 0.1;
+				console.log("난이도 증가:", this.difficultyLevel.toFixed(1));
+
+				// 발판 생성 간격 줄이기
+				this.platformSpawnDelay = Math.max(300, 2000 - (this.difficultyLevel * 300));
+				// 최소 0.3초(300ms)까지
+
+				// 타이머 갱신
+				this.platformTimer.reset({
+					delay: this.platformSpawnDelay,
+					callback: this.createPlatform,
+					callbackScope: this,
+					loop: true
+				});
+
+				console.log("발판 생성 간격:", this.platformSpawnDelay, "ms");
+			},
+			loop: true
+		});
+
+
 
 		// 충돌 처리 무지발판 
 		this.physics.add.collider(this.me, platform);
@@ -219,14 +250,14 @@ class MainScene extends Phaser.Scene {
 
 
 	createPlatform() { // 자동 플랫폼 생성
-		let isTrap = Math.random() < 0.3; // 30% 확률
+		let isTrap = Math.random() < 0.2; // 30% 확률
 		this.PlatformCount++;
 		if (this.PlatformCount === 100) {
 			this.unlockAchievement("forgotten_glade_oblivion_proof");
 		}
 		console.log(this.PlatformCount);
 		let key = isTrap ? "platformTrap" : "platform";
-		let platform = this.platforms.create(900, Phaser.Math.Between(300, 500), key);
+		let platform = this.platforms.create(900, Phaser.Math.Between(350, 600), key);
 
 
 		platform.setVelocityX(-200 * this.difficultyLevel);
@@ -262,7 +293,7 @@ class MainScene extends Phaser.Scene {
 		//함정 여부 저장
 		platform.setData("isTrap", isTrap);
 
-		if (Math.random() < 0.3) {
+		if (Math.random() < 0.4) {
 			this.spawnItem(platform.x, platform.y - 80);
 		}
 
@@ -277,26 +308,26 @@ class MainScene extends Phaser.Scene {
 	spawnItem(x, y) {
 		// 아이템 종류 선택
 		const itemsWithProb = [
-		       { type: "potion", prob: 0.3 },
-		       { type: "diamond", prob: 0.3 },
-		       { type: "emerald", prob: 0.399 },
-		       { type: "letter", prob: 0.001 }
-		   ];
+			{ type: "potion", prob: 0.5 },
+			{ type: "diamond", prob: 0.2 },
+			{ type: "emerald", prob: 0.299 },
+			{ type: "letter", prob: 0.001 }
+		];
 
-		   // 랜덤 숫자 생성
-		   const rand = Math.random();
-		   let cumulative = 0;
-		   let itemType = "potion"; // 기본값
+		// 랜덤 숫자 생성
+		const rand = Math.random();
+		let cumulative = 0;
+		let itemType = "potion"; // 기본값
 
-		   for (let item of itemsWithProb) {
-		       cumulative += item.prob;
-		       if (rand < cumulative) {
-		           itemType = item.type;
-		           break;
-		       }
-		   }
-		
-		
+		for (let item of itemsWithProb) {
+			cumulative += item.prob;
+			if (rand < cumulative) {
+				itemType = item.type;
+				break;
+			}
+		}
+
+
 		let item = this.items.create(x, y, itemType);
 		item.setScale(0.5, 0.5);
 		item.setVelocityX(-200 * this.difficultyLevel);
@@ -338,7 +369,7 @@ class MainScene extends Phaser.Scene {
 		} else if (type === "emerald") {
 			this.points += 10; // 포인트 증가
 			this.pointsText.setText("포인트: " + this.points);
-		}else if(type === "letter"){
+		} else if (type === "letter") {
 			this.score += 200000; // 점수 증가
 			this.scoreText.setText("점수: " + this.score);
 			this.unlockAchievement("forgotten_glade_precious_memory")
@@ -398,7 +429,7 @@ class MainScene extends Phaser.Scene {
 
 
 
-
+	//회원 검색
 
 
 
@@ -408,6 +439,8 @@ class MainScene extends Phaser.Scene {
 
 	handleGameOver() {
 		// 죽음 업적 달성
+
+
 		this.unlockAchievement("forgotten_glade_oblivion_start");
 		this.scene.start("Gameover", {
 			score: this.score,
@@ -418,40 +451,33 @@ class MainScene extends Phaser.Scene {
 	}
 
 	update(time, delta) {
-		if (this.platformEvent.delay > this.minDelay) {
-		        this.platformEvent.reset({
-		            delay: this.platformEvent.delay - this.delayDecrease,
-		            callback: this.createPlatform,
-		            callbackScope: this,
-		            loop: true
-		        });
-		    }
+		
 
 
-		// 플레이어 이동
-		if (this.cursors.left.isDown) {
-			this.me.setVelocityX(-this.speed);
-		}
-		else if (this.cursors.right.isDown) {
-			this.me.setVelocityX(this.speed);
-		} else {
-			this.me.setVelocityX(0);
-		}
+			// 플레이어 이동
+			if (this.cursors.left.isDown) {
+				this.me.setVelocityX(-this.speed*(1.2));
+			}
+			else if (this.cursors.right.isDown) {
+				this.me.setVelocityX(this.speed);
+			} else {
+				this.me.setVelocityX(0);
+			}
 
-		// 배경 왼쪽으로 스크롤
-		this.tileSprite.tilePositionX += this.scrollSpeed;
-		//점프 구현 + 더블점프
-		if (this.me.body.touching.down) {
-			this.me.setData("jumpCount", 2);
-		}
-		if (Phaser.Input.Keyboard.JustDown(this.spaceKey)
+			// 배경 왼쪽으로 스크롤
+			this.tileSprite.tilePositionX += this.scrollSpeed;
+			//점프 구현 + 더블점프
+			if (this.me.body.touching.down) {
+				this.me.setData("jumpCount", 2);
+			}
+			if (Phaser.Input.Keyboard.JustDown(this.spaceKey)
 
-			&& this.me.getData("jumpCount") > 0) {
+				&& this.me.getData("jumpCount") > 0) {
 
-			this.me.setVelocityY(-400);
-			this.me.setData("jumpCount", this.me.getData("jumpCount") - 1);
-		}
-
+				this.me.setVelocityY(-500);
+				this.me.setData("jumpCount", this.me.getData("jumpCount") - 1);
+			}
+		
 
 		// 모션 변경
 		if (!this.isHurt && !this.isDead) { // hurt 또는 dead 중이면 run/jump로 덮어쓰지 않음
@@ -468,57 +494,58 @@ class MainScene extends Phaser.Scene {
 		}
 
 
+
 		let inputActive =
 			this.cursors.left.isDown ||
 			this.cursors.right.isDown ||
 			this.cursors.up.isDown ||
 			this.cursors.down.isDown ||
 			this.spaceKey.isDown;
-	
+
 		if (!inputActive) {
 			this.noInputTime += delta;  // 입력 없으면 시간 누적
 		} else {
 			this.noInputTime = 0;       // 입력하면 리셋
 		}
 		if (!this.noInputAchieved && this.noInputTime >= 5000) {
-			
+
 			this.unlockAchievement("forgotten_glade_quiet_forest");
 			this.noInputAchieved = true;
-	
-		}
-}
-		unlockAchievement(achievementId) {
-			console.log("imunlockachievement");
-			if (loginId === "") return;
-
-			console.log(this.unlockedAchievements);
-
-			if (this.unlockedAchievements.has(achievementId)) return;
-
-			this.unlockedAchievements.add(achievementId);
-
-			$.ajax({
-				url: "/api/achievement/unlock",
-				type: "POST",
-				contentType: "application/json",
-				data: JSON.stringify({
-					userId: loginId,
-					achievementId: achievementId,
-					unlocked_at: Date.now()
-				})
-			}).done((resp) => {
-				if (resp.status === "success") {
-
-					console.log("🎉 업적 달성: " + resp.title + "업적 설명:" + resp.description);
-					showAchievementPopup("🎉 업적 달성: " + resp.title, resp.description);
-				}
-			}).fail((err) => {
-				console.error("업적 서버 오류:", err);
-			});
-
-
-
 
 		}
-	
+	}
+	unlockAchievement(achievementId) {
+		console.log("imunlockachievement");
+		if (loginId === "") return;
+
+		console.log(this.unlockedAchievements);
+
+		if (this.unlockedAchievements.has(achievementId)) return;
+
+		this.unlockedAchievements.add(achievementId);
+
+		$.ajax({
+			url: "/api/achievement/unlock",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({
+				userId: loginId,
+				achievementId: achievementId,
+				unlocked_at: Date.now()
+			})
+		}).done((resp) => {
+			if (resp.status === "success") {
+
+				console.log("🎉 업적 달성: " + resp.title + "업적 설명:" + resp.description);
+				showAchievementPopup("🎉 업적 달성: " + resp.title, resp.description);
+			}
+		}).fail((err) => {
+			console.error("업적 서버 오류:", err);
+		});
+
+
+
+
+	}
+
 }

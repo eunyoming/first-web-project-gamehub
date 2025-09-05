@@ -25,6 +25,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import commons.NotificationSender;
 import dao.ChatDAO;
 import dto.chat.MessageDTO;
 
@@ -54,10 +55,30 @@ public class ChatServer {
 			        }
 			    })
 			    .create();
+    
+    public String recieveId(String senderId, String input) {
+    	
+
+    	// 대괄호 제거
+    	input = input.replaceAll("[\\[\\]]", "");
+
+    	// "와" 기준으로 분할
+    	String[] parts = input.split("와");
+
+    	// 첫 번째 ID
+    	String user1 = parts[0].trim(); // "test09876"
+
+    	// 두 번째 ID (뒤에 "의 채팅방" 제거)
+    	String user2 = parts[1].replace("의 채팅방", "").trim(); // "aaa111"
+    	
+    	return senderId.equals(user1)? user2 : user1;
+
+    }
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("웹소켓 연결: " + session.getId());
+        
     }
 
     @OnMessage
@@ -83,10 +104,18 @@ public class ChatServer {
                 for (Session s : roomSessions) {
                     if (s.isOpen()) {
                         s.getBasicRemote().sendText(jsonMsg);
+                        
+                       
                     }
                 }
             }
-
+            
+            //알림 보내기
+            NotificationSender.send(
+            		recieveId(dto.getSender_Id(), ChatDAO.getInstance().getChatroomName(dto.getChatroom_seq())), 
+            		"chat",
+            		savedMsg.getContent() );
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,4 +132,7 @@ public class ChatServer {
         System.out.println("웹소켓 에러 발생: " + session.getId());
         e.printStackTrace();
     }
+    
+    
+    
 }

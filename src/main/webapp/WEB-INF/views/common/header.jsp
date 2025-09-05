@@ -16,6 +16,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- main css -->
 <link href="/css/main.css" rel="stylesheet" />
+
+
 </head>
 <body>
 	<header class="fixed-top">
@@ -242,7 +244,7 @@
 									<li><a class="dropdown-item"
 										href="/api/member/mypage?section=collection&userId=${loginId}">마이
 											페이지</a></li>
-									<li><a class="dropdown-item" href="#">보유 포인트:
+									<li><a class="dropdown-item" href="/api/member/mypage?userId=${loginId}&section=point">보유 포인트:
 											${currentPoint}</a></li>
 									<li><a class="dropdown-item" href="/chat/open">채팅</a></li>
 									<li><hr class="dropdown-divider"></li>

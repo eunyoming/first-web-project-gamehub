@@ -287,6 +287,7 @@ h3 {
 		      $("#profileImage").attr("src", data.profileImage);
 		      $("#loginId").text(data.userID);
 		      $("#equipedAchiev").text("${simpleProfile.achievDTO.title}" || "장착 업적 없음");
+		      
 		      $("#bioInput").val(data.bio);
 		      $("#statusInput").val(data.statusMessage);
 		    }

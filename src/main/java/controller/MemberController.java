@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -320,7 +324,19 @@ public class MemberController extends HttpServlet {
 
 			           String userId = (String) request.getSession().getAttribute("loginId");
 			           
-			           boolean updated = dao.updateProfileText(userId, bio, statusMessage);
+			           Document docbio = Jsoup.parseBodyFragment(bio);
+			           docbio.select("script, style").unwrap(); // 태그만 제거, 내부 텍스트는 보존
+
+			            Safelist safelist = Safelist.none().addTags("b", "i", "u", "br");
+			            String cleanBio = Jsoup.clean(docbio.body().html(), safelist);
+			           
+			            Document docStatusMessage = Jsoup.parseBodyFragment(statusMessage);
+				           docbio.select("script, style").unwrap(); // 태그만 제거, 내부 텍스트는 보존
+
+				    
+				            String cleanStatusMessage = Jsoup.clean(docStatusMessage.body().html(), safelist);
+			            
+			           boolean updated = dao.updateProfileText(userId, cleanBio, cleanStatusMessage);
 
 			           // 응답 JSON 생성
 			           JsonObject result = new JsonObject();

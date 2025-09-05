@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -123,8 +127,19 @@ public class GameController extends HttpServlet {
 					String content = request.getParameter("content");
 					int game_seq = Integer.parseInt(request.getParameter("game_seq"));
 					int rating = Integer.parseInt(request.getParameter("rating"));
+					
+					Document docTitle = Jsoup.parseBodyFragment(title);
+					 docTitle.select("script, style").unwrap(); // 태그만 제거, 내부 텍스트는 보존
+
+			        Safelist safelist = Safelist.none().addTags("b", "i", "u", "br");
+			         String cleanTitle = Jsoup.clean(docTitle.body().html(), safelist);
 	
-					GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, title, content, game_seq, rating, null);
+			         Document docContent = Jsoup.parseBodyFragment( content);
+					 docTitle.select("script, style").unwrap(); // 태그만 제거, 내부 텍스트는 보존
+					 String cleanContent  = Jsoup.clean(docContent.body().html(), safelist);
+			         
+			         
+					GameReviewDTO gameReviewDTO = new GameReviewDTO(0, loginId, cleanTitle, cleanContent, game_seq, rating, null);
 					int result = gameReviewDAO.insertGameReviews(gameReviewDTO);
 	
 					List<GameReviewDTO> gameReviewDTOList = gameReviewDAO.selectGameReviewsByGame_seq(game_seq);

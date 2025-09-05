@@ -291,6 +291,24 @@ body{
   background-repeat: no-repeat;
 }
 
+.main-section2 {
+  height: auto;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.top1Item p{
+	width:50%;
+	 margin: 0 auto;
+  text-align: center;   
+	 word-break: keep-all;       /* 한글 단어가 중간에 잘리지 않도록 */
+  line-break: auto;           /* 줄바꿈 시점 자동 조절 (한글에 적합) */
+  white-space: normal;        /* 줄바꿈 허용 */
+  overflow-wrap: break-word;  /* 긴 단어가 넘칠 경우 줄바꿈 */
+	
+}
+
 .bg-main-waves {
   background-image: url('/asset/img/layered-waves.png');
 }
@@ -348,7 +366,21 @@ body{
 .welcome-box2 h5 {
   line-height: 1.1;
 }
+.welcome-box3 .line {
+	line-height: 1.2;
+  display: block;
+  opacity: 0;
+  transform: translateY(10px);
+}
 
+
+.welcome-box3 h1 {
+  line-height: 1.2;
+}
+
+.welcome-box3 h5 {
+  line-height: 1.1;
+}
 
 .image-grid {
   display: grid;
@@ -359,53 +391,77 @@ body{
 }
 
 .image-wrapper {
+  padding:1.5vw;
   position: relative;
   display: inline-block;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden; /* 오버레이가 이미지 밖으로 안나가게 */
+  width: 100%;
+  max-width: 250px; /* 최대 너비 제한 */
 }
 
+
 .image-wrapper img {
-  width: 250px;
-  height: 250px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1; /* 정사각형 비율 유지 */
   object-fit: cover;
   border-radius: 8px;
   display: block;
-  
-  box-shadow:
-    -20px -20px 30px -25px var(--color1),
-    20px 20px 30px -25px var(--color2),
-    -7px -7px 10px -5px var(--color1),
-    7px 7px 10px -5px var(--color2),
-    0 0 13px 4px rgba(255,255,255,0.3),
-    0 55px 35px -20px rgba(0, 0, 0, 0.5);
+}
+
+
+/* 스파클 점 */
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 6px white, 0 0 12px rgba(255,255,255,0.8);
+  animation: twinkle infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+
+.image-wrapper:hover{
+	  box-shadow: 0 0 30px -5px white, 0 0 10px -2px white, 0 55px 35px -20px rgba(0, 0, 0, 0.5);
+}
+
+
+.image-wrapper::before{
+	  content: "";
+    z-index: -2;
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: linear-gradient(-45deg, #f8acff 0%, #696eff 100%);
+    transform: translate3d(0px, 20px, 0) scale(0.95);
+    filter: blur(20px);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    border-radius: inherit;
+	
 }
 
 .image-wrapper::after {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("/asset/img/hhholographic.png");
-  background-size: 200% 200%; /* 확대해서 무늬가 흘러가게 */
-  background-repeat: no-repeat;
-  background-position: 0% 0%;
+background-image: url("/asset/img/hhholographic.jpg"); /* 홀로그램 텍스처 */
+  background-size: cover;
+ 
   mix-blend-mode: screen;
-  opacity: 0.15;
-  animation: holoShift 8s linear infinite;
+  opacity: 0.5;
   pointer-events: none;
+  
 }
 
-
-@keyframes sparkle {
-  0%, 100% { opacity: 0.0; }
-  50%      { opacity: 0.7; }
-}
-
-@keyframes holoShift {
-  0%   { background-position: 0% 0%; }
-  50%  { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
 
 .image-grid img {
   filter: brightness(1) contrast(1);;
@@ -434,6 +490,28 @@ body{
   color: #fff; /* 하얀색 글씨 */
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* 어두운 그림자 */
 }
+
+
+.storeTop5 {
+    position: relative;
+    width: 100%;
+    height: 500px; /* 필요에 따라 조절 */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.fly-image {
+    width: 500px;
+	height:auto;
+    object-fit: cover;
+    position: absolute; /* 화면 바깥에서 이동 가능하게 */
+    border-radius: 8px;
+}
+
+
 
 @font-face {
     font-family: 'Danjo';

@@ -41,6 +41,7 @@ class MainScene extends Phaser.Scene {
 		this.load.image('diamond', IMG_PATH + 'assets/image/diamond.png');
 		this.load.image('emerald', IMG_PATH + 'assets/image/emerald.png');
 		this.load.image('potion', IMG_PATH + 'assets/image/potion.png');
+		this.load.image('letter,',IMG_PATH + 'assets/image/letter.png');
 		this.load.spritesheet("runSheet", IMG_PATH + "assets/image/Run.png", { frameWidth: 128, frameHeight: 128 });
 		this.load.spritesheet("jumpSheet", IMG_PATH + "assets/image/Jump.png", { frameWidth: 128, frameHeight: 128 });
 		this.load.spritesheet("hurtSheet", IMG_PATH + "assets/image/Hurt.png", { frameWidth: 128, frameHeight: 128 });
@@ -118,7 +119,7 @@ class MainScene extends Phaser.Scene {
 
 
 		// 초기 무지 발판 생성 FIXED 
-		let platform = this.physics.add.sprite(0, 600, "platform");
+		let platform = this.physics.add.sprite(100, 600, "platform");
 		platform.setScale(0.6, 0.3);
 		platform.setImmovable(true);
 		platform.setOrigin(0.1, 0.5);
@@ -138,6 +139,8 @@ class MainScene extends Phaser.Scene {
 			callbackScope: this,
 			loop: true
 		});
+		this.minDelay = 1000; // 최소 1초
+		this.delayDecrease = 100; // 프레임마다 줄어드는 딜레이
 		this.time.addEvent({
 			delay: 10000, // 10초마다
 			callback: () => {
@@ -415,6 +418,14 @@ class MainScene extends Phaser.Scene {
 	}
 
 	update(time, delta) {
+		if (this.platformEvent.delay > this.minDelay) {
+		        this.platformEvent.reset({
+		            delay: this.platformEvent.delay - this.delayDecrease,
+		            callback: this.createPlatform,
+		            callbackScope: this,
+		            loop: true
+		        });
+		    }
 
 
 		// 플레이어 이동

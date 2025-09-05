@@ -136,8 +136,8 @@ public class AchievementDAO {
 
 	}
 	
-	public String equipTitle(String userId, int achievSeq) throws Exception {
-	    String equippedTitle = null;
+	public AchievementDTO equipAchievement(String userId, int achievSeq) throws Exception {
+		AchievementDTO achiev = new AchievementDTO();
 
 	    try (Connection conn = this.getConnection()) {
 	        conn.setAutoCommit(false);
@@ -150,7 +150,7 @@ public class AchievementDAO {
 	                "UPDATE USERACHIEVEMENT SET ISEQUIP = 'Y' WHERE USERID = ? AND ACHIEV_SEQ = ?"
 	            );
 	            PreparedStatement pstmt3 = conn.prepareStatement(
-	                "SELECT a.title FROM achievement a WHERE a.seq = ?"
+	                "SELECT * FROM achievement a WHERE a.seq = ?"
 	            )
 	        ) {
 	            // 1. 모든 칭호 해제
@@ -162,11 +162,15 @@ public class AchievementDAO {
 	            pstmt2.setInt(2, achievSeq);
 	            pstmt2.executeUpdate();
 
-	            // 3. 장착된 칭호 제목 조회
+	            // 3. 장착된 칭호 조회
 	            pstmt3.setInt(1, achievSeq);
 	            try (ResultSet rs = pstmt3.executeQuery()) {
 	                if (rs.next()) {
-	                    equippedTitle = rs.getString("title");
+	                	achiev.setId(rs.getString("id"));
+						achiev.setTitle(rs.getString("title"));
+						achiev.setDescription(rs.getString("description"));
+						achiev.setIconUrl(rs.getString("icon_url"));
+						achiev.setGameSeq(rs.getInt("game_seq"));
 	                }
 	            }
 
@@ -177,7 +181,7 @@ public class AchievementDAO {
 	        }
 	    }
 
-	    return equippedTitle;
+	    return achiev;
 	}
 		
 		

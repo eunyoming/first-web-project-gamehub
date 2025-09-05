@@ -136,9 +136,12 @@ public class BoardController extends HttpServlet {
 				// 댓글 개수
 				int replyCount = repliesList.size();
 
-				//작성자 프로필 용 dto 
+				// 작성자 프로필 용 dto 
 				SimpleUserProfileDTO simpleUserProfileDTO = MemberDAO.getInstance().getSimpleUserProfile(boardDto.getWriter());
-
+				// 로그인한 유저 프로필 dto
+				SimpleUserProfileDTO loginUserProfileDTO = (SimpleUserProfileDTO)request.getSession().getAttribute("simpleProfile");
+				String userCategory = loginUserProfileDTO.getCategory();
+				
 				// JSON 직렬화 준비
 				try (PrintWriter pw = response.getWriter()) {
 
@@ -150,6 +153,7 @@ public class BoardController extends HttpServlet {
 					result.put("replyCount", replyCount);
 					result.put("likeCount", boards_likes_dao.countLikes(board_seq));
 				    result.put("isLiked", isLiked);
+				    result.put("userCategory", userCategory);
 
 					String json = new Gson().toJson(result);
 					pw.print(json);

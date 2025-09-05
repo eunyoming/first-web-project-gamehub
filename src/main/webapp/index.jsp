@@ -64,7 +64,7 @@ request.setAttribute("pageTitle", "메인페이지");
 }
 
 .strips__strip:nth-child(3) .strip__content {
-	background-image: url("/games/game3/thumbnails/thumbnails.png");
+	background-image: url("/games/game3/thumbnails/thumbnail.png");
 	background-size: cover;
   background-position: center;
 	transform: translate3d(0, 100%, 0);

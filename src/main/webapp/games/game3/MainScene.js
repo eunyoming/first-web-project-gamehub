@@ -10,13 +10,11 @@ class MainScene extends Phaser.Scene {
 		this.restartCount = 0;
 		this.afkTime = 0;
 		this.movingTime = 0;
-		this.justDodgedClose = false;
 		this.patternsSeen = 0;
 		this.totalPatterns = 7; // single, circle, spiral, down, up, left, right
 	}
 
 	init(data) {
-		console.log("data:", data);
 		this.score = 0;                 // 점수 리셋
 		this.isGameOver = false;        // 상태 리셋
 		this.elapsed = 0;				// 경과시간 리셋
@@ -157,7 +155,6 @@ class MainScene extends Phaser.Scene {
 	update(time, delta) {
 		this.debugTimer = (this.debugTimer || 0) + delta;
 		if (this.debugTimer >= 1000) {
-			console.log('delta:', delta);
 			this.debugTimer = 0;
 		}
 		if (this.isGameOver) return;
@@ -209,14 +206,6 @@ class MainScene extends Phaser.Scene {
 					});
 				}
 			}
-
-			// 이동 거리 계산
-			const dx = this.player.x - this.player.prevX;
-			const dy = this.player.y - this.player.prevY;
-			const dist = Math.sqrt(dx*dx + dy*dy);
-			this.player.totalMovedDist = (this.player.totalMovedDist || 0) + dist;
-			this.player.prevX = this.player.x;
-			this.player.prevY = this.player.y;
 
 			// AFK 체크
 			if (!this.cursors.left.isDown && !this.cursors.right.isDown &&
@@ -433,8 +422,7 @@ class MainScene extends Phaser.Scene {
 		// GameOverScene 으로 점수 + 시간 넘기기
 		this.scene.start('GameOverScene', {
 		        score: this.score,
-		        elapsed: elapsed,   // ✅ 그대로 전달
-		        totalMovedDist: this.player.totalMovedDist,
+		        elapsed: elapsed,   // 그대로 전달
 		        startTime: this.startTime,
 		        endTime: this.time.now, // 원한다면 종료 시각도 넘길 수 있음
 		    });

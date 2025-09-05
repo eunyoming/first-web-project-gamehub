@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Safelist;
+
 import com.google.gson.Gson;
 
 import dao.BoardDAO;
@@ -34,8 +38,15 @@ public class ReplyController extends HttpServlet {
 				String contents = request.getParameter("contents");
 				int board_seq = Integer.parseInt(request.getParameter("board_seq"));
 				int parent_seq = Integer.parseInt(request.getParameter("parent_seq"));
+				
+				// 댓글 태그 공격 방어
+				Document doc = Jsoup.parseBodyFragment(contents);
+				doc.select("script, style").unwrap(); // 태그만 제거, 내부 텍스트는 보존
 
-				ReplyDTO dto = new ReplyDTO(0, writer, contents, 0, board_seq, parent_seq, null, "public", null);
+				Safelist safelist = Safelist.none().addTags("b", "i", "u", "br");
+				String cleanContents = Jsoup.clean(doc.body().html(), safelist);
+				
+				ReplyDTO dto = new ReplyDTO(0, writer, cleanContents, 0, board_seq, parent_seq, null, "public", null);
 				int result = reply_dao.insertReplies(dto);
 
 				response.setContentType("application/json; charset=UTF-8");

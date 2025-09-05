@@ -160,6 +160,23 @@ public class ChatDAO {
 
 	    return null; // 혹시 실패 시
 	}
+	
+	public String getChatroomName(int chatroomSeq) throws Exception  {
+		 String sql = "SELECT name from chatrooms where seq = ? ";
+		 try (Connection connection = getConnection();
+		         PreparedStatement pstmt = connection.prepareStatement(sql)) {
+			  
+			 pstmt.setInt(1, chatroomSeq);
+			 try(ResultSet rs = pstmt.executeQuery()){
+				if( rs.next()) {
+					 return rs.getString("name");
+				}
+				
+			 }
+		 }
+		return "";
+		 
+	}
 
 	public List<MessageDTO> getMessages(int chatroomSeq, int limit) throws Exception {
 	    String sql = "SELECT * FROM ( " +

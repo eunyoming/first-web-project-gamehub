@@ -133,10 +133,7 @@
 				}).done(function(resp){
 					console.log(resp, "/view 응답 받음");
 					
-					if(resp.lists.length>0)
-					{
-						$("#emptymyPagePointRow").hide();
-					}
+					
 					
 					$("#totalPointText").html("Total Point : " +  resp.pointValue);
 					
@@ -189,71 +186,7 @@
 				        $("#myPagePoint-myPagePoint-section").append(bookmark);
 				    });
 
-				 // 여기부터 페이징 자바스크립트.
-					// 게시글 총개수
-					// 한 페이지에 출력할 개수
-					// 한 페이지에 출력할 네비 개수
-					// 페이지 총 개수
-					let recordTotalCount = resp.userLogCount;
-					let recordCountPerPage = 5;  //상수로 줌
-					let naviCountPerPage = 5;    //상수로 줌
-					let pageTotalCount = 0;
-					
-					//나머지가 있으면 +1을 해줘야함. 10개씩 출력할때 147개의 글이 있으면 15페이지가 나와야해서
-					if(recordTotalCount % recordCountPerPage > 0) { 
-						pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage);
-					}
-					else
-					{
-						pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage)
-					}
-					
-					let currentPage = resp.currentPage;
-					
-					if(currentPage < 1) {	//currentPage값 보정
-						currentPage = 1;
-					}else if(currentPage > pageTotalCount)
-					{
-						currentPage = pageTotalCount;
-					}
-					
-					let startNavi = Math.floor((currentPage-1) / naviCountPerPage) * naviCountPerPage + 1 ;
-					let endNavi = startNavi + (naviCountPerPage - 1); 
-					
-					if(endNavi > pageTotalCount)
-					{
-						endNavi = pageTotalCount;
-					}
-					
-					let needPrev = true;
-					let needNext = true;
-
-					if(startNavi == 1) {needPrev = false;}
-					if(endNavi == pageTotalCount) { needNext = false;}
-					
-					
-					
-					
-					
-					let pagingDiv = $("<div class='mypage-pagination-container'></div>");
-
-					// 이전 버튼
-					if (needPrev) {
-					    pagingDiv.append("<a class='mypage-page-btn prev' href='/api/member/mypage?section=point&cpage=" + (startNavi - 1) + "&userId=${loginId}'>&lt;</a>");
-					}
-
-					// 페이지 번호
-					for (let i = startNavi; i <= endNavi; i++) {
-					    let activeClass = (i === currentPage) ? " active" : "";
-					    pagingDiv.append("<a class='mypage-page-btn num" + activeClass + "' href='/api/member/mypage?section=point&cpage=" + i + "&userId=${loginId}'>" + i + "</a>");
-					}
-
-					// 다음 버튼
-					if (needNext) {
-					    pagingDiv.append("<a class='mypage-page-btn next' href='/api/member/mypage?section=point&cpage=" + (endNavi + 1) + "&userId=${loginId}'>&gt;</a>");
-					}
-
-					$("#myPagePoint-myPagePoint-section").append(pagingDiv);
+				 
 					
 					/* let pagingDiv = $("<div style=display:flex;justify-content:center; padding:5px>");
 					
@@ -271,7 +204,76 @@
 					}
 					
 					 $("#myPagePoint-myPagePoint-section").append(pagingDiv); */
-				   
+					 
+					 if(resp.lists.length>0)
+						{
+							$("#emptymyPagePointRow").hide();
+							// 여기부터 페이징 자바스크립트.
+							// 게시글 총개수
+							// 한 페이지에 출력할 개수
+							// 한 페이지에 출력할 네비 개수
+							// 페이지 총 개수
+							let recordTotalCount = resp.userLogCount;
+							let recordCountPerPage = 5;  //상수로 줌
+							let naviCountPerPage = 5;    //상수로 줌
+							let pageTotalCount = 0;
+							
+							//나머지가 있으면 +1을 해줘야함. 10개씩 출력할때 147개의 글이 있으면 15페이지가 나와야해서
+							if(recordTotalCount % recordCountPerPage > 0) { 
+								pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage);
+							}
+							else
+							{
+								pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage)
+							}
+							
+							let currentPage = resp.currentPage;
+							
+							if(currentPage < 1) {	//currentPage값 보정
+								currentPage = 1;
+							}else if(currentPage > pageTotalCount)
+							{
+								currentPage = pageTotalCount;
+							}
+							
+							let startNavi = Math.floor((currentPage-1) / naviCountPerPage) * naviCountPerPage + 1 ;
+							let endNavi = startNavi + (naviCountPerPage - 1); 
+							
+							if(endNavi > pageTotalCount)
+							{
+								endNavi = pageTotalCount;
+							}
+							
+							let needPrev = true;
+							let needNext = true;
+
+							if(startNavi == 1) {needPrev = false;}
+							if(endNavi == pageTotalCount) { needNext = false;}
+							
+							
+							
+							
+							
+							let pagingDiv = $("<div class='mypage-pagination-container'></div>");
+
+							// 이전 버튼
+							if (needPrev) {
+							    pagingDiv.append("<a class='mypage-page-btn prev' href='/api/member/mypage?section=point&cpage=" + (startNavi - 1) + "&userId=${loginId}'>&lt;</a>");
+							}
+
+							// 페이지 번호
+							for (let i = startNavi; i <= endNavi; i++) {
+							    let activeClass = (i === currentPage) ? " active" : "";
+							    pagingDiv.append("<a class='mypage-page-btn num" + activeClass + "' href='/api/member/mypage?section=point&cpage=" + i + "&userId=${loginId}'>" + i + "</a>");
+							}
+
+							// 다음 버튼
+							if (needNext) {
+							    pagingDiv.append("<a class='mypage-page-btn next' href='/api/member/mypage?section=point&cpage=" + (endNavi + 1) + "&userId=${loginId}'>&gt;</a>");
+							}
+
+							$("#myPagePoint-myPagePoint-section").append(pagingDiv);
+						}
 				})
 				.fail(function(xhr, status, error){
 				    console.log("AJAX 실패:", status, error);

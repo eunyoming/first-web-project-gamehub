@@ -61,7 +61,6 @@
 			$("#selling-list-div").html("");
 			//리스트 내용 비워주고.
 			
-			  if("${loginId}" != "") {
 				  let isPurchasedBool=false;
 				  
 				  resp.forEach(function(list){
@@ -91,10 +90,18 @@
 					  cardDiv.append(imgSrc).append(cardBodyDiv);
 					  colDiv.append(cardDiv);
 
-					  
+
+					  if("${loginId}" != "") {
 					  cardDiv.on("click", function() {
 						    window.location.href = '/api/store/itemDetail?seq='+list.seq;
 						});
+					  }
+					  else{
+						  cardDiv.on("click", function() {
+							    alert("로그인 후 이용해주세요.");
+							});
+						  
+						}
 					  
 					  if(list.isPurchased=="false"){
 					  	$("#selling-list-div").append(colDiv);
@@ -112,7 +119,7 @@
 					if(isPurchasedBool)
 					{ $("#purchased-list-text").css("display", "block");}
 				  
-			  }
+			  
 			
 		});
 	}); 

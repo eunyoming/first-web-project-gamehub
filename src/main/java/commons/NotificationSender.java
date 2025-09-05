@@ -60,11 +60,16 @@ public class NotificationSender {
     }
     
     
+    
+    //related_userId랑 related_objectId 에 넣을거 없으면 null 하시면 됩니다.
+    // 채팅 관련은 related_userId 넣으면 되고
+    // 게시글 관련은 related_objectId 사용 예정
+    
     // 친구 알림 전송 메서드
-    public static void send(String loginId,String type, String message,String related_userId) {
+    public static void send(String loginId,String type, String message,String related_userId,String related_objectId) {
     	try {
         NotificationDAO.getInstance().insertNotifications(
-            new NotificationDTO(0, loginId, type, message, "n", null, related_userId, null)
+            new NotificationDTO(0, loginId, type, message, "n", null, related_userId, related_objectId)
         );
 
         NotificationServer.sendToUser(loginId, MESSAGE);

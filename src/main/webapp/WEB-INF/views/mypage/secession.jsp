@@ -266,7 +266,7 @@ margin-top: 30px;
   </div>
 
   <div class="button-group">
-    <button type="button" id="cancelBtn">취소</button>
+   <a href="/api/member/mypage?section=bio&userId=${paramUserId}"><button type="button" id="cancelBtn">취소</button></a>
     <button type="button" id="secessionBtn" disabled>회원 탈퇴</button>
   </div>
 </div>

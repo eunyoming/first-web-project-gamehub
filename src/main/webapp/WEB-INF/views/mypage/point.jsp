@@ -201,11 +201,11 @@
 					
 					//나머지가 있으면 +1을 해줘야함. 10개씩 출력할때 147개의 글이 있으면 15페이지가 나와야해서
 					if(recordTotalCount % recordCountPerPage > 0) { 
-						pageTotalCount = recordTotalCount / recordCountPerPage + 1;
+						pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage);
 					}
 					else
 					{
-						pageTotalCount = recordTotalCount / recordCountPerPage;
+						pageTotalCount = Math.ceil(recordTotalCount / recordCountPerPage)
 					}
 					
 					let currentPage = resp.currentPage;

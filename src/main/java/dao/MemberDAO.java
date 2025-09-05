@@ -12,6 +12,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import dto.game.AchievementDTO;
 import dto.member.ManagerMemberDTO;
 import dto.member.MemberDTO;
 import dto.member.MemberProfileDTO;
@@ -267,12 +268,16 @@ public class MemberDAO {
 	public SimpleUserProfileDTO login(String id, String pw) {
 		String sql = "SELECT m.id AS userId,\n"
 				+ "       mp.profileImage,\n"
-				+ "       NVL(a.title, '업적 칭호 없음') AS equipedAchiev,\n"
+				+ "       NVL(a.id, '업적 칭호 없음') AS eqipedAchievId,\n"
+				+ "       NVL(a.title, '업적 칭호 없음') AS equipedAchievTitle,\n"
+				+ "       NVL(a.DESCRIPTION, '업적 칭호 없음') AS equipedAchievDescription,\n"
+				+ "       NVL(a.GAME_SEQ, 0) AS equipedAchievGameSeq,\n"
+				+ "       NVL(a.ICON_URL, '업적 칭호 없음') AS equipedAchievImgUrl,\n"
 				+ "       NVL(r.category, 'User') AS category "
 				+ "FROM members m\n"
 				+ "LEFT JOIN member_profiles mp ON m.id = mp.userId\n"
 				+ "LEFT JOIN (\n"
-				+ "    SELECT ua.userId, ach.title\n"
+				+ "    SELECT ua.userId, ach.*\n"
 				+ "    FROM userAchievement ua\n"
 				+ "    JOIN Achievement ach ON ua.achiev_seq = ach.seq\n"
 				+ "    WHERE ua.isEquip = 'Y'\n"
@@ -291,7 +296,13 @@ public class MemberDAO {
 				return new SimpleUserProfileDTO(
 						rs.getString("userId"),
 						rs.getString("profileImage"),
-						rs.getString("equipedAchiev"),
+						new AchievementDTO(0,
+								rs.getString("eqipedAchievId"),
+								"🏆"+ rs.getString("equipedAchievTitle"),
+								rs.getString("equipedAchievDescription"),
+								rs.getString("equipedAchievImgUrl"), 
+								rs.getInt("equipedAchievGameSeq"),
+								0 ),
 						rs.getString("category")
 						);
 			}
@@ -364,12 +375,16 @@ public class MemberDAO {
 	public SimpleUserProfileDTO getSimpleUserProfile(String userId) {
 		String sql = 
 				"SELECT m.id AS userId, " +
-						"       mp.profileImage, " +
-						"       NVL(a.title, '업적 칭호 없음') AS equipedAchiev " +
+						"       mp.profileImage, " 
+						+ "       NVL(a.id, '업적 칭호 없음') AS eqipedAchievId,\n"
+						+ "       NVL(a.title, '업적 칭호 없음') AS equipedAchievTitle,\n"
+						+ "       NVL(a.DESCRIPTION, '업적 칭호 없음') AS equipedAchievDescription,\n"
+						+ "       NVL(a.GAME_SEQ, 0) AS equipedAchievGameSeq,\n"
+						+ "       NVL(a.ICON_URL, '업적 칭호 없음') AS equipedAchievImgUrl\n"+
 						"FROM members m " +
 						"LEFT JOIN member_profiles mp ON m.id = mp.userID " +
 						"LEFT JOIN ( " +
-						"    SELECT ua.userid, ach.title " +
+						"    SELECT ua.userid, ach.* " +
 						"    FROM userAchievement ua " +
 						"    JOIN Achievement ach ON ua.achiev_seq = ach.seq " +
 						"    WHERE ua.isEquip = 'Y' " +
@@ -384,8 +399,16 @@ public class MemberDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					String profileImage = rs.getString("profileImage");
-					String equipedAchiev = rs.getString("equipedAchiev");
-					return new SimpleUserProfileDTO(userId, profileImage, "🏆"+equipedAchiev,null);
+				
+					AchievementDTO achievDTO = new AchievementDTO(0,
+							rs.getString("eqipedAchievId"),
+							 "🏆"+ rs.getString("equipedAchievTitle"),
+							rs.getString("equipedAchievDescription"),
+							rs.getString("equipedAchievImgUrl"), 
+							rs.getInt("equipedAchievGameSeq"),
+							0 );
+					
+					return new SimpleUserProfileDTO(userId, profileImage,achievDTO,null);
 				}
 			}
 
@@ -408,12 +431,16 @@ public class MemberDAO {
 
 		String sql = 
 				"SELECT m.id AS userId, " +
-						"       mp.profileImage, " +
-						"       NVL(a.title, '업적 칭호 없음') AS equipedAchiev " +
+						"       mp.profileImage, " 
+						+ "       NVL(a.id, '업적 칭호 없음') AS eqipedAchievId,\n"
+						+ "       NVL(a.title, '업적 칭호 없음') AS equipedAchievTitle,\n"
+						+ "       NVL(a.DESCRIPTION, '업적 칭호 없음') AS equipedAchievDescription,\n"
+						+ "       NVL(a.GAME_SEQ, 0) AS equipedAchievGameSeq,\n"
+						+ "       NVL(a.ICON_URL, '업적 칭호 없음') AS equipedAchievImgUrl,\n"+
 						"FROM members m " +
 						"LEFT JOIN member_profiles mp ON m.id = mp.userID " +
 						"LEFT JOIN ( " +
-						"    SELECT ua.userid, ach.title " +
+						"    SELECT ua.userid, ach.* " +
 						"    FROM userAchievement ua " +
 						"    JOIN Achievement ach ON ua.achiev_seq = ach.seq " +
 						"    WHERE ua.isEquip = 'Y' " +
@@ -434,8 +461,14 @@ public class MemberDAO {
 				while (rs.next()) {
 					String userId = rs.getString("userId");
 					String profileImage = rs.getString("profileImage");
-					String equipedAchiev = rs.getString("equipedAchiev");
-					result.add(new SimpleUserProfileDTO(userId, profileImage,"🏆"+ equipedAchiev, null));
+					AchievementDTO achievDTO = new AchievementDTO(0,
+							rs.getString("eqipedAchievId"),
+							 "🏆"+ rs.getString("equipedAchievTitle"),
+							rs.getString("equipedAchievDescription"),
+							rs.getString("equipedAchievImgUrl"), 
+							rs.getInt("equipedAchievGameSeq"),
+							0 );
+					result.add(new SimpleUserProfileDTO(userId, profileImage, achievDTO, null));
 				}
 			}
 

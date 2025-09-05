@@ -247,8 +247,24 @@ h3 {
 	          
 	            achievSeq: achievSeq
 	        },
-	        success: function(response) {
-	            alert("칭호가 장착되었습니다!");
+	        success: function() {
+	        	if (confirm("칭호 이미지를 프로필 사진으로 설정하시겠습니까?")) {
+	        	    $.ajax({
+	        	        url: "/api/achievement/setEquipImage",
+	        	        type: "POST",
+	        	        success: function(response) {
+	        	            alert("교체에 성공했습니다.");
+	        	        },
+	        	        error: function() {
+	        	            alert("프로필 이미지 교체에 실패했습니다.");
+	        	        }
+	        	    });
+	        	}
+
+	        	 else{   //취소
+
+	        	 }
+	        	
 	            // 필요 시 UI 업데이트
 	            location.reload(); // 페이지 새로고침
             
@@ -270,7 +286,7 @@ h3 {
 		    	console.log(data);
 		      $("#profileImage").attr("src", data.profileImage);
 		      $("#loginId").text(data.userID);
-		      $("#equipedAchiev").text("${simpleProfile.equipedAchiev}" || "장착 업적 없음");
+		      $("#equipedAchiev").text("${simpleProfile.achievDTO.title}" || "장착 업적 없음");
 		      $("#bioInput").val(data.bio);
 		      $("#statusInput").val(data.statusMessage);
 		    }

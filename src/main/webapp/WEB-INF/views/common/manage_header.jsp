@@ -49,7 +49,7 @@
 									class="rounded-circle me-2" width="40" height="40"> <!-- 아이디와 칭호 -->
 									<div class="d-none d-md-block text-end">
 										<div class="fw-bold text-purple">${loginId}</div>
-										<div class="text-muted">${simpleProfile.equipedAchiev}</div>
+										<div class="text-muted">${simpleProfile.achievDTO.title}</div>
 									</div>
 								</a>
 								<ul class="dropdown-menu dropdown-menu-end"

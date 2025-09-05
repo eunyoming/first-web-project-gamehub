@@ -141,18 +141,19 @@ public class AchievementController extends HttpServlet {
 	        	 
 
 	        	 
-	             String title=  AchievementDAO.getInstance().equipTitle(loginId, achievSeq);
+	             AchievementDTO achieveDTO=  AchievementDAO.getInstance().equipAchievement(loginId, achievSeq);
 	             
 	             SimpleUserProfileDTO simpleProfile = (SimpleUserProfileDTO) request.getSession().getAttribute("simpleProfile");
 
-	             System.out.println(simpleProfile.getEquipedAchiev());
+	             System.out.println(simpleProfile.getAchievDTO().getIconUrl());
 	             
-	             if (simpleProfile != null && title != null) {
-	                 simpleProfile.setEquipedAchiev(title); // 필드 업데이트
+	             
+	             if (simpleProfile != null && achieveDTO != null) {
+	                 simpleProfile.setAchievDTO(achieveDTO); // 필드 업데이트
 	             }
 
 	              
-	             boolean success = (title != null);
+	             boolean success = (achieveDTO != null);
 
 	             response.setContentType("application/json");
 	             response.getWriter().write("{\"success\": " + success + "}");
@@ -163,7 +164,23 @@ public class AchievementController extends HttpServlet {
 	        	String userId = request.getParameter("userId");
 	      
 	        	response.setContentType("application/json; charset=UTF-8");
-	        	response.getWriter().write("{\"data\": " + MemberDAO.getInstance().getSimpleUserProfile(userId).getEquipedAchiev()+ "}");
+	        	response.getWriter().write("{\"data\": " + MemberDAO.getInstance().getSimpleUserProfile(userId).getAchievDTO().getTitle()+ "}");
+	      
+	        }else if(path.equals("/setEquipImage")) {
+	        	 SimpleUserProfileDTO simpleProfile = (SimpleUserProfileDTO) request.getSession().getAttribute("simpleProfile");
+
+	        	    boolean success = MemberDAO.getInstance().updateProfileImage(
+	        	        simpleProfile.getUserId(),
+	        	        simpleProfile.getAchievDTO().getIconUrl()
+	        	    );
+
+	        	    if(success) {
+	        	        simpleProfile.setProfileImage(simpleProfile.getAchievDTO().getIconUrl());
+	        	    }
+
+	        	    response.setContentType("application/json");
+	        	    response.getWriter().write("{\"success\": " + success + "}");
+
 	        }
 			
 		}catch(Exception e) {

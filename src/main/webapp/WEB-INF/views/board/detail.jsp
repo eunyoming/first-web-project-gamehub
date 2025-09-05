@@ -325,7 +325,7 @@
             // 작성자 프로필
             $("#writer_profile_img").attr("src", resp.writerProfile.profileImage); // 이미지 없을 경우 대비
             $("#writer_userId").text(resp.writerProfile.userId);
-            $("#writer_achiev").text(resp.writerProfile.equipedAchiev);
+            $("#writer_achiev").text(resp.writerProfile.achievDTO.title);
 
          // 버튼 조합
             const isWriter = loginId === resp.writerProfile.userId;

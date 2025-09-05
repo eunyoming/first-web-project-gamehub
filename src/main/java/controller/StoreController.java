@@ -167,6 +167,15 @@ public class StoreController extends HttpServlet {
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write("{\"success\":" + inserted + "}");
 
+			}else if(path.equals("/top5")) {
+				List<PointStoreDTO> topItems = StoreDAO.getInstance().getTop5PopularItems();
+
+			    String json = gson.toJson(topItems);
+
+			    response.setContentType("application/json; charset=UTF-8");
+			    response.getWriter().write(json);
+			
+
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

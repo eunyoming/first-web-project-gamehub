@@ -662,6 +662,7 @@
 			
 		});
 		
+
 		// #gameReviewWriteBox 요소를 가져옵니다.
 	      const reviewWriteBox = document.getElementById('gameReviewWriteBox');
 
@@ -675,5 +676,6 @@
 	          }
 	      });
 		
+
 	</script>
 </div>

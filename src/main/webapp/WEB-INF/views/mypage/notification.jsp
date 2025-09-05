@@ -165,24 +165,24 @@
 			        		        window.location.href = "/api/point/pointPage";
 			        		        break;
 			        		    case "friend":
-			        		        console.log('friend입니다.'); // a는 2입니다.
+			        		        console.log('friend입니다.'); 
 			        		        window.location.href = "/api/member/mypage?userId=${loginId}&section=friend";
 			        		        break;
 			        		    case "achievement":
-			        		        console.log('achievement입니다.'); // a는 2입니다.
+			        		        console.log('achievement입니다.'); 
 			        		        window.location.href = "/api/member/mypage?userId=${loginId}&section=collection";
 			        		        break;
 			        		    case "point":
-			        		        console.log('point입니다.'); // a는 2입니다.
-			        		        window.location.href = "#";
+			        		        console.log('point입니다.'); 
+			        		        window.location.href = "/api/member/mypage?userId=${loginId}&section=point";
 			        		        break;
 			        		    case "chat":
-				        		    console.log('chat입니다.'); // a는 2입니다.
-				        		    window.location.href = "/chat/open";
+				        		    console.log('chat입니다.'); 
+				        		    window.location.href = "/chat/open?friendId="+item.related_userId;
 				        		    break;
 			        		    case "reply":
-				        		    console.log('reply입니다.'); // a는 2입니다.
-				        		    window.location.href = "/detailPage.board?seq=" + item.seq;
+				        		    console.log('reply입니다.'); 
+				        		    window.location.href = "/detailPage.board?seq="+item.related_objectId;
 				        		    break;
 			        		    default:
 			        		    	dropa.attr({"class":"dropdown-item","href":"#"})

@@ -21,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import commons.NotificationSender;
 import dao.FriendDAO;
 import dao.FriendDAO.FriendshipStatus;
 import dto.friend.FriendshipDTO;
@@ -84,7 +85,12 @@ public class FriendController extends HttpServlet {
 		        
 		        boolean success =friendDAO.requestFriend(fromUser, toUser);
 		        if(success) {
+		        	NotificationSender.send(toUser,"friend",fromUser+"님이 친구 요청을 하셨습니다.",null,null);	
+		        	
+		        	
 			        request.getRequestDispatcher("/api/member/mypage?section=collection&userId="+toUser).forward(request, response);
+			        
+			        
 		        }else {
 		        	if(friendDAO.isAlreadyRequested(fromUser, toUser)) {
 		        		response.sendRedirect("/error?alreadyFriend");
@@ -97,6 +103,7 @@ public class FriendController extends HttpServlet {
 
 			}else if ("/sent-requests".equals(path)) {
                 resultList = friendDAO.selectFriendShipRequestsByID(currentUserId);
+                
                 String jsonResult = gson.toJson(resultList);
                 response.getWriter().write(jsonResult);
                 
@@ -125,6 +132,9 @@ public class FriendController extends HttpServlet {
 
             	if (success) {
                     // 성공 응답
+            		
+            		NotificationSender.send(targetId,"friend",currentUserId+"님이 친구 요청 수락을 하셨습니다.",null,null);
+            		
                     response.setStatus(HttpServletResponse.SC_OK);
                     response.getWriter().write("{\"status\":\"success\", \"message\":\"친구 요청이 수락되었습니다.\"}");
                 } else {

@@ -51,6 +51,7 @@ request.setAttribute("pageTitle", "메인페이지");
 
 .strips__strip:nth-child(1) .strip__content {
 	background-image: url("/games/game1/assets/image/gameTitle.png");
+	background-size: cover;
 	background-position: center;
 	transform: translate3d(-100%, 0, 0);
 }
@@ -79,8 +80,10 @@ request.setAttribute("pageTitle", "메인페이지");
 }
 
 .strips__strip:nth-child(5) .strip__content {
-	background: linear-gradient(to right, var(--main-color) 0%,
-		var(--accent-color) 100%);
+	background-image: url("/games/game5/thumbnails/thumbnails.png");
+	background-size: cover;
+	background-position: center;
+
 	transform: translate3d(100%, 0, 0);
 }
 
@@ -276,7 +279,7 @@ h2 {
 						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
-						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
+						<video src="/games/game1/thumbnails/gamevideo.mp4" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=1" > <button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
@@ -361,7 +364,6 @@ h2 {
 						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
-						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=5"><button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
@@ -423,8 +425,20 @@ h2 {
 </section>
 
 
-<section class="container-fluid p-5 main-section bg-main-stacked">
-<p>섹션3</p>
+<section class="container-fluid p-5 main-section2 bg-main-stacked">
+ <div class="welcome-box3 text-center mb-5">
+      <h1 class="font_YeogiOttae mb-5">
+        <span class="line fw-bolder">상점에서 가장</span>
+        <span class="line fw-bolder">인기있는 아이템은 과연...?</span>
+      </h1>
+      <div class ="storeTop5 mb-5">
+
+	  </div>
+	  <div class="top1Item font_gowooDodum"> 
+	  </div>
+  
+    </div>
+
 
 </section>
 
@@ -438,7 +452,8 @@ h2 {
 	src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-..."
   crossorigin="anonymous"
   referrerpolicy="no-referrer"></script>
-	
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>	
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.2/dist/vanilla-tilt.min.js"></script>
 <script>
 
 $(document).ready(function(){
@@ -544,6 +559,21 @@ gsap.utils.toArray(".welcome-box2 .line").forEach((el, i) => {
 	  gsap.to(el, {
 	    scrollTrigger: {
 	      trigger: ".welcome-box2",
+	      start: "top 70%",
+	      toggleActions: "play none none none"
+	    },
+	    opacity: 1,
+	    y: 0,
+	    duration: 0.8,
+	    delay: i * 0.5,
+	    ease: "power2.out"
+	  });
+	});
+	
+gsap.utils.toArray(".welcome-box3 .line").forEach((el, i) => {
+	  gsap.to(el, {
+	    scrollTrigger: {
+	      trigger: ".welcome-box3",
 	      start: "top 70%",
 	      toggleActions: "play none none none"
 	    },
@@ -666,16 +696,35 @@ $.ajax({
     const container = $("#imageContainer");
     container.empty();
 
-    images.forEach((src, index) => {
-    	  const wrapper = $('<div>', { class: 'image-wrapper' });
-    	  const img = $('<img>', {
-    	    src: src,
-    	    class: 'img-fluid gsap-img',
-    	    css: { opacity: 0, transform: 'translateY(50px)' }
+    images.forEach((src) => {
+      // tilt 적용할 wrapper
+      const wrapper = $('<div>', { 
+        class: 'image-wrapper ', 
+        'data-tilt': '' 
+      });
+
+      // 카드 이미지
+      const img = $('<img>', {
+        src: src,
+        class: 'img-fluid gsap-img',
+        css: { opacity: 0, transform: 'translateY(50px)' }
+      });
+
+      wrapper.append(img);
+      container.append(wrapper);
+    });
+
+    setTimeout(() => {
+    	  VanillaTilt.init(document.querySelectorAll(".image-wrapper[data-tilt]"), {
+    	    max: 20,
+    	    speed: 400,
+    	    glare: true,
+    	    "max-glare": 0.8,
+    	    gyroscope: true
     	  });
-    	  wrapper.append(img);
-    	  container.append(wrapper);
-    	});
+    	}, 1500); // 1.5초 뒤에 초기화
+
+   
 
     // GSAP ScrollTrigger 애니메이션
     gsap.registerPlugin(ScrollTrigger);
@@ -694,12 +743,87 @@ $.ajax({
         }
       });
     });
+    
+    const $container = $('.image-wrapper');
+    for (let i = 0; i < 30; i++) { // 스파클 30개 생성
+        const $star = $('<span class="sparkle"></span>');
+
+        // 랜덤 위치
+        $star.css({
+            top: Math.random() * 100 + '%',
+            left: Math.random() * 100 + '%',
+            animationDelay: (Math.random() * 3) + 's',
+            animationDuration: (1 + Math.random() * 2) + 's'
+        });
+
+        $container.append($star);
+    }
+        
+    
+  
   },
   error: function() {
     alert("이미지를 불러오는 데 실패했습니다.");
   }
 });
+	
+	
+$.ajax({
+    url: "/api/store/top5",
+    type: "GET",
+    dataType: "json",
+    success: function(data) {
+        console.log("인기 아이템 목록:", data);
+        
+        const container = $(".storeTop5");
+        
+        data.slice().reverse().forEach((item, index) => {
+            // 이미지 엘리먼트 생성
+            const img = $('<img src="'+item.url+'" class="fly-image" />');
+            container.append(img);
 
-        </script>
+            // 화면 바깥 랜덤 위치 설정 (좌/우, 위/아래)
+            const startX = Math.random() < 0.5 ? -300 : $(window).width() + 300;
+            const startY = Math.random() * $(window).height() - 100;
+
+            // GSAP 애니메이션
+            gsap.from(img, {
+                scrollTrigger: {
+                    trigger: container[0],
+                    start: "top 80%", // 컨테이너가 화면에 80% 올라올 때
+                    toggleActions: "play none none none"
+                },
+                x: startX,
+                y: startY,
+                opacity: 0,
+                scale: 0.5,
+                duration: 1.5 + Math.random(),
+                delay: index * 0.2,
+                ease: "power3.out",
+                onComplete: () => {
+                    // 첫 번째 이미지만 정보 추가
+                    if (index === data.length - 1) {
+                        var info = $('<a href="/api/point/pointPage" class="text-decoration-none text-black"><div class="item-info text-center ">' +
+                                        '<h3>' + item.itemName + '</h3>' +
+                                        '<p>' + item.contents + '</p>' +
+                                        '<strong>포인트 : ' + item.price.toLocaleString() + '</strong>' +
+                                     '</div></a>');
+                        $(".top1Item").append(info);
+                        gsap.from(info, {opacity: 0, x: 20, duration: 0.8, ease: "power2.out"});
+                    }
+                }
+            });
+        });
+        
+        
+        
+    },
+    error: function() {
+        alert("인기 아이템을 불러오지 못했습니다.");
+    }
+});
+    </script>
+   
+        
 <!-- </body></html> -->
 <jsp:include page="/WEB-INF/views/common/footer.jsp" />

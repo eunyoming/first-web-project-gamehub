@@ -228,12 +228,17 @@ public class StoreDAO {
 	
 	//가장 많이 팔린 5개의 아이템을 추출하는 함수
 	public List<PointStoreDTO> getTop5PopularItems() {
-	    String sql = "SELECT ps.seq, ps.itemname, ps.price, ps.url, ps.contents, ps.created_at " +
-	                 "FROM pointStore ps " +
-	                 "JOIN (SELECT item_seq, COUNT(*) AS cnt FROM pointpurchase GROUP BY item_seq) pp " +
-	                 "ON ps.seq = pp.item_seq " +
-	                 "ORDER BY pp.cnt DESC, ps.created_at DESC " +
-	                 "FETCH FIRST 5 ROWS ONLY";
+	    String sql = "SELECT * FROM (\r\n"
+	    		+ "    SELECT ps.seq, ps.itemname, ps.price, ps.url, ps.contents, ps.created_at\r\n"
+	    		+ "    FROM pointStore ps\r\n"
+	    		+ "    JOIN (\r\n"
+	    		+ "        SELECT item_seq, COUNT(*) AS cnt\r\n"
+	    		+ "        FROM pointpurchase\r\n"
+	    		+ "        GROUP BY item_seq\r\n"
+	    		+ "    ) pp ON ps.seq = pp.item_seq\r\n"
+	    		+ "    ORDER BY pp.cnt DESC, ps.created_at DESC\r\n"
+	    		+ ")\r\n"
+	    		+ "WHERE ROWNUM <= 5";
 
 	    List<PointStoreDTO> list = new ArrayList<>();
 

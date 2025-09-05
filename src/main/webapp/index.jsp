@@ -645,7 +645,7 @@ if ('scrollRestoration' in history) {
 	  history.scrollRestoration = 'manual';
 	}
 $.ajax({
-	  url: '/api/manage/total-board-count',
+	  url: '/total-board-count.board',
 	  method: 'GET',
 	  dataType: 'json',
 	  success: function(data) {

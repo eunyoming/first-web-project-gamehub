@@ -1,5 +1,7 @@
 package dto.member;
 
+import dto.game.AchievementDTO;
+
 public class SimpleUserProfileDTO {
 	
 	//심플유저프로필 DTO는 딱 세가지 필드로 구성됩니다.
@@ -8,14 +10,14 @@ public class SimpleUserProfileDTO {
 	
 	 private String userId;
 	  private String profileImage;
-	  private String equipedAchiev;
+	  private AchievementDTO achievDTO;
 	  private String category;
 
 	    // 생성자
-	    public SimpleUserProfileDTO(String userId, String profileImage, String equipedAchiev, String category) {
+	    public SimpleUserProfileDTO(String userId, String profileImage, AchievementDTO achievDTO, String category) {
 	        this.userId = userId;
 	        this.profileImage = profileImage;
-	        this.equipedAchiev = equipedAchiev;
+	        this.achievDTO = achievDTO;
 	        this.category = category;
 	    }
 
@@ -36,13 +38,14 @@ public class SimpleUserProfileDTO {
 	        this.profileImage = profileImage;
 	    }
 
-	    public String getEquipedAchiev() {
-	        return equipedAchiev;
-	    }
 
-	    public void setEquipedAchiev(String equipedAchiev) {
-	        this.equipedAchiev = equipedAchiev;
-	    }
+		public AchievementDTO getAchievDTO() {
+			return achievDTO;
+		}
+
+		public void setAchievDTO(AchievementDTO achievDTO) {
+			this.achievDTO = achievDTO;
+		}
 
 		public String getCategory() {
 			return category;

@@ -299,14 +299,6 @@ public class ManagerController extends HttpServlet {
 		        
 				
 				
-			}else if(path.equals("/total-board-count")) {
-				
-
-				response.setContentType("application/json");
-				response.setCharacterEncoding("UTF-8");
-
-				response.getWriter().write("{\"count\":" + BoardDAO.getInstance().getRecordTotalCount() + "}");
-				
 			}else if(path.equals("/updateGameComment")) {
 				
 				request.setCharacterEncoding("UTF-8");

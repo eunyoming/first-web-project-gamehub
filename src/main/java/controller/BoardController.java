@@ -342,6 +342,14 @@ public class BoardController extends HttpServlet {
 			    request.setAttribute("navi", navi);
 
 			    request.getRequestDispatcher("/WEB-INF/views/board/Q&A.jsp").forward(request, response);
+			}else if(cmd.equals("/total-board-count.board")) {
+				
+
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+
+				response.getWriter().write("{\"count\":" + BoardDAO.getInstance().getRecordTotalCount() + "}");
+				
 			}
 
 

@@ -150,7 +150,7 @@ function loadReportData() {
         		            '<a href="/api/member/mypage?section=collection&userId=' + targetUser.userId + '" class="text-decoration-none">' +
         		                '<div class="fw-bold text-red">' + targetUser.userId + '</div>' +
         		            '</a>' +
-        		            '<div class="text-muted">' + targetUser.equipedAchiev + '</div>' +
+        		            '<div class="text-muted">' + targetUser.achievDTO.title + '</div>' +
         		        '</div>' +
         		    '</div>';
 
@@ -223,7 +223,7 @@ function loadBannedData() {
                             '<a href="/api/member/mypage?section=collection&userId=' + profile.userId + '" class="text-decoration-none">' +
                                 '<div class="fw-bold text-purple">' + profile.userId + '</div>' +
                             '</a>' +
-                            '<div class="text-muted">' + profile.equipedAchiev + '</div>' +
+                            '<div class="text-muted">' + profile.achievDTO.title + '</div>' +
                             '<div class="text-muted small">차단 사유: ' + ban.bannedReason + '</div>' +
                             '<div class="text-muted small">차단 만료: <span id="banned-time-' + profile.userId + '">' + formatRemainingTime(ban.bannedUntil) + '</span></div>' +
                         '</div>' +

@@ -66,7 +66,35 @@ request.setAttribute("pageTitle", "게시판 리스트");
 				<c:forEach var="dto" items="${list}">
 					<div class="row board-item g-0">
 						<div class="col-1">${dto.seq}</div>
-						<div class="col-1">[ ${dto.category} ]</div>
+						<div class="col-1">
+							<c:choose>
+								<c:when test="${dto.category == '전체'}">
+									<span class="badge btn-gradient btn-blue-purple me-1">
+									 ${dto.category}
+									</span>
+								</c:when>
+								<c:when test="${dto.category == '자유'}">
+									<span class="badge btn-gradient btn-green-peach me-1">
+									 ${dto.category}
+									</span>
+								</c:when>
+								<c:when test="${dto.category == '공략'}">
+									<span class="badge btn-gradient btn-navy-blue me-1">
+									 ${dto.category}
+									</span>
+								</c:when>
+								<c:when test="${dto.category == '기타'}">
+									<span class="badge btn-gradient btn-yellow-green me-1">
+									 ${dto.category}
+									</span>
+								</c:when>
+								<c:otherwise>
+									<span class="badge btn-gradient btn-red-blue me-1">
+									 ${dto.category}
+									</span>
+								</c:otherwise>
+							</c:choose>
+						</div>
 						<div class="col-2">
 							<c:choose>
 							    <c:when test="${dto.refgame == '스페이스 배틀'}">

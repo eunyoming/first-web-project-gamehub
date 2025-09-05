@@ -9,8 +9,7 @@ class GameOverScene extends Phaser.Scene {
 		this.ending = data.ending;
 		this.startTime = data.startTime;
 		this.endTime = data.endTime;
-		console.log('GameOverScene init:', data);
-		// ✅ 점수 기반 포인트 계산 (100분의 1, 최대 300포인트)
+		// 점수 기반 포인트 계산 (100분의 1, 최대 300포인트)
 		this.finalPoint = Math.min(300, Math.floor(this.finalScore / 100));
 	}
 
@@ -27,8 +26,6 @@ class GameOverScene extends Phaser.Scene {
 
 		};
 
-		console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
-
 		$.ajax({
 			url: "/api/game/recordInsert",
 			contentType: "application/json",
@@ -37,7 +34,7 @@ class GameOverScene extends Phaser.Scene {
 
 		}).done(function(resp) {
 
-			console.log(resp);
+			// console.log(resp);
 
 		});
 
@@ -55,13 +52,6 @@ class GameOverScene extends Phaser.Scene {
 				console.error("에러 발생:", xhr.responseText);
 			}
 		});
-
-		// 움직인 px 가져오기
-		const movedDist = data.totalMovedDist || 0;
-		// 업적 체크 300px 움직이면
-		if (movedDist >= 300) this.unlockAchievement("MEOW_WALKER");
-		console.log('생존 시간 확인:', this.finalTime);
-
 		// 1. 배경 꽉 채우기
 		this.add.image(400, 400, "background")
 			.setDisplaySize(800, 800)
@@ -152,7 +142,8 @@ class GameOverScene extends Phaser.Scene {
 
 		// 사망 관련 업적
 		if (mainScene.deathCount === 1) mainScene.unlockAchievement("MEOW_FIRST_DEATH");
-
+		
+		console.log("죽은 횟수 : " + mainScene.deathCount);
 		// ⏱ 생존 시간 업적 체크
 		const survivedSeconds = Math.floor(this.finalTime / 1000);
 
@@ -160,7 +151,8 @@ class GameOverScene extends Phaser.Scene {
 		if (survivedSeconds >= 60) mainScene.unlockAchievement("MEOW_SURVIVE_1M");
 		if (survivedSeconds >= 120) mainScene.unlockAchievement("MEOW_SURVIVE_2M");
 		if (survivedSeconds >= 180) mainScene.unlockAchievement("MEOW_SURVIVE_3M");
-
+		if (survivedSeconds >= 300) mainScene.unlockAchievement("MEOW_SURVIVE_5M");
+		
 		for (const id in achievements) {
 			const ach = achievements[id];
 			if (!mainScene.unlockedAchievements.has(id) && ach.condition(mainScene)) {

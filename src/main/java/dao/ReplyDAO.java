@@ -166,7 +166,7 @@ public class ReplyDAO {
 	// delete
 	public int deleteRepliesBySeq(int seq) throws Exception {
 		String checkSql = "select parent_seq from replies where seq = ?";
-		String softDeleteSql = "update replies set contents = '삭제된 댓글입니다.', visibility = 'deleted' where seq = ?";
+		String softDeleteSql = "update replies set visibility = 'deleted' where seq = ?";
 		String hardDeleteSql = "delete from replies where seq = ?";
 
 		try (Connection con = this.getConnection()) {

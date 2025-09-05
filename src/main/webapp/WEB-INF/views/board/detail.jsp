@@ -67,25 +67,29 @@
             </div>
         </div>
         <div class="col-4 header-btns">
-            <div class="left-btn">
-                <!-- 공유 버튼 -->
-				<button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">
-				    <i class="bi bi-share"></i> 공유하기
-				</button>
-            </div>
-            <div class="right-btn">
-                <button class="btn" id="report_btn" data-bs-toggle="modal" data-bs-target="#boardModal">
-                    <img src="/asset/img/siren.png"> 신고하기
-                </button>
-            </div>
+	        <c:if test = "${loginUserProfileDTO.category eq 'user'}">
+	            <div class="left-btn">
+	                <!-- 공유 버튼 -->
+					<button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">
+					    <i class="bi bi-share"></i> 공유하기
+					</button>
+	            </div>
+	            <div class="right-btn">
+	                <button class="btn" id="report_btn" data-bs-toggle="modal" data-bs-target="#boardModal">
+	                    <img src="/asset/img/siren.png"> 신고하기
+	                </button>
+	            </div>
+	        </c:if>
         </div>
     </div>
     <!-- 글 내용 -->
     <div class="row contents">
         <div class="col-12 content" id="board_content"></div>
-        <!-- 버튼들 -->
-        <div class="col-12 board_btns d-flex justify-content-center align-items-center">
-        </div>
+	        <!-- 버튼들 -->
+	        <c:if test = "${loginUserProfileDTO.category eq 'user'}">
+		        <div class="col-12 board_btns d-flex justify-content-center align-items-center">
+		        </div>
+	        </c:if>
     </div>
     <div class="reply-count">댓글 ${dto.replyCount}개</div>
     <!-- 댓글 컨테이너 -->
@@ -263,6 +267,7 @@
     // 사용할 전역변수 모음
     let loginId = '${loginId}';
     console.log("loginId : " + loginId);
+   	let userCategory = '';
 	
     let currentTitle = '';
     let currentCategory = "";
@@ -281,8 +286,10 @@
             method: "GET",
             dataType: "json"
         }).done(function (resp) { // board detail 값 채워주는 function
-            
+        	
+        	// 로그인 유저 정보
         	loginId = resp.loginId;
+			userCategory = resp.userCategory;
         
             // 게시글 정보
             $("#board_category_refgame").text("[ " + resp.boardDto.category + " ] | [ " + resp.boardDto.refgame + " ]");
@@ -326,8 +333,8 @@
             $("#writer_profile_img").attr("src", resp.writerProfile.profileImage); // 이미지 없을 경우 대비
             $("#writer_userId").text(resp.writerProfile.userId);
             $("#writer_achiev").text(resp.writerProfile.achievDTO.title);
-
-         // 버튼 조합
+            
+         	// 버튼 조합
             const isWriter = loginId === resp.writerProfile.userId;
             const board_btns = $(".board_btns");
             board_btns.empty();
@@ -1272,7 +1279,15 @@
 		
      	// 처음에는 무조건 빈 하트
         let likeIcon = "bi-heart";
-        
+     	
+     	// 추천 버튼
+     	let likeBtn = '';
+     	if(userCategory === 'user'){
+     		'<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
+            '<i class="bi ' + likeIcon + '"></i> ' + likeCount +
+            '</button>'
+     	}
+     		
         // 작성자 일 때 수정, 삭제 버튼
         let controlBtns = '';
         if (isWriter) {
@@ -1280,14 +1295,16 @@
             controlBtns += '<button class="btn btn-outline-red-main reply-delete_btn" data-reply-seq="' + reply.seq + '">삭제</button>';
         }
 		
-     	// 신고 버튼은 작성자가 아닐 때만 표시
+     	// 신고 버튼은 일반 유저들과 작성자가 아닐 때만 표시
         let reportBtn = '';
-        if (!isWriter) {
-            reportBtn =
-                '<button class="btn btn-outline-red-main reply-report_btn" data-bs-toggle="modal" data-bs-target="#boardModal" data-reply-seq="' + reply.seq + '">' +
-                '<img src="/asset/img/siren.png" style="width:16px; height:16px;">' +
-                '</button>';
-        }
+     	if(userCategory === 'user'){
+     		if (!isWriter) {
+                reportBtn =
+                    '<button class="btn btn-outline-red-main reply-report_btn" data-bs-toggle="modal" data-bs-target="#boardModal" data-reply-seq="' + reply.seq + '">' +
+                    '<img src="/asset/img/siren.png" style="width:16px; height:16px;">' +
+                    '</button>';
+            }
+     	}
         
         let inputBtn = '<button class="btn btn-outline-red-main subReply-input_btn" data-reply-seq="' + reply.seq + '" data-parent-seq="' + reply.seq + '" data-writer="' + reply.writer + '">답글</button>';
 
@@ -1297,7 +1314,19 @@
         }
 
         let hiddenClass = hidden ? ' d-none' : '';
-
+		
+        // 사용자 권한에 따라 댓글 내용 보여주기
+        let contentsHtml = '';
+		if (reply.visibility === 'deleted') {
+		    if (userCategory === 'Manager') {
+		        contentsHtml = '(삭제된 댓글) ' + reply.contents; // 원문이 남아있어야 가능
+		    } else {
+		        contentsHtml = '삭제된 댓글입니다.';
+		    }
+		} else {
+		    contentsHtml = reply.contents;
+		}
+        
         let replyHtml =
             '<div class="reply-box mb-2' + hiddenClass + '" data-depth="' + depth + '" data-reply-seq="' + reply.seq + '" style="' + style + '">' +
             '<div class="row reply-header g-0">' +
@@ -1305,16 +1334,14 @@
             mention + reply.writer +
             '</div>' +
             '<div class="col-4 reply-header_btns text-end">' +
-            '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
-            '<i class="bi ' + likeIcon + '"></i> ' + likeCount +
-            '</button>' +
+            likeBtn +
             reportBtn +
             controlBtns +
             '</div>' +
             '</div>' +
             '<div class="row reply-contents g-0 mt-1">' +
             '<div class="col-8 reply-left_content" contenteditable="false">' +
-            reply.contents +
+            contentsHtml +
             '</div>' +
             '<div class="col-4 reply-right-content text-end">' +
             inputBtn +

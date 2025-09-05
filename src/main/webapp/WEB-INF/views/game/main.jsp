@@ -71,7 +71,6 @@ const config = {
 const game = new Phaser.Game(config);
 </script>
 
-
 		</c:when>
 		<c:when test="${param.game_seq == '2'}">
 			<c:set var="imgPath" value="/games/game2/" />
@@ -117,7 +116,51 @@ const game = new Phaser.Game(config);
     let game = new Phaser.Game(config);
     </script>
 		</c:when>
+		<c:when test="${param.game_seq == '3'}">
+		<c:set var="imgPath" value="/games/game3/" />
+		<c:set var="loginId" value="${loginId}" />
 
+	<script>
+    const IMG_PATH = "${imgPath}";
+    const loginId = "${loginId}";
+	</script>
+			<script src="/games/achievementPopup.js"></script>
+			
+			<script src="/games/game3/achievements.js"></script>
+			<script src="/games/game3/StartScene.js"></script>
+			<script src="/games/game3/MainScene.js"></script>
+			<script src="/games/game3/GameOverScene.js"></script>
+			<script>
+    
+		    const GAME_WIDTH = 800;
+		    const GAME_HEIGHT = 800;
+		      const config = {
+		        type: Phaser.AUTO,
+		        width: GAME_WIDTH,
+		        height: GAME_HEIGHT,
+		        parent: "gamebox",
+		        backgroundColor: "#ffffff",
+		        physics: {
+		          default: "matter",
+		          matter: {
+		            debug: false,
+		            gravity: { y: 0 },
+		          },
+		          fps: {
+		              target: 60,
+		              forceSetTimeOut: true
+		          },
+		        },
+		        scene: [StartScene, MainScene, GameOverScene],
+		        scale: {
+		          mode: Phaser.Scale.NONE, // 크기 강제로 고정
+		          autoCenter: Phaser.Scale.CENTER_BOTH, // 항상 가운데 정렬
+		        },
+		      };
+		      new Phaser.Game(config);
+		    </script>
+		  </body>
+		</c:when>
 		<c:when test="${param.game_seq == '4'}">
 			<c:set var="imgPath" value="/games/game4/" />
 			<c:set var="loginId" value="${loginId}" />
@@ -128,7 +171,8 @@ const game = new Phaser.Game(config);
     const loginId = "${loginId}";
 	</script>
 			<script src="/games/achievementPopup.js"></script>
-
+	
+			
 			<script src="/games/game4/GameIntro.js"></script>
 			<script src="/games/game4/tetris.js"></script>
 			<script src="/games/game4/Gameover.js"></script>

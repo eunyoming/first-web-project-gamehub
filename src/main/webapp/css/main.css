@@ -354,6 +354,7 @@ body{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+
   justify-items: center;
 }
 
@@ -366,7 +367,7 @@ body{
 
 .image-wrapper img {
   width: 250px;
-  height: auto;
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
   display: block;

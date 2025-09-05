@@ -11,7 +11,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import dto.board.BoardDTO;
 import dto.notification.NotificationDTO;
 
 public class NotificationDAO {

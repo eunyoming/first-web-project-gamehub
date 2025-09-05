@@ -251,8 +251,7 @@ h3 {
 	            alert("칭호가 장착되었습니다!");
 	            // 필요 시 UI 업데이트
 	            location.reload(); // 페이지 새로고침
-	            
-	            
+            
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("칭호 장착 실패:", error);

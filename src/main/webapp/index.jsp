@@ -65,9 +65,10 @@ request.setAttribute("pageTitle", "메인페이지");
 }
 
 .strips__strip:nth-child(3) .strip__content {
-	background: linear-gradient(to right, var(--navy-color),
-		var(--main-color));
-	transform: translate3d(0, -100%, 0);
+	background-image: url("/games/game3/thumbnails/thumbnails.png");
+	background-size: cover;
+  background-position: center;
+	transform: translate3d(0, 100%, 0);
 }
 
 .strips__strip:nth-child(4) .strip__content {
@@ -321,7 +322,7 @@ h2 {
 					<div class="col-md-6 text-center">
 						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
-							<a href="/api/game/main?game_seq=5"><button
+							<a href="/api/game/main?game_seq=3"><button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
 							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>
@@ -363,7 +364,7 @@ h2 {
 					<div class="col-md-6 text-center">
 						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
 						<div class="d-flex justify-content-center gap-2">
-							<a href="/api/game/main?game_seq=1"><button
+							<a href="/api/game/main?game_seq=5"><button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>
 							<button class="btn gameSelectBtn strip__close btn">close</button>
 						</div>

@@ -24,9 +24,6 @@ import com.google.gson.JsonPrimitive;
 import dao.ChatDAO;
 import dao.FriendDAO;
 import dto.chat.MessageDTO;
-import dto.friend.FriendshipDTO;
-import dto.member.MemberDTO;
-import dto.member.MemberProfileDTO;
 
 
 @WebServlet("/chat/*")

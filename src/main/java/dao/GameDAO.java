@@ -11,7 +11,6 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import dto.game.GameDTO;
-import dto.game.GameInfoDTO;
 public class GameDAO {
 //대상 DTO : GameDTO, GameRecordDTO, 
 	/*

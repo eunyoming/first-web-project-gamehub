@@ -27,7 +27,6 @@ import com.google.gson.JsonPrimitive;
 
 import commons.SessionManager;
 import dao.BoardDAO;
-
 import dao.GameInfoDAO;
 import dao.ManagerDAO;
 import dao.MemberDAO;

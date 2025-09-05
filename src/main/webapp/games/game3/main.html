@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Arrow Dodge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    // 서버 세션에서 로그인한 사용자 ID를 주입
+    // 로그인 안 했으면 ""(빈 문자열) 들어가게
+    let loginId = "${sessionScope.loginId}" || "";
+  </script>
+
+  <!-- Phaser CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+
+  <!-- Scenes -->
+  <script src="./achievements.js"></script>
+  <script src="./StartScene.js"></script>
+  <script src="./MainScene.js"></script>
+  <script src="./GameOverScene.js"></script>
+</head>
+
+<body style="margin: 0; background: #111; display: flex; justify-content: center; align-items: center; height: 100vh">
+  <div id="game-container" style="min-width: 800px; min-height: 800px"></div>
+
+  <script>
+    const config = {
+      type: Phaser.AUTO,
+      width: 800,
+      height: 800,
+      parent: "game-container",
+      backgroundColor: "#ffffff",
+      physics: {
+        default: "matter",
+        matter: {
+          debug: true,
+          gravity: { y: 0 },
+        },
+      },
+      scene: [StartScene, MainScene, GameOverScene],
+      scale: {
+        mode: Phaser.Scale.NONE, // 👈 크기 강제로 고정
+        autoCenter: Phaser.Scale.CENTER_BOTH, // 👈 항상 가운데 정렬
+      },
+    };
+    new Phaser.Game(config);
+  </script>
+</body>
+
+</html>

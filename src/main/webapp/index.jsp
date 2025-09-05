@@ -51,6 +51,7 @@ request.setAttribute("pageTitle", "메인페이지");
 
 .strips__strip:nth-child(1) .strip__content {
 	background-image: url("/games/game1/assets/image/gameTitle.png");
+	background-size: cover;
 	background-position: center;
 	transform: translate3d(-100%, 0, 0);
 }

@@ -41,9 +41,9 @@ class MainScene extends Phaser.Scene {
 		this.matter.world.off("collisionstart");
 		this.hitDetected = false;
 		this.matter.world.on('collisionstart', (event, bodyA, bodyB) => {
-		    if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-		        this.hitDetected = true;
-		    }
+			if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
+				this.hitDetected = true;
+			}
 		});
 
 		// 배경/텍스트
@@ -80,7 +80,7 @@ class MainScene extends Phaser.Scene {
 				this.player.y = Phaser.Math.Clamp(this.player.y, 100, 700);
 			}
 		});
-		
+
 		// --- 초기 이동 관련 변수 초기화 (중요) ---
 		this.player.totalMovedDist = 0;
 		this.player.prevX = this.player.x;
@@ -153,6 +153,14 @@ class MainScene extends Phaser.Scene {
 	}
 
 	update(time, delta) {
+		// 충돌시 게임오버
+		if (this.hitDetected) {
+			const elapsed = this.startTime !== null ? time - this.startTime : 0;
+			this.gameOver(elapsed); // ✅ time 넘기기
+			this.hitDetected = false;
+			return; // 더 이상 update 진행 안 함
+		}
+
 		this.debugTimer = (this.debugTimer || 0) + delta;
 		if (this.debugTimer >= 1000) {
 			this.debugTimer = 0;
@@ -161,7 +169,7 @@ class MainScene extends Phaser.Scene {
 
 		// 최초 시작 시간 기록
 		if (this.startTime === null) {
-		    this.startTime = time;
+			this.startTime = time;
 		}
 
 		// 이동
@@ -209,34 +217,43 @@ class MainScene extends Phaser.Scene {
 
 			// AFK 체크
 			if (!this.cursors.left.isDown && !this.cursors.right.isDown &&
-				!this.cursors.up.isDown && !this.cursors.down.isDown) {
-				this.afkTime += delta;
-				if (this.afkTime >= 15000) {
-					this.unlockAchievement('MEOW_AFK_15S');
-					this.afkTime = 0;
-				}
+			    !this.cursors.up.isDown && !this.cursors.down.isDown) {
+
+			    // 처음 멈춘 시각 기록
+			    if (!this.afkStartTime) {
+			        this.afkStartTime = time;
+			    }
+
+			    // 현재 시각 - 멈춘 시각 >= 15초
+			    if (time - this.afkStartTime >= 15000) {
+			        this.unlockAchievement('MEOW_AFK_15S');
+			        this.afkStartTime = time; // 다시 측정 시작
+			    }
+
 			} else {
-				this.afkTime = 0;
+			    // 움직이면 초기화
+			    this.afkStartTime = null;
 			}
 
 			// 계속 움직이기 체크
 			if (this.cursors.left.isDown || this.cursors.right.isDown ||
-				this.cursors.up.isDown || this.cursors.down.isDown) {
-				this.movingTime += delta;
-				if (this.movingTime >= 15000) {
-					this.unlockAchievement('MEOW_KEEP_MOVING_15S');
-					this.movingTime = 0;
-				}
+			    this.cursors.up.isDown || this.cursors.down.isDown) {
+
+			    if (!this.movingStartTime) {
+			        this.movingStartTime = time;
+			    }
+
+			    if (time - this.movingStartTime >= 15000) {
+			        this.unlockAchievement('MEOW_KEEP_MOVING_15S');
+			        this.movingStartTime = time;
+			    }
+
 			} else {
-				this.movingTime = 0;
+			    this.movingStartTime = null;
 			}
+
 		}
-		
-		// 충돌시 게임오버
-		if (this.hitDetected) {
-		    this.gameOver(elapsed); // ✅ time 넘기기
-		    this.hitDetected = false;
-		}
+
 	}
 
 	// 랜덤 패턴
@@ -413,7 +430,7 @@ class MainScene extends Phaser.Scene {
 	gameOver(elapsed) {
 		if (this.isGameOver) return;
 		this.isGameOver = true;
-		
+
 		// 최고 점수 갱신
 		if (this.score > bestScore) {
 			bestScore = this.score;
@@ -421,11 +438,11 @@ class MainScene extends Phaser.Scene {
 
 		// GameOverScene 으로 점수 + 시간 넘기기
 		this.scene.start('GameOverScene', {
-		        score: this.score,
-		        elapsed: elapsed,   // 그대로 전달
-		        startTime: this.startTime,
-		        endTime: this.time.now, // 원한다면 종료 시각도 넘길 수 있음
-		    });
+			score: this.score,
+			elapsed: elapsed,   // 그대로 전달
+			startTime: this.startTime,
+			endTime: this.time.now, // 원한다면 종료 시각도 넘길 수 있음
+		});
 	}
 
 

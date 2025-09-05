@@ -235,7 +235,7 @@ class MainScene extends Phaser.Scene {
 				this.cursors.up.isDown || this.cursors.down.isDown) {
 				this.movingTime += delta;
 				if (this.movingTime >= 15000) {
-					this.unlockAchievement('MEOW_MOVE_15S');
+					this.unlockAchievement('MEOW_KEEP_MOVING_15S');
 					this.movingTime = 0;
 				}
 			} else {

@@ -10,18 +10,57 @@ class GameOverScene extends Phaser.Scene {
 		this.startTime = data.startTime;
 		this.endTime = data.endTime;
 		console.log('GameOverScene init:', data);
-		// ✅ 점수 기반 포인트 계산 (200분의 1, 최소 1포인트 보장)
-		this.finalPoint = Math.max(1, Math.floor(this.finalScore / 200));
+		// ✅ 점수 기반 포인트 계산 (100분의 1, 최대 300포인트)
+		this.finalPoint = Math.min(300, Math.floor(this.finalScore / 100));
 	}
 
 	create(data) {
+		// 점수 비례 얻은 포인트
+		const pointValue = this.finalPoint;
+		// 플레이 기록 저장 준비
+		const payload = {
+			userId: loginId,
+			game_seq: parseInt(new URLSearchParams(window.location.search).get("game_seq")),
+			gameScore: this.finalScore,
+			gameStartTime: Number(this.startTime),
+			gameEndTime: Number(this.endTime)
+
+		};
+
+		console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
+
+		$.ajax({
+			url: "/api/game/recordInsert",
+			contentType: "application/json",
+			type: "post",
+			data: JSON.stringify(payload)
+
+		}).done(function(resp) {
+
+			console.log(resp);
+
+		});
+
+		$.ajax({
+			url: "/api/point/gameOver",
+			type: "POST",
+			data: {
+				seq: 6,               // POINT 테이블의 SEQ
+				pointValue: pointValue       // 클라이언트에서 계산된 포인트 값
+			},
+			success: function(response) {
+				console.log("포인트 지급 성공:", response);
+			},
+			error: function(xhr) {
+				console.error("에러 발생:", xhr.responseText);
+			}
+		});
+
 		// 움직인 px 가져오기
 		const movedDist = data.totalMovedDist || 0;
-		// 업적 체크 1000px 움직이면
-		if (movedDist >= 1000) this.unlockAchievement("MEOW_WALKER");
+		// 업적 체크 300px 움직이면
+		if (movedDist >= 300) this.unlockAchievement("MEOW_WALKER");
 		console.log('생존 시간 확인:', this.finalTime);
-		// 점수 비례 얻은 포인트
-		const pointValue = this.finalPoint; // 안전하게 저장
 
 		// 1. 배경 꽉 채우기
 		this.add.image(400, 400, "background")
@@ -108,65 +147,26 @@ class GameOverScene extends Phaser.Scene {
 
 		// 점수 업적
 		if (mainScene.score >= 1000) mainScene.unlockAchievement("MEOW_SCORE_1000");
-		if (mainScene.score >= 5000) mainScene.unlockAchievement("MEOW_SCORE_3000");
-		if (mainScene.score >= 10000) mainScene.unlockAchievement("MEOW_SCORE_7000");
+		if (mainScene.score >= 3000) mainScene.unlockAchievement("MEOW_SCORE_3000");
+		if (mainScene.score >= 7000) mainScene.unlockAchievement("MEOW_SCORE_7000");
 
 		// 사망 관련 업적
 		if (mainScene.deathCount === 1) mainScene.unlockAchievement("MEOW_FIRST_DEATH");
-		if (mainScene.restartCount >= 3) mainScene.unlockAchievement("MEOW_RESTART_3X");
-		if (mainScene.isGameOver && mainScene.score === 0) mainScene.unlockAchievement("MEOW_DIE_AT_0");
-		for (const id in achievements) {
-			const ach = achievements[id];
-			if (!mainScene.unlockedAchievements.has(id) && ach.condition(mainScene)) {
-				mainScene.unlockAchievement(id);
-			};
-		};
 
 		// ⏱ 생존 시간 업적 체크
 		const survivedSeconds = Math.floor(this.finalTime / 1000);
 
 		if (survivedSeconds >= 30) mainScene.unlockAchievement("MEOW_SURVIVE_30S");
 		if (survivedSeconds >= 60) mainScene.unlockAchievement("MEOW_SURVIVE_1M");
+		if (survivedSeconds >= 120) mainScene.unlockAchievement("MEOW_SURVIVE_2M");
 		if (survivedSeconds >= 180) mainScene.unlockAchievement("MEOW_SURVIVE_3M");
-		if (survivedSeconds >= 300) mainScene.unlockAchievement("MEOW_SURVIVE_5M");
-		
-		const payload = {
-					userId: loginId,
-					game_seq: parseInt(new URLSearchParams(window.location.search).get("game_seq")),
-					gameScore: this.finalScore,
-					gameStartTime: Number(this.startTime),
-					gameEndTime: Number(this.endTime)
 
-				};
-
-				console.log("전송할 JSON:", JSON.stringify(payload)); // 확인용 로그
-
-				$.ajax({
-					url: "/api/game/recordInsert",
-					contentType: "application/json",
-					type: "post",
-					data: JSON.stringify(payload)
-
-				}).done(function(resp) {
-
-					console.log(resp);
-
-				});
-
-				$.ajax({
-					url: "/api/point/gameOver",
-					type: "POST",
-					data: {
-						seq: 6,               // POINT 테이블의 SEQ
-						pointValue: pointValue       // 클라이언트에서 계산된 포인트 값
-					},
-					success: function(response) {
-						console.log("포인트 지급 성공:", response);
-					},
-					error: function(xhr) {
-						console.error("에러 발생:", xhr.responseText);
-					}
-				});
+		for (const id in achievements) {
+			const ach = achievements[id];
+			if (!mainScene.unlockedAchievements.has(id) && ach.condition(mainScene)) {
+				mainScene.unlockAchievement(id);
+			};
+		};
 
 		// 스페이스바 입력 → 다시 시작
 		this.input.keyboard.once("keydown-SPACE", () => this.handleRestart(mainScene));
@@ -181,13 +181,15 @@ class GameOverScene extends Phaser.Scene {
 		// 재시작 관련 업적 즉시 체크
 		if (mainScene.restartCount >= 3) {
 			mainScene.unlockAchievement("MEOW_RESTART_3X");
+		} else if (mainScene.restartCount >= 10) {
+			mainScene.unlockAchievement("MEOW_RESTART_10X");
 		};
 
 		this.scene.stop("GameOverScene");
 		this.scene.start("MainScene", {
-		        loginId: loginId,
-		        restartCount: mainScene.restartCount // ✅ 같이 넘겨줌
-		    })
+			loginId: loginId,
+			restartCount: mainScene.restartCount // ✅ 같이 넘겨줌
+		})
 	}
 
 	formatTime(ms) {

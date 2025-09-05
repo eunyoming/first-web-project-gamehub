@@ -319,7 +319,7 @@ h2 {
 						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
-						<img src="your-image.jpg" alt="대체이미지" class="img-fluid mb-3">
+						<video src="/games/game3/thumbnails/gamevideo.mkv" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=3"><button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>

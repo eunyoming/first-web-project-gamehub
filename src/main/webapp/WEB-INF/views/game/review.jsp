@@ -663,6 +663,17 @@
 		});
 		
 		
-		
+		// #gameReviewWriteBox 요소를 가져옵니다.
+		const reviewWriteBox = document.getElementById('gameReviewWriteBox');
+
+		// 키보드 입력 이벤트를 처리할 리스너를 추가합니다.
+		reviewWriteBox.addEventListener('keydown', (event) => {
+		    const target = event.target;
+		    // 이벤트가 발생한 요소가 INPUT 또는 TEXTAREA 태그인지 확인합니다.
+		    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+		        // 이벤트 버블링(전파)을 막아 게임 로직까지 전달되지 않게 합니다.
+		        event.stopPropagation();
+		    }
+		});
 	</script>
 </div>

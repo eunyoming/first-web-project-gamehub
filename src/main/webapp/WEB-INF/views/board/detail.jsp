@@ -1289,8 +1289,9 @@
         let likeIcon = "bi-heart";
 
         // 추천 버튼
-        let likeBtn = '';
+        let reply_likeBtn = '';
         if (currentCategory != 'Q&A') {
+        	reply_likeBtn = 
             '<button class="btn btn-outline-red-main reply-like_btn" data-reply-seq="' + reply.seq + '">' +
                 '<i class="bi ' + likeIcon + '"></i> ' + likeCount +
                 '</button>'
@@ -1303,9 +1304,9 @@
             controlBtns += '<button class="btn btn-outline-red-main reply-delete_btn" data-reply-seq="' + reply.seq + '">삭제</button>';
         }
 
-        // 신고 버튼은 일반 유저들과 작성자가 아닐 때만 표시
+        // 신고 버튼은 카테고리가 Q&A가 아니면서, 작성자가 아닐 때만 표시
         let reportBtn = '';
-        if (userCategory === 'user') {
+        if (currentCategory != 'Q&A') {
             if (!isWriter) {
                 reportBtn =
                     '<button class="btn btn-outline-red-main reply-report_btn" data-bs-toggle="modal" data-bs-target="#boardModal" data-reply-seq="' + reply.seq + '">' +
@@ -1342,7 +1343,7 @@
             mention + reply.writer +
             '</div>' +
             '<div class="col-4 reply-header_btns text-end">' +
-            likeBtn +
+            reply_likeBtn +
             reportBtn +
             controlBtns +
             '</div>' +

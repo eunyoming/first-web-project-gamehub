@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 
+import commons.NotificationSender;
 import dao.PointDAO;
 import dto.point.PointDTO;
 
@@ -65,10 +66,16 @@ public class PointController extends HttpServlet {
 		          
 		            String typeCode = request.getParameter("typeCode");
 		            String description = request.getParameter("description");
-
+		            
 		            pointDao.addPointsWithLogUsers(ids, points,typeCode, description);
 
+		            for(String id : ids) {
+		            	NotificationSender.send(id,"point","관리자님이 "+ points + " point를 지급하셨습니다.",null,null);	
+		            }
+		            
 		            response.getWriter().write("{\"status\":\"success\"}");
+		            
+		            
 				
 				//ajax로 호출
 			}else if(path.equals("/gameOver")) {

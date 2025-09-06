@@ -21,6 +21,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import commons.NotificationSender;
 import dao.AchievementDAO;
 import dao.MemberDAO;
 import dao.PointDAO;
@@ -113,7 +114,8 @@ public class AchievementController extends HttpServlet {
 
 				        result.addProperty("status", success ? "success" : "fail");
 				        
-				      
+				        NotificationSender.send(userId,"point","\""+achievDto.getTitle()+"\" 업적을 달성해 "+ pointDTO.getValue() +" point를 획득했습니다.");	
+				        
 				        if(success) {
 				        	result.addProperty("title",achievDto.getTitle());
 				        	result.addProperty("description",achievDto.getDescription());

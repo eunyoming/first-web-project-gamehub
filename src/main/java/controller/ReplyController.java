@@ -18,9 +18,11 @@ import org.jsoup.safety.Safelist;
 
 import com.google.gson.Gson;
 
+import commons.NotificationSender;
 import dao.BoardDAO;
 import dao.RepliesLikesDAO;
 import dao.ReplyDAO;
+import dto.board.BoardDTO;
 import dto.board.ReplyDTO;
 
 @WebServlet("*.reply")
@@ -48,7 +50,36 @@ public class ReplyController extends HttpServlet {
 				
 				ReplyDTO dto = new ReplyDTO(0, writer, cleanContents, 0, board_seq, parent_seq, null, "public", null);
 				int result = reply_dao.insertReplies(dto);
-
+				
+				
+				BoardDTO boardDTO = BoardDAO.getInstance().selectBoardsBySeq(board_seq);
+				//알림 전송.
+				if(parent_seq==0) //대댓글 아님 //게시글 작성자에게만 알림 전달.
+				{
+					if(!boardDTO.getWriter().equals(writer))
+					{  //게시글 작성자와 댓글 작성자가 같지 않으면 알림 보냄
+						NotificationSender.send(boardDTO.getWriter(),"reply",writer+"님이 게시글에 댓글을 작성하셨습니다.",null,""+board_seq);						
+					}
+					
+					System.out.println("board시퀀스"+board_seq);
+				}
+				else //대댓글임 //게시글 작성자와 댓글 작성자에게 알림 전달.
+				{
+					ReplyDTO parent_seqReplydto = reply_dao.selectRepliesBySeq(parent_seq);
+					
+					if(!parent_seqReplydto.getWriter().equals(writer))
+					{ //대댓글 작성자와 부모댓글 작성자가 같지 않으면 알림 보냄
+						NotificationSender.send(parent_seqReplydto.getWriter(),"reply",writer+"님이 댓글에 대댓글을 작성하셨습니다.",null,""+board_seq);						
+					}
+					
+					if(!boardDTO.getWriter().equals(writer))
+					{  //게시글글 작성자와 댓글 작성자가 같지 않으면 알림 보냄
+						NotificationSender.send(boardDTO.getWriter(),"reply",writer+"님이 게시글에 댓글을 작성하셨습니다.",null,""+board_seq);						
+					}
+					System.out.println("board시퀀스"+board_seq +":" + "parent_seq" + parent_seqReplydto.getWriter());
+				}
+				
+				
 				response.setContentType("application/json; charset=UTF-8");
 				try (PrintWriter pw = response.getWriter()) {
 					Map<String, Object> resultMap = new HashMap<>();
@@ -62,6 +93,11 @@ public class ReplyController extends HttpServlet {
 
 						resultMap.put("replies", replies);
 						resultMap.put("result", result);
+						
+						
+						
+						
+						
 						System.out.println("댓글등록완료");
 					} else {
 						resultMap.put("message", "댓글 등록 실패");

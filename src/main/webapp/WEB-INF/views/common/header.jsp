@@ -167,7 +167,7 @@
 								        		    break;
 							        		    case "reply":
 								        		    console.log('reply입니다.'); // a는 2입니다.
-								        		    dropa.attr({"class":"dropdown-item","href":"/chat/open"})
+								        		    dropa.attr({"class":"dropdown-item","href":"/detailPage.board?seq="+item.related_objectId})
 								        		    break;
 							        		    default:
 							        		    	dropa.attr({"class":"dropdown-item","href":"#"})

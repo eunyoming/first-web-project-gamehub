@@ -110,11 +110,11 @@ public class ChatServer {
                 }
             }
             
-            //알림 보내기
+          //알림 보내기
             NotificationSender.send(
             		recieveId(dto.getSender_Id(), ChatDAO.getInstance().getChatroomName(dto.getChatroom_seq())), 
             		"chat",
-            		savedMsg.getContent() );
+            		dto.getSender_Id()+"님의 메세지 도착 : " +savedMsg.getContent(), dto.getSender_Id(),null);
             
         } catch (IOException e) {
             e.printStackTrace();

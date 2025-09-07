@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,10 +31,12 @@ import dao.GameDAO;
 import dao.GameInfoDAO;
 import dao.GameRecordDAO;
 import dao.GameReviewDAO;
+import dao.MemberDAO;
 import dto.game.GameDTO;
 import dto.game.GameInfoDTO;
 import dto.game.GameRecordDTO;
 import dto.game.GameReviewDTO;
+import dto.member.SimpleUserProfileDTO;
 
 @WebServlet("/api/game/*")
 public class GameController extends HttpServlet {
@@ -199,11 +204,20 @@ public class GameController extends HttpServlet {
 	
 				try {
 					List<GameRecordDTO> gameRecordDTOList = gameRecordDAO.selectGameRecordsByRank(game_seq);
-	
+					List<SimpleUserProfileDTO> simpleUserProfiles = new ArrayList<>();
+					for (GameRecordDTO gameRecordDTO : gameRecordDTOList) {
+						SimpleUserProfileDTO dto = MemberDAO.getInstance().getSimpleUserProfile(gameRecordDTO.getUserId());
+						simpleUserProfiles.add(dto);
+					}
+					Map<String, Object> result = new HashMap<>();
+					result.put("records", gameRecordDTOList);
+					result.put("profiles", simpleUserProfiles);
+					
 					response.setContentType("text/html; charset=UTF-8");
 					PrintWriter pw = response.getWriter();
 	
-					pw.append(g.toJson(gameRecordDTOList));
+					pw.append(g.toJson(result));
+					
 	
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -47,33 +47,39 @@ $.ajax({
 	  dataType: "json",
 	  data: { game_seq: game_seq } // JSP에서 변수 바인딩한 경우: "${game_seq}"
 	}).done(function(resp) {
-	  let $container = $("#rankList").empty();
-	 
+		console.log(resp);
+		
+		let $container = $("#rankList").empty();
+	console.log(resp.records);
+	console.log(resp.profiles);
+		  resp.records.forEach(function(record, index) {
+		    let profile = resp.profiles.find(p => p.userId == record.userId);
 
-	  resp.forEach(function(rec, index) {
-	  
-	    let $row = $(
-	      '<div class="row mb-2">'+
-	        '<div class="col-12">'+
-	          '<div class="card">'+
-	            '<div class="card-body">'+
-	              '<div class="row">'+
-	                '<div class="col-2">' + (index + 1) + '등</div>'+
-	                '<div class="col-2">'+
-	                  '<img src="'+(rec.iconUrl || '/images/default.png')+ '"alt="아이콘" class="img-fluid">'+
-	                '</div>'+
-	                '<div class="col-3">' + rec.userId + '</div>' +
-	                '<div class="col-2"></div>'+
-	                '<div class="col-3">점수 ' + rec.gameScore + '</div>'+
-	              '</div>'+
-	            '</div>'+
-	          '</div>'+
-	        '</div>'+
-	      '</div>'
-	    );
+		    let $row = $(
+		      '<div class="row mb-2">'+
+		        '<div class="col-12">'+
+		          '<div class="card">'+
+		            '<div class="card-body">'+
+		              '<div class="row">'+
+		                '<div class="col-2">' + (index + 1) + '등</div>'+
+		                '<div class="col-2">'+
+		                  '<img src="'+profile.profileImage+ '" alt="아이콘" class="rounded-circle mb-3" width="80" height="80">'+
+		                '</div>'+
+		                '<div class="col-3"><a href="/api/member/mypage?userId=' +
+		                record.userId  +
+		                '" style="text-decoration: none; color: inherit;"><div class="row" >' + record.userId + '</div>' +
+		                 '<div class="row" >' +profile.achievDTO.title + '</div></a></div>'+
+		                '<div class="col-2"></div>'+
+		                '<div class="col-3">점수 ' + record.gameScore + '</div>'+
+		              '</div>'+
+		            '</div>'+
+		          '</div>'+
+		        '</div>'+
+		      '</div>'
+		    );
 
-	    $container.append($row);
-	  });
+		    $container.append($row);
+		  });
 	}).fail(function(xhr, status, error) {
 	  console.error("AJAX 실패:", status, error);
 	});

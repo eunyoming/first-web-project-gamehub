@@ -192,10 +192,29 @@ public class ManagerDAO {
 	public List<Map<String,String>> selectPost_Data(String type) throws Exception{
 		// 게시글 수 -
 		//일별
-		String typeDaySql = "WITH week_table AS (SELECT TRUNC(SYSDATE) - LEVEL + 1 AS day_date FROM dual CONNECT BY LEVEL <= 7) SELECT w.day_date, NVL(b.post_count, 0) AS post_count FROM week_table w LEFT JOIN (SELECT TRUNC(created_at) AS created_day,COUNT(*) AS post_count FROM boards WHERE created_at >= TRUNC(SYSDATE) - 6 GROUP BY TRUNC(created_at)) b ON w.day_date = b.created_day	ORDER BY w.day_date";
+		String typeDaySql = "WITH week_table AS (SELECT TRUNC(SYSDATE) - LEVEL + 1 AS day_date FROM dual CONNECT BY LEVEL <= 7) "
+				+ "SELECT w.day_date, NVL(b.post_count, 0) "
+				+ "AS post_count FROM week_table w LEFT JOIN (SELECT TRUNC(created_at) "
+				+ "AS created_day,COUNT(*) AS post_count "
+				+ "FROM boards WHERE created_at >= TRUNC(SYSDATE) - 6 GROUP BY TRUNC(created_at)) b ON w.day_date = b.created_day	"
+				+ "ORDER BY w.day_date";
 
 		//주차별
-		String typeWeekSql = "WITH week_table AS ( SELECT TRUNC(SYSDATE) - LEVEL + 1 AS day_date FROM dual CONNECT BY LEVEL <= 31),	week_group AS (SELECT TO_CHAR(day_date, 'YYYY-MM') AS month, CEIL(TO_CHAR(day_date, 'DD') / 7) AS week_in_month FROM week_table GROUP BY TO_CHAR(day_date, 'YYYY-MM'), CEIL(TO_CHAR(day_date, 'DD') / 7)), board_count AS ( SELECT TO_CHAR(CREATED_AT, 'YYYY-MM') AS month, CEIL(TO_CHAR(CREATED_AT, 'DD') / 7) AS week_in_month, COUNT(*) AS post_count FROM boards WHERE CREATED_AT >= TRUNC(SYSDATE)-32 GROUP BY TO_CHAR(CREATED_AT, 'YYYY-MM'), CEIL(TO_CHAR(CREATED_AT, 'DD') / 7)	), board_total AS ( SELECT wg.month, wg.week_in_month, NVL(bc.post_count, 0) AS post_count FROM week_group wg LEFT JOIN board_count bc ON wg.month = bc.month AND wg.week_in_month = bc.week_in_month) SELECT * FROM ( SELECT * FROM board_total ORDER BY month DESC, week_in_month DESC ) WHERE ROWNUM < 6";
+		String typeWeekSql = "WITH week_table AS ( SELECT TRUNC(SYSDATE) - LEVEL + 1 AS day_date "
+				+ "FROM dual CONNECT BY LEVEL <= 31),	"
+				+ "week_group AS (SELECT TO_CHAR(day_date, 'YYYY-MM') AS month, "
+				+ "CEIL(TO_CHAR(day_date, 'DD') / 7) AS week_in_month "
+				+ "FROM week_table GROUP BY TO_CHAR(day_date, 'YYYY-MM'), "
+				+ "CEIL(TO_CHAR(day_date, 'DD') / 7)), "
+				+ "board_count AS ( SELECT TO_CHAR(CREATED_AT, 'YYYY-MM') AS month, "
+				+ "CEIL(TO_CHAR(CREATED_AT, 'DD') / 7) AS week_in_month, "
+				+ "COUNT(*) AS post_count FROM boards WHERE CREATED_AT >= TRUNC(SYSDATE)-32 "
+				+ "GROUP BY TO_CHAR(CREATED_AT, 'YYYY-MM'), CEIL(TO_CHAR(CREATED_AT, 'DD') / 7)	), "
+				+ "board_total AS ( SELECT wg.month, wg.week_in_month, "
+				+ "NVL(bc.post_count, 0) AS post_count "
+				+ "FROM week_group wg LEFT JOIN board_count bc ON wg.month = bc.month "
+				+ "AND wg.week_in_month = bc.week_in_month) "
+				+ "SELECT * FROM ( SELECT * FROM board_total ORDER BY month DESC, week_in_month DESC ) WHERE ROWNUM < 6";
 
 		//월간별
 		String typeMonthSql = "WITH month_table AS ( SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), - (LEVEL - 1)) AS month_start FROM dual CONNECT BY LEVEL <= 6), board_count AS ( SELECT TRUNC(CREATED_AT, 'MM') AS month_start, COUNT(*) AS post_count FROM boards WHERE CREATED_AT >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -5) GROUP BY TRUNC(CREATED_AT, 'MM')) SELECT mt.month_start, NVL(bc.post_count, 0) AS post_count FROM month_table mt LEFT JOIN board_count bc ON mt.month_start = bc.month_start ORDER BY mt.month_start DESC";

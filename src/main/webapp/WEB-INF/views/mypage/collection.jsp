@@ -107,6 +107,9 @@ h3 {
 			.ajax({
 				url : "/api/collection/recentlyPlayedGames",
 				type : "post",
+				data: {
+					  userId: "${loginId}"
+					},
 				dataType : "json"
 			})
 			.done(
@@ -172,6 +175,9 @@ h3 {
 			.ajax({
 				url : "/api/collection/userAchievement",
 				type : "post",
+				data: {
+					  userId: "${loginId}"
+					},
 				dataType : "json"
 			})
 			.done(

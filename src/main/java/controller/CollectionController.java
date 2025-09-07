@@ -64,16 +64,16 @@ public class CollectionController extends HttpServlet {
 				//int currentAchievement = achievementDAO.CountAchievementByGame_Seq(game_seq);
 				//int totalAchievement = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId);
 				
+				String userID = request.getParameter("userId");
 				
 				
-				
-				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(loginId); 
+				List<GameRecentDTO> gameRecentDTOList = gameRecordDAO.selectGameRecordsByLoginId(userID ); 
 				//List<AchievementDTO> achievementDTOList = achievementDAO.selectAchievementByLoginId(loginId);
 				for (GameRecentDTO dto : gameRecentDTOList) {
 				    int seq = dto.getGameSeq();
 				    
 				    int totalAch   = achievementDAO.CountAchievementByGame_Seq(seq);
-				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(loginId, seq);
+				    int currAch    = achievementDAO.CountAchievementByGame_SeqAndLoginId(userID , seq);
 				    dto.setTotalAchievement(totalAch);
 				    dto.setCurrentAchievement(currAch);
 				}	
@@ -91,7 +91,8 @@ public class CollectionController extends HttpServlet {
 				
 				
 			}else if(path.equals("/userAchievement")) {
-				List<Map<String, Object>> list = achievementDAO.selectUserAchievements(loginId);
+				String userID = request.getParameter("userId");
+				List<Map<String, Object>> list = achievementDAO.selectUserAchievements(userID);
 				response.setContentType("application/json; charset=UTF-8");
 		        PrintWriter pw = response.getWriter();
 		        pw.append(g.toJson(list));

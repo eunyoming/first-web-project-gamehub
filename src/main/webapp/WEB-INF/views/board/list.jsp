@@ -123,7 +123,9 @@ request.setAttribute("pageTitle", "게시판 리스트");
 							<!-- 댓글수 -->
 							<span class="ms-1">[${dto.replyCount}]</span>
 						</div>
-						<div class="col-1">${dto.writer}</div>
+						<div class="col-1">
+                     <a href="/api/member/mypage?userId=${dto.writer}" 	style="text-decoration: none; color: inherit;">${dto.writer}</a>
+                  </div>
 						<div class="col-2">
 							<fmt:formatDate value="${dto.created_at}" pattern="yyyy-MM-dd" />
 						</div>

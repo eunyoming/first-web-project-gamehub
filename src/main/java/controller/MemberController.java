@@ -172,6 +172,19 @@ public class MemberController extends HttpServlet {
 				MemberDTO dto = new MemberDTO (id,pw,name,phone,email,zipcode,address,addressDetail,0,'Y',null,null);
 
 				int result = dao.insertMembers(dto);
+				
+				//회원 가입시 기본 프로필도 설정하도록
+				if(result != 0) {
+					MemberProfileDTO profile = new MemberProfileDTO();
+					 	profile.setUserID(id);
+				        profile.setProfileImage("/asset/img/default-profile.png");
+				        profile.setBio("자기소개를 입력해주세요.");
+				        profile.setStatusMessage("상태메시지를 설정해주세요.");
+				        profile.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+						dao.insertDefaultProfile(profile);
+				}
+				
+				
 
 				if(result != 0) {
 					response.sendRedirect("/api/member/loginPage");
@@ -275,7 +288,7 @@ public class MemberController extends HttpServlet {
 			    if (profile == null) {
 			        profile = new MemberProfileDTO();
 			        profile.setUserID(userId);
-			        profile.setProfileImage("/images/default-profile.png");
+			        profile.setProfileImage("/asset/img/default-profile.png");
 			        profile.setBio("자기소개를 입력해주세요.");
 			        profile.setStatusMessage("상태메시지를 설정해주세요.");
 			        profile.setUpdatedAt(new Timestamp(System.currentTimeMillis()));

@@ -203,7 +203,7 @@ public class BoardController extends HttpServlet {
 				    .addTags("div", "span", "section", "article");
 				    
 
-				String cleanContents = Jsoup.clean(contents, safelist);
+				String cleanContents = Jsoup.clean(contents,"http://localhost/", safelist);
 
 			    
 				BoardDTO dto = new BoardDTO(0, loginId, title, cleanContents, category, refgame, 0, 0, null, null);

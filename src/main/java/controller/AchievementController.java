@@ -166,8 +166,10 @@ public class AchievementController extends HttpServlet {
 	        	String userId = request.getParameter("userId");
 	      
 	        	response.setContentType("application/json; charset=UTF-8");
-	        	response.getWriter().write("{\"data\": " + MemberDAO.getInstance().getSimpleUserProfile(userId).getAchievDTO().getTitle()+ "}");
-	      
+	        	response.getWriter().write("{\"data\": \"" 
+	        		    + MemberDAO.getInstance().getSimpleUserProfile(userId).getAchievDTO().getTitle()
+	        		    + "\"}");
+
 	        }else if(path.equals("/setEquipImage")) {
 	        	 SimpleUserProfileDTO simpleProfile = (SimpleUserProfileDTO) request.getSession().getAttribute("simpleProfile");
 

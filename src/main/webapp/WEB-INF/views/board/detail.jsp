@@ -316,7 +316,11 @@
 
             // 작성자 프로필
             $("#writer_profile_img").attr("src", resp.writerProfile.profileImage); // 이미지 없을 경우 대비
-            $("#writer_userId").text(resp.writerProfile.userId);
+            $("#writer_userId").html("<a href='/api/member/mypage?userId=" +
+                    resp.writerProfile.userId +
+                    "' style='text-decoration: none; color: inherit;'>" +
+                    resp.writerProfile.userId +
+                    "</a>");
             $("#writer_achiev").text(resp.writerProfile.achievDTO.title);
 
             // 버튼 조합
@@ -1273,7 +1277,10 @@
         if (depth >= 3) {
             let parent = replies.find(r => r.seq === reply.parent_seq);
             if (parent) {
-                mention = '<span class="mention text-green">@' + parent.writer + '</span> ';
+                mention = "<a href='/api/member/mypage?userId=" +
+                      parent.writer +
+                        "' style='text-decoration: none; color: inherit;'>" +
+                        "<span class='mention text-green'>@" + parent.writer + "</span>";
             }
         }
 
@@ -1340,7 +1347,12 @@
             '<div class="reply-box mb-2' + hiddenClass + '" data-depth="' + depth + '" data-reply-seq="' + reply.seq + '" style="' + style + '">' +
             '<div class="row reply-header g-0">' +
             '<div class="col-8 reply-writer fw-bold text-navy">' +
-            mention + reply.writer +
+            mention + 
+            '<a href="/api/member/mypage?userId=' +
+            reply.writer +
+            '" style="text-decoration: none; color: inherit;">' +
+            reply.writer +
+            '</a>' +
             '</div>' +
             '<div class="col-4 reply-header_btns text-end">' +
             reply_likeBtn +

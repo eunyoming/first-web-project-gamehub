@@ -364,6 +364,7 @@ h2 {
 						<p class="col-md-8 fs-4">게임 설명</p>
 					</div>
 					<div class="col-md-6 text-center">
+					<video src="/games/game5/thumbnails/gamevideo.mp4" autoplay muted loop class="img-fluid mb-3"></video>
 						<div class="d-flex justify-content-center gap-2">
 							<a href="/api/game/main?game_seq=5"><button
 									class="btn gameSelectBtn strip__game">게임하러 가기</button></a>

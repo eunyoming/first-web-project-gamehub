@@ -16,6 +16,7 @@ class GameOverScene extends Phaser.Scene {
 	create(data) {
 		// 점수 비례 얻은 포인트
 		const pointValue = this.finalPoint;
+		
 		// 플레이 기록 저장 준비
 		const payload = {
 			userId: loginId,
@@ -23,9 +24,8 @@ class GameOverScene extends Phaser.Scene {
 			gameScore: this.finalScore,
 			gameStartTime: Number(this.startTime),
 			gameEndTime: Number(this.endTime)
-
 		};
-
+		
 		$.ajax({
 			url: "/api/game/recordInsert",
 			contentType: "application/json",
@@ -33,9 +33,9 @@ class GameOverScene extends Phaser.Scene {
 			data: JSON.stringify(payload)
 
 		}).done(function(resp) {
-
-			// console.log(resp);
-
+			console.log(JSON.stringify(resp));
+		}).fail(function(err) {
+		    console.error("기록 저장 실패:", err.responseText);
 		});
 
 		$.ajax({

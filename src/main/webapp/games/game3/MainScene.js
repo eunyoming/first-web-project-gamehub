@@ -23,6 +23,8 @@ class MainScene extends Phaser.Scene {
 
 		// data가 없으면 전역 loginId 사용
 		this.loginId = (data && data.loginId) ? data.loginId : (typeof loginId !== "undefined" ? loginId : "");
+		this.startTimeStamp = Date.now();
+		this.startTime = null;
 	}
 
 	preload() {
@@ -440,8 +442,8 @@ class MainScene extends Phaser.Scene {
 		this.scene.start('GameOverScene', {
 			score: this.score,
 			elapsed: elapsed,   // 그대로 전달
-			startTime: this.startTime,
-			endTime: this.time.now, // 원한다면 종료 시각도 넘길 수 있음
+			startTime: this.startTimeStamp, 
+			endTime: Date.now(), // 원한다면 종료 시각도 넘길 수 있음
 		});
 	}
 

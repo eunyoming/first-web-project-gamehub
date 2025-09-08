@@ -80,7 +80,7 @@ class MainGame extends Phaser.Scene {
 
     this.isGameOver = false;
     this.score = 0;
-    this.speed = -150;
+    this.speed = -180;
 
     this.gapRatio = 0.36;
     this.baseSpeed = -150;
@@ -253,9 +253,10 @@ class MainGame extends Phaser.Scene {
     let newSpeed = this.baseSpeed;
     let newTier = 0;
 
-    if (this.score >= 100) { newSpeed = -400; newTier = 5; }
-    else if (this.score >= 70) { newSpeed = -350; newTier = 4; }
-    else if (this.score >= 15) { newSpeed = -300; newTier = 3; }
+    if (this.score >= 70) { newSpeed = -650; newTier = 5; }
+	else if (this.score >= 50) { newSpeed = -550; newTier = 4; }
+    else if (this.score >= 30) { newSpeed = -450; newTier = 4; }
+    else if (this.score >= 15) { newSpeed = -350; newTier = 3; }
     else if (this.score >= 10) { newSpeed = -250; newTier = 2; }
     else if (this.score >= 5)  { newSpeed = -200; newTier = 1; }
 

@@ -29,8 +29,10 @@
     integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
     crossorigin="anonymous"></script>
 <!-- kakao key -->
-<script>
-    Kakao.init('68c4c9de5864af60b8deea3885634e91');  // 사용하려는 앱의 JavaScript 키 입력
+<script type="module">
+import config from '/config/config.js';
+
+    Kakao.init(config.kakaoAPI);  // 사용하려는 앱의 JavaScript 키 입력
     console.log(Kakao.isInitialized());
 </script>
 

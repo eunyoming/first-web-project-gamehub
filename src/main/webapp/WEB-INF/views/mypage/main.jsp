@@ -157,7 +157,7 @@ h3 {
 			})
 			.done(
 					function(resp) {
-						console.log(resp, "/recentlyPlayedGames 응답 받음");
+					
 						let $recentList = $("#recentlyPlayedGamesList").empty();
 
 						//		this.currentAchievement = currentAchievement;

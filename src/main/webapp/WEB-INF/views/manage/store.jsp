@@ -97,7 +97,7 @@ $(function(){
 		url : '/api/store/itemAll',
 		type : 'post'
 	}).done(function(resp){
-		console.log(resp + '응답 받음');
+		
 
 		$('#selling-list-div').html('');
 

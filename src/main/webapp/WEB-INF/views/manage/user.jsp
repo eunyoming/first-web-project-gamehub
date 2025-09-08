@@ -128,8 +128,7 @@ function loadReportData() {
         const reports = data.reports;
         const users = data.users;
 
-        console.log("신고 리스트:", reports);
-        console.log("밴 대상 유저 프로필:", users);
+       
 
         reports.forEach((report,index) => {
         	
@@ -206,12 +205,11 @@ function loadBannedData() {
 
         const profiles = result.profiles;
         const banInfo = result.banInfo;
-	console.log(profiles);
-	console.log(banInfo);
+	
         profiles.forEach(profile => {
             // userId 기준으로 banInfo 찾기
             const ban = banInfo.find(b => b.id === profile.userId);
-            console.log(ban)
+           
 
             const profileBlock =
                 '<div class="profile d-flex align-items-center justify-content-between">' +

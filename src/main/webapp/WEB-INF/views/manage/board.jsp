@@ -183,8 +183,7 @@ request.setAttribute("pageTitle", "관리자 게시판 관리 페이지");
 	    $('#' + targetId).html(html);
 	}
  function processQna(boardSeq) {
-	 
-	 console.log(boardSeq);
+	
 
 
     if (!confirm("해당 Q&A를 처리하시겠습니까?")) return;

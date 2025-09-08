@@ -143,7 +143,7 @@ function editComment(seq) {
     );
 }
 function saveComment(seq) {
-	console.log("버튼 클릭")
+	
     let newComment = $("#commentEdit").val();
     $.post('/api/manage/updateGameComment', { 
         seq: seq, 

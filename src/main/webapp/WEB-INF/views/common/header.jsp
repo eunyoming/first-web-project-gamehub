@@ -250,7 +250,7 @@
 									<li><hr class="dropdown-divider"></li>
 									<li><a class="dropdown-item text-danger "
 										href="/api/member/logout">로그아웃</a></li>
-									<li><a class="dropdown-item text-danger" href="#">회원탈퇴</a></li>
+									<li><a class="dropdown-item text-danger" href="/api/member/mypage?section=secession&userId=${loginId}">회원탈퇴</a></li>
 								</ul>
 							</div>
 						</c:otherwise>

@@ -115,19 +115,7 @@ $(document).ready(function() {
         if(e.which === 13) $('#sendBtn').click();
     });
     
-    // Enter / Shift+Enter 처리
-    $('#messageInput').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-            if (e.shiftKey) {
-                // Shift + Enter → 줄바꿈 허용
-                return;
-            } else {
-                // Enter → 메시지 전송
-                e.preventDefault(); // 줄바꿈 방지
-                sendMessage();
-            }
-        }
-    });
+
 
     // -----------------------------
     // 메시지 추가 함수

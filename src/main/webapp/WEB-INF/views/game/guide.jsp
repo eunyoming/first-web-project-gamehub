@@ -40,8 +40,7 @@ $.ajax({
 	dataType : "json"
 	
 }).done(function(resp) {
-	console.log("업데이트 후 시퀀스", ${game_seq});
-    console.log("업데이트 후 데이터:", resp);
+	
 
     // 예시: 화면 갱신
      if (resp.guide) {

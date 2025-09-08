@@ -47,11 +47,10 @@ $.ajax({
 	  dataType: "json",
 	  data: { game_seq: game_seq } // JSP에서 변수 바인딩한 경우: "${game_seq}"
 	}).done(function(resp) {
-		console.log(resp);
+		
 		
 		let $container = $("#rankList").empty();
-	console.log(resp.records);
-	console.log(resp.profiles);
+	
 		  resp.records.forEach(function(record, index) {
 		    let profile = resp.profiles.find(p => p.userId == record.userId);
 

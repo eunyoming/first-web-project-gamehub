@@ -200,7 +200,7 @@
 		    $("#review-title").val(title);
 		    $("#review-content").val(content);
 		    		    
-		    console.log(userReviewRating);
+		
 		    $("#"+userReviewRating+"-stars").prop("checked", true);
 		    
 		    $("#reviewBtn").hide();
@@ -218,7 +218,7 @@
 				},
 				 dataType: "json" 
 			}).done(function(resp){
-				console.log(resp + "응답받음");
+				
 				$("#gameReviewWriteBox").show();
 				$("#review-title").val("");
 				$("#review-content").val("");
@@ -330,7 +330,7 @@
 				},
 				 dataType: "json" 
 			}).done(function(resp){
-				console.log(resp + "응답받음");
+				
 				$("#gameReviewBox").html("");
 				//리뷰 작성 내용 지워주고
 				$("#review-title").val("");
@@ -450,7 +450,7 @@
 				},
 				 dataType: "json" 
 			}).done(function(resp){
-				console.log(resp + "응답받음");
+				
 				$("#gameReviewBox").html("");
 				//리뷰 작성 내용 지워주고
 				$("#review-title").val("");
@@ -573,7 +573,7 @@
 				},
 				 dataType: "json" 
 			}).done(function(resp){
-				console.log(resp + "응답받음");
+				
 				$("#gameReviewBox").html("");
 				//리뷰 작성 내용 지워주고
 				$("#review-title").val("");

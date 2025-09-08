@@ -91,7 +91,7 @@
 					type : "post",
 					dataType:"json"
 				}).done(function(resp){
-					console.log(resp, "/view 응답 받음");
+				
 
 				    // bookmarks 배열 순회
 				    resp.bookmarks.forEach(function(item){

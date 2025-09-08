@@ -56,7 +56,7 @@
 			type : "post"
 			
 		}).done(function(resp){
-			console.log(resp+"응답 받음");
+		
 			
 			$("#selling-list-div").html("");
 			//리스트 내용 비워주고.

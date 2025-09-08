@@ -130,7 +130,7 @@
 					        }
 					        else
 					        {
-					        	bookmarkContent.html(item.contents);
+					        	//bookmarkContent.html(item.contents);
 					        }
 					        bookmarkContent.attr({"class":"card-text"});
 					        
@@ -200,7 +200,7 @@
 				        bookmarkBody.append(bookmarkTitle);
 				        
 				        let bookmarkContent = $("<div>");
-				        bookmarkContent.html(item.contents);
+				        //bookmarkContent.html(item.contents);
 				        bookmarkContent.attr({"class":"card-text"});
 				        
 				        bookmarkBody.append(bookmarkContent);

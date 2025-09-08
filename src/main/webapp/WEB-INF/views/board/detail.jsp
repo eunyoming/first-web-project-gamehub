@@ -34,7 +34,6 @@
     console.log(Kakao.isInitialized());
 </script>
 
-
 <div class="container g-0">
     <!-- 상단 헤더 -->
     <div class="row header-board g-0">
@@ -282,15 +281,6 @@
             $("#board_content").html(resp.boardDto.contents);
             $("#board_viewCount").text(resp.boardDto.viewCount);
 
-            // 북마크 버튼 상태 반영
-            if (resp.bookmarked) {
-                $("#bookmark_btn").data("bookmarked", true);
-                $("#bookmark_btn").html('<i class="bi bi-bookmark-fill" style="color:#e74c3c"></i> 북마크');
-            } else {
-                $("#bookmark_btn").data("bookmarked", false);
-                $("#bookmark_btn").html('<i class="bi bi-bookmark"></i> 북마크');
-            }
-
             // 카테고리, 관련 게임 세팅
             currentCategory = resp.boardDto.category;
             currentRefgame = resp.boardDto.refgame;
@@ -375,6 +365,15 @@
                 $icon.removeClass("bi-heart").addClass("bi-heart-fill").css("color", "#e74c3c");
             } else {
                 $icon.removeClass("bi-heart-fill").addClass("bi-heart").css("color", "");
+            }
+            
+         	// 북마크 버튼 상태 반영
+            if (resp.isBookmarked) {
+                $("#bookmark_btn").data("bookmarked", true);
+                $("#bookmark_btn").html('<i class="bi bi-bookmark-fill" style="color:#e74c3c"></i> 북마크');
+            } else {
+                $("#bookmark_btn").data("bookmarked", false);
+                $("#bookmark_btn").html('<i class="bi bi-bookmark"></i> 북마크');
             }
 
             // 댓글 개수 표시

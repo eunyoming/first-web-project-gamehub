@@ -28,6 +28,7 @@
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.6/kakao.min.js"
     integrity="sha384-WAtVcQYcmTO/N+C1N+1m6Gp8qxh+3NlnP7X1U7qP6P5dQY/MsRBNTh+e1ahJrkEm"
     crossorigin="anonymous"></script>
+    
 <!-- kakao key -->
 <script type="module">
 import config from '/config/config.js';
@@ -321,6 +322,7 @@ import config from '/config/config.js';
             // 공유 + 신고하기 버튼
             let header_buttons = '';
             if (currentCategory != 'Q&A') {
+				if(!isWriter){
                 header_buttons +=
                     '<div class="left-btn">' +
                     '<button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">' +
@@ -331,6 +333,13 @@ import config from '/config/config.js';
                     '<button class="btn" id="report_btn" data-bs-toggle="modal" data-bs-target="#boardModal">' +
                     '<img src="/asset/img/siren.png"> 신고하기' +
                     '</button>'
+				}else{
+					header_buttons +=
+	                    '<div class="left-btn">' +
+	                    '<button class="btn" id="share_btn" data-bs-toggle="modal" data-bs-target="#shareModal">' +
+	                    '<i class="bi bi-share"></i> 공유하기' +
+	                    '</button>'
+				}
             }
 
             const header_btns = $(".header_btns");
